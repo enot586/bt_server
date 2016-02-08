@@ -14,6 +14,7 @@ public class BT_Client implements DiscoveryListener {
 
     public void deviceDiscovered(RemoteDevice remoteDevice, DeviceClass deviceClass) {
 
+
     }
 
     public void servicesDiscovered(int i, ServiceRecord[] serviceRecords) {
