@@ -15,6 +15,7 @@ public class test implements BlueCoveLocalDeviceProperties{
 
 
         LocalDevice localDevice = null;
+
         while (true) {
             if (!LocalDevice.isPowerOn()) {
                 System.err.println("Take on Bluetooth");
@@ -30,9 +31,12 @@ public class test implements BlueCoveLocalDeviceProperties{
             }
         }
 
+        System.out.println("Address: "+localDevice.getBluetoothAddress());
+        System.out.println("Name: "+localDevice.getFriendlyName());
 
         BT_Server server=new BT_Server();
         server.start();
+
 
         //BT_Client client=new BT_Client();
         //client.serverConnect(localDevice);
