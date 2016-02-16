@@ -12,6 +12,7 @@ import javax.obex.ResponseCodes;
 import javax.obex.ServerRequestHandler;
 import java.io.*;
 import java.net.ServerSocket;
+import java.net.Socket;
 
 /**
  * Created by m on 09.02.16.
@@ -20,12 +21,6 @@ public class BT_Server {
 
     void start() throws IOException {
 
-
-        byte[] mybytearray = new byte[1000000];    //create byte array to buffer the file
-        int bytesRead;
-        int current = 0;
-        FileOutputStream fileOutputStream;
-        BufferedOutputStream bufferedOutputStream;
 
         UUID uuid = new UUID("1101", true);
         String name = "Echo Server";
@@ -36,8 +31,7 @@ public class BT_Server {
         //StreamConnectionNotifier server = null;
         //StreamConnection conn = null;
 
-
-            StreamConnectionNotifier streamConnNotifier = (StreamConnectionNotifier) Connector.open(url);
+        StreamConnectionNotifier streamConnNotifier = (StreamConnectionNotifier) Connector.open(url);
             System.out.println("Server Started. Waiting for clients to connect…");
             StreamConnection connection = streamConnNotifier.acceptAndOpen();
         
@@ -50,15 +44,48 @@ public class BT_Server {
 //read string from spp client
             InputStream inStream = connection.openInputStream();
 
-        /*
+
         BufferedReader bReader = new BufferedReader(new InputStreamReader(inStream));
-             String lineRead = bReader.readLine();
-            System.out.println(lineRead);
 
+        byte [] mba=new byte[10000];
+        int bytesRead;
+        bytesRead = inStream.read(mba, 0, mba.length);
+        FileOutputStream fileOutputStream;
+        BufferedOutputStream bufferedOutputStream;
 
-            PrintStream out = new PrintStream(new FileOutputStream("filename.txt"));
-            out.print(lineRead);
+        fileOutputStream = new FileOutputStream("output.txt");
+        bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
+        bufferedOutputStream.write(mba, 0, bytesRead);
+        bufferedOutputStream.flush();
+        bufferedOutputStream.close();
+        inStream.close();
+
+       /* int val;
+        while ((val = bReader.read()) != -1) {
+
+            System.out.print(val+" ");
+
+        }
 */
+
+
+
+
+ //      String lineRead = bReader.readLine();
+ //      System.out.println(lineRead);
+
+
+    //        PrintStream out = new PrintStream(new FileOutputStream("filename.txt"));
+    //        out.print(lineRead);
+/*
+        FileOutputStream fileOutputStream;
+        BufferedOutputStream bufferedOutputStream;
+        int filesize =20; // filesize temporary hardcoded
+        int bytesRead;
+        int current = 0;
+        byte[] mybytearray = new byte[filesize];
+
+
         fileOutputStream = new FileOutputStream("output.txt");
         bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
 
@@ -81,7 +108,7 @@ public class BT_Server {
         //serverSocket.close();
 
         System.out.println("Sever recieved the file");
-
+*/
 
 
 
@@ -93,6 +120,8 @@ public class BT_Server {
 
             pWriter.close();
             streamConnNotifier.close();
+
+
         }
 
 
