@@ -61,47 +61,6 @@ public class BT_Server {
         inStream.close();
 
 
- //      String lineRead = bReader.readLine();
- //      System.out.println(lineRead);
-
-
-    //        PrintStream out = new PrintStream(new FileOutputStream("filename.txt"));
-    //        out.print(lineRead);
-/*
-        FileOutputStream fileOutputStream;
-        BufferedOutputStream bufferedOutputStream;
-        int filesize =20; // filesize temporary hardcoded
-        int bytesRead;
-        int current = 0;
-        byte[] mybytearray = new byte[filesize];
-
-
-        fileOutputStream = new FileOutputStream("output.txt");
-        bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
-
-        System.out.println("Receiving...");
-        bytesRead = inStream.read(mybytearray, 0, mybytearray.length);
-        current = bytesRead;
-
-        do {
-            bytesRead = inStream.read(mybytearray, current, (mybytearray.length - current));
-            if (bytesRead >= 0) {
-                current += bytesRead;
-            }
-        } while (bytesRead > -1);
-
-        bufferedOutputStream.write(mybytearray, 0, current);
-        bufferedOutputStream.flush();
-        bufferedOutputStream.close();
-        inStream.close();
-        //clientSocket.close();
-        //serverSocket.close();
-
-        System.out.println("Sever recieved the file");
-*/
-
-
-
 //send response to spp client
             OutputStream outStream = connection.openOutputStream();
             PrintWriter pWriter = new PrintWriter(new OutputStreamWriter(outStream));
