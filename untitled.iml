@@ -10,5 +10,8 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="bluecove-2.1.0" level="project" />
     <orderEntry type="library" name="bluecove-gpl-2.1.0" level="project" />
+    <orderEntry type="library" name="bluecove-1.2.3-signed" level="project" />
+    <orderEntry type="library" name="bluecove-2.1.0-sources" level="project" />
+    <orderEntry type="library" name="bluecove-2.1.0 (2)" level="project" />
   </component>
 </module>
