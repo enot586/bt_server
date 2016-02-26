@@ -11,7 +11,7 @@ public class ReportServer implements BlueCoveLocalDeviceProperties{
     public static void main(String[] args) throws IOException, InterruptedException {
 
         Server server = new Server(8080);
-        
+
         server.setHandler( new HelloWorld() );
 
         try {
