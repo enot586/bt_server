@@ -1,18 +1,18 @@
-import javax.bluetooth.DiscoveryAgent;
-import javax.bluetooth.LocalDevice;
+//import javax.bluetooth.DiscoveryAgent;
+//import javax.bluetooth.LocalDevice;
 import javax.bluetooth.RemoteDevice;
 import javax.bluetooth.UUID;
 import javax.microedition.io.Connector;
-import javax.microedition.io.SocketConnection;
+//import javax.microedition.io.SocketConnection;
 import javax.microedition.io.StreamConnection;
 import javax.microedition.io.StreamConnectionNotifier;
-import javax.obex.HeaderSet;
-import javax.obex.Operation;
-import javax.obex.ResponseCodes;
-import javax.obex.ServerRequestHandler;
+//import javax.obex.HeaderSet;
+//import javax.obex.Operation;
+//import javax.obex.ResponseCodes;
+//import javax.obex.ServerRequestHandler;
 import java.io.*;
-import java.net.ServerSocket;
-import java.net.Socket;
+//import java.net.ServerSocket;
+//import java.net.Socket;
 
 /**
  * Created by m on 09.02.16.
