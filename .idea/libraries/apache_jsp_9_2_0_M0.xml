@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="apache-jsp-9.2.0.M0">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/jars/apache-jsp-9.2.0.M0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

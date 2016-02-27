@@ -1,23 +1,17 @@
 import javax.bluetooth.*;
 import java.io.IOException;
 
-/**
- * Created by m on 08.02.16.
- */
-public class BT_Client {
 
+public class BT_Client {
 
     public void serverConnect(LocalDevice localDevice) throws BluetoothStateException, InterruptedException {
         final Object inquiryCompletedEvent = new Object();
         localDevice.setDiscoverable(DiscoveryAgent.GIAC);
 
-
-
         DiscoveryListener listener = new DiscoveryListener() {
 
             public void deviceDiscovered(RemoteDevice remoteDevice, DeviceClass deviceClass) {
                 System.out.println("Device " + remoteDevice.getBluetoothAddress() + " found");
-
 
                 // devicesDiscovered.addElement(btDevice);
                 try {
@@ -26,7 +20,6 @@ public class BT_Client {
                 }
 
             }
-
 
             public void servicesDiscovered(int i, ServiceRecord[] serviceRecords) {
 
@@ -45,6 +38,7 @@ public class BT_Client {
                 }
             }
         };
+
         synchronized (inquiryCompletedEvent) {
             boolean started = LocalDevice.getLocalDevice().getDiscoveryAgent().startInquiry(DiscoveryAgent.GIAC, listener);
             if (started) {

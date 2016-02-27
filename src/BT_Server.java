@@ -11,68 +11,83 @@ import javax.microedition.io.StreamConnectionNotifier;
 //import javax.obex.ResponseCodes;
 //import javax.obex.ServerRequestHandler;
 import java.io.*;
-//import java.net.ServerSocket;
-//import java.net.Socket;
+import java.net.ServerSocket;
+import java.net.Socket;
 
-/**
- * Created by m on 09.02.16.
- */
+
 public class BT_Server {
 
+    //Размер поточного байтового буфера
+    final int MAX_BUFFER_SIZE = 100000;
+
+    private StreamConnection currentConnection;
+
+    private StreamConnection createConection(String url) throws IOException {
+        StreamConnectionNotifier streamConnNotifier = (StreamConnectionNotifier) Connector.open(url);
+        System.out.println("Server Started. Waiting for clients to connect…");
+        StreamConnection connection = streamConnNotifier.acceptAndOpen();
+        RemoteDevice dev = RemoteDevice.getRemoteDevice(connection);
+
+        System.out.println("Remote device address:"+dev.getBluetoothAddress());
+        System.out.println("Remote device name:"+dev.getFriendlyName(true));
+
+        return connection;
+    }
+
     void start() throws IOException {
-
-
         UUID uuid = new UUID("1101", true);
         String name = "Echo Server";
         String url = "btspp://localhost:" + uuid + ";name=" + name;
-        System.out.println(uuid.toString());
+        System.out.println("uuid: " + uuid);
         //+ ";authenticate=false;encrypt=false;";
-        //LocalDevice local = null;
-        //StreamConnectionNotifier server = null;
-        //StreamConnection conn = null;
 
-        StreamConnectionNotifier streamConnNotifier = (StreamConnectionNotifier) Connector.open(url);
-            System.out.println("Server Started. Waiting for clients to connect…");
-            StreamConnection connection = streamConnNotifier.acceptAndOpen();
-        
+        try {
+            currentConnection = createConection(url);
+        } catch (IOException e) {
+            System.out.println(e);
+            return;
+        }
 
+        try {
+            //read string from spp client
+            InputStream inStream = currentConnection.openInputStream();
 
-            RemoteDevice dev = RemoteDevice.getRemoteDevice(connection);
-            System.out.println("Remote device address:"+dev.getBluetoothAddress());
-            System.out.println("Remote device name:"+dev.getFriendlyName(true));
+            BufferedReader bReader = new BufferedReader(new InputStreamReader(inStream));
 
-//read string from spp client
-            InputStream inStream = connection.openInputStream();
+            byte[] mba = new byte[MAX_BUFFER_SIZE];
+            int bytesRead;
+            bytesRead = inStream.read(mba, 0, mba.length);
 
+            FileOutputStream fileOutputStream;
+            BufferedOutputStream bufferedOutputStream;
 
-        BufferedReader bReader = new BufferedReader(new InputStreamReader(inStream));
+            fileOutputStream = new FileOutputStream("output.txt");
+            bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
 
-        byte [] mba=new byte[100000];
-        int bytesRead;
-        bytesRead = inStream.read(mba, 0, mba.length);
-        FileOutputStream fileOutputStream;
-        BufferedOutputStream bufferedOutputStream;
+            bufferedOutputStream.write(mba, 0, bytesRead);
 
-        fileOutputStream = new FileOutputStream("output.txt");
-        bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
-        bufferedOutputStream.write(mba, 0, bytesRead);
-        bufferedOutputStream.flush();
-        bufferedOutputStream.close();
-        inStream.close();
+            bufferedOutputStream.flush();
+            bufferedOutputStream.close();
 
+            inStream.close();
+        } catch (IOException e) {
+            System.out.println(e);
+            return;
+        }
 
-//send response to spp client
-            OutputStream outStream = connection.openOutputStream();
+        try {
+            //send response to spp client
+            OutputStream outStream = currentConnection.openOutputStream();
             PrintWriter pWriter = new PrintWriter(new OutputStreamWriter(outStream));
             pWriter.write("Response String from SPP Server\r\n");
             pWriter.flush();
 
             pWriter.close();
-            streamConnNotifier.close();
 
-
+            currentConnection.close();
+        } catch (IOException e) {
+            System.out.println(e);
+            return;
         }
-
-
-
+    }
 }
