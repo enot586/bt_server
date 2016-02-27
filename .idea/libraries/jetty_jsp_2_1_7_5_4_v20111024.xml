@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="jetty-jsp-2.1-7.5.4.v20111024">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/jars/jetty-jsp-2.1-7.5.4.v20111024.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

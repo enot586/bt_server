@@ -6,20 +6,22 @@
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/tests" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/webapp" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/webapp/WEB-INF" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/webapp/WEB-INF/classes" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/webapp/WEB-INF/html" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/webapp/WEB-INF/html/img" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/webapp/WEB-INF" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/webapp/WEB-INF/lib" isTestSource="false" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="bluecove-2.1.0" level="project" />
     <orderEntry type="library" name="jetty-all-server-8.1.19.v20160209" level="project" />
     <orderEntry type="library" name="servlet-api-3.1" level="project" />
-    <orderEntry type="library" name="jetty-jsp-2.1-7.5.4.v20111024" level="project" />
     <orderEntry type="library" name="jetty-jsp-9.2.10.v20150310" level="project" />
     <orderEntry type="library" name="apache-jsp-9.2.0.M0" level="project" />
     <orderEntry type="library" name="jetty-annotations-9.3.7.v20160115" level="project" />
     <orderEntry type="library" name="jetty-plus-9.3.7.v20160115" level="project" />
+    <orderEntry type="library" name="org.apache.jasper.glassfish_2.1.0.v201007080150" level="project" />
+    <orderEntry type="library" name="javax.servlet.jsp-3.1" level="project" />
   </component>
 </module>

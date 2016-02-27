@@ -31,7 +31,10 @@ import javax.bluetooth.ServiceRecord;
 
 public class ReportServer {
 
+
     public static void main(String[] args) throws IOException, InterruptedException {
+
+        System.setProperty("org.apache.jasper.compiler.disablejsr199", "false");
 
         Server server = new Server(8080);
 
@@ -40,12 +43,20 @@ public class ReportServer {
         context.setAttribute("org.eclipse.jetty.server.webapp.ContainerIncludeJarPattern",
                              ".*/[^/]*servlet-api-[^/]*\\.jar$|.*/javax.servlet.jsp.jstl-.*\\.jar$|.*/.*taglibs.*\\.jar$");
 
-        context.setResourceBase("/webapp/");
-        context.setContextPath("/webapp/WEB-INF/html/example");
+        context.setResourceBase("/webapp");
+        context.setContextPath("/");
+
+//        ContainerInitializer initializer = new ContainerInitializer();
+//        context.setAttribute("org.eclipse.jetty.containerInitializers", initializer);
+//
+//        context.addBean(new ServletContainerInitializersStarter(context), true);
+
+        context.setClassLoader(new URLClassLoader(new URL[0], ReportServer.class.getClassLoader()));
+        context.setParentLoaderPriority(true);
 
         // Add Default Servlet (must be named "default")
         ServletHolder holderDefault = new ServletHolder("default", DefaultServlet.class);
-        holderDefault.setInitParameter("resourceBase", "/webapp/WEB-INF/html/");
+        holderDefault.setInitParameter("resourceBase", "/webapp/WEB-INF/html");
         holderDefault.setInitParameter("dirAllowed", "true");
         context.addServlet(holderDefault, "/");
 
@@ -61,12 +72,13 @@ public class ReportServer {
         context.addServlet(holderJsp, "*.jsp");
 
         // Add Application Servlets
+        context.addServlet(BTResponseServlet.class, "/example");
 
-        ServletHolder exampleJspHolder = new ServletHolder();
-        exampleJspHolder.setInitParameter("resourceBase", "/webapp/WEB-INF/html/example");
-        exampleJspHolder.setInitParameter("dirAllowed", "true");
-        exampleJspHolder.setName("example.jsp");
-        context.addServlet(exampleJspHolder, "/example");
+//        ServletHolder exampleJspHolder = new ServletHolder();
+//        exampleJspHolder.setInitParameter("resourceBase", "/webapp/WEB-INF/html");
+//        exampleJspHolder.setInitParameter("dirAllowed", "true");
+//        exampleJspHolder.setName("example.jsp");
+//        context.addServlet(exampleJspHolder, "/example");
 
 
         server.setHandler(context);
