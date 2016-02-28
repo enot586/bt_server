@@ -1,32 +1,15 @@
 
-import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
 
-import javax.bluetooth.*;
-import com.intel.bluetooth.*;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.handler.ContextHandler;
-import org.eclipse.jetty.annotations.ServletContainerInitializersStarter;
-import org.eclipse.jetty.plus.annotation.ContainerInitializer;
 import org.eclipse.jetty.jsp.JettyJspServlet;
-import org.eclipse.jetty.apache.jsp.JettyJasperInitializer;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.webapp.WebAppContext;
 
 
-import org.eclipse.jetty.util.IO;
-
 import java.io.IOException;
-
-import javax.bluetooth.BluetoothStateException;
-import javax.bluetooth.DeviceClass;
-import javax.bluetooth.DiscoveryAgent;
-import javax.bluetooth.DiscoveryListener;
-import javax.bluetooth.LocalDevice;
-import javax.bluetooth.RemoteDevice;
-import javax.bluetooth.ServiceRecord;
 
 
 public class ReportServer {
@@ -36,6 +19,9 @@ public class ReportServer {
 
         System.setProperty("org.apache.jasper.compiler.disablejsr199", "false");
 
+        String jetty_home = System.getProperty("jetty.home",".");
+
+
         Server server = new Server(8080);
 
         WebAppContext context = new WebAppContext();
@@ -43,7 +29,7 @@ public class ReportServer {
         context.setAttribute("org.eclipse.jetty.server.webapp.ContainerIncludeJarPattern",
                              ".*/[^/]*servlet-api-[^/]*\\.jar$|.*/javax.servlet.jsp.jstl-.*\\.jar$|.*/.*taglibs.*\\.jar$");
 
-        context.setResourceBase("/webapp");
+        context.setResourceBase(jetty_home+"/src/webapp");
         context.setContextPath("/");
 
 //        ContainerInitializer initializer = new ContainerInitializer();
@@ -56,7 +42,7 @@ public class ReportServer {
 
         // Add Default Servlet (must be named "default")
         ServletHolder holderDefault = new ServletHolder("default", DefaultServlet.class);
-        holderDefault.setInitParameter("resourceBase", "/webapp/WEB-INF/html");
+        holderDefault.setInitParameter("resourceBase", jetty_home+"/src/webapp");
         holderDefault.setInitParameter("dirAllowed", "true");
         context.addServlet(holderDefault, "/");
 
@@ -72,13 +58,10 @@ public class ReportServer {
         context.addServlet(holderJsp, "*.jsp");
 
         // Add Application Servlets
-        context.addServlet(BTResponseServlet.class, "/example");
-
-//        ServletHolder exampleJspHolder = new ServletHolder();
-//        exampleJspHolder.setInitParameter("resourceBase", "/webapp/WEB-INF/html");
-//        exampleJspHolder.setInitParameter("dirAllowed", "true");
-//        exampleJspHolder.setName("example.jsp");
-//        context.addServlet(exampleJspHolder, "/example");
+        ServletHolder exampleJspHolder = new ServletHolder("example.jsp", BTResponseServlet.class);
+        exampleJspHolder.setInitParameter("resourceBase", jetty_home+"/src/webapp/WEB-INF/jsps");
+        exampleJspHolder.setInitParameter("dirAllowed", "true");
+        context.addServlet(exampleJspHolder, "/example");
 
 
         server.setHandler(context);

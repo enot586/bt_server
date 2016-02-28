@@ -1,7 +1,5 @@
 
 import java.io.IOException;
-import javax.bluetooth.BluetoothStateException;
-import javax.bluetooth.LocalDevice;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
