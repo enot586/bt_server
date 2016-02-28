@@ -9,6 +9,6 @@ public class BTResponseServlet extends HttpServlet
 {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
-        request.getRequestDispatcher("/example.jsp").forward(request,response);
+        request.getRequestDispatcher("/example").forward(request,response);
     }
 }

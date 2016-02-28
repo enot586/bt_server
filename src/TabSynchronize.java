@@ -16,26 +16,26 @@ public class TabSynchronize extends HttpServlet
         try {
             LocalDevice localDevice = LocalDevice.getLocalDevice();
 
-            System.out.println("Bluetooth module power: "+localDevice.isPowerOn());
-            System.out.println("Address: "+localDevice.getBluetoothAddress());
-            System.out.println("Name: "+localDevice.getFriendlyName());
+            response.setContentType("text/html");
+            response.setStatus(HttpServletResponse.SC_OK);
+            response.getWriter().println("<html><title>Hello Servlet</title><body>");
+            response.getWriter().println("<p>");
+            response.getWriter().println("Bluetooth module power: "+localDevice.isPowerOn()+"(may be wrong)<br>");
+            response.getWriter().println("Address: "+localDevice.getBluetoothAddress()+"<br>");
+            response.getWriter().println("Name: "+localDevice.getFriendlyName()+"<br>");
+            response.getWriter().println("</body></html>");
         } catch (BluetoothStateException e) {
             System.err.println("Cannot get local device: " + e);
         }
 
-        try {
-            BT_Server server = new BT_Server();
-            server.start();
-        }
-        catch(IOException e)
-        {
-            System.out.println(e);
-        }
+//        try {
+//            BT_Server server = new BT_Server();
+//            server.start();
+//        }
+//        catch(IOException e)
+//        {
+//            System.out.println(e);
+//        }
 
-        response.setContentType("text/html");
-        response.setStatus(HttpServletResponse.SC_OK);
-
-        response.getWriter().println("<h1>Hello Servlet</h1>");
-        response.getWriter().println("session=" + request.getSession(true).getId());
     }
 }

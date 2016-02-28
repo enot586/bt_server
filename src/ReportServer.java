@@ -21,7 +21,6 @@ public class ReportServer {
 
         String jetty_home = System.getProperty("jetty.home",".");
 
-
         Server server = new Server(8080);
 
         WebAppContext context = new WebAppContext();
@@ -32,10 +31,7 @@ public class ReportServer {
         context.setResourceBase(jetty_home+"/src/webapp");
         context.setContextPath("/");
 
-//        ContainerInitializer initializer = new ContainerInitializer();
-//        context.setAttribute("org.eclipse.jetty.containerInitializers", initializer);
-//
-//        context.addBean(new ServletContainerInitializersStarter(context), true);
+        //context.setAttribute("javax.servlet.context.tempdir",scratchDir);
 
         context.setClassLoader(new URLClassLoader(new URL[0], ReportServer.class.getClassLoader()));
         context.setParentLoaderPriority(true);
@@ -58,9 +54,17 @@ public class ReportServer {
         context.addServlet(holderJsp, "*.jsp");
 
         // Add Application Servlets
-        ServletHolder exampleJspHolder = new ServletHolder("example.jsp", BTResponseServlet.class);
-        exampleJspHolder.setInitParameter("resourceBase", jetty_home+"/src/webapp/WEB-INF/jsps");
-        exampleJspHolder.setInitParameter("dirAllowed", "true");
+        ServletHolder tabSynchronizeHolder = new ServletHolder("TabSynchronize", TabSynchronize.class);
+        tabSynchronizeHolder.setInitParameter("resourceBase", jetty_home+"/src/webapp");
+        tabSynchronizeHolder.setInitParameter("dirAllowed", "true");
+        context.addServlet(tabSynchronizeHolder, "/TabSynchronize");
+
+        ServletHolder exampleJspHolder = new ServletHolder();
+        tabSynchronizeHolder.setInitParameter("resourceBase", jetty_home+"/src/webapp/WEB-INF/jsps");
+        exampleJspHolder.setForcedPath(jetty_home+"/src/webapp/WEB-INF/jsps/example.jsp");
+        //exampleJspHolder.setInitParameter("resourceBase", jetty_home+"/src/webapp/WEB-INF/jsps");
+        //exampleJspHolder.setInitParameter("dirAllowed", "true");
+        exampleJspHolder.setName("example.jsp");
         context.addServlet(exampleJspHolder, "/example");
 
 
