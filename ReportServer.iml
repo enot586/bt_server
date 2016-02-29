@@ -7,12 +7,10 @@
       <sourceFolder url="file://$MODULE_DIR$/src/tests" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/webapp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/webapp/WEB-INF/classes" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/webapp/WEB-INF/html" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/webapp/WEB-INF" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/webapp/WEB-INF/lib" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/webapp/WEB-INF/html/img" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/webapp/img" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/webapp/WEB-INF/jsps" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/webapp/WEB-INF" isTestSource="false" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
