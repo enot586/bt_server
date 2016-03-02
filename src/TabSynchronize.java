@@ -27,15 +27,5 @@ public class TabSynchronize extends HttpServlet
         } catch (BluetoothStateException e) {
             System.err.println("Cannot get local device: " + e);
         }
-
-//        try {
-//            BT_Server server = new BT_Server();
-//            server.start();
-//        }
-//        catch(IOException e)
-//        {
-//            System.out.println(e);
-//        }
-
     }
 }

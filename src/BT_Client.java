@@ -47,7 +47,5 @@ public class BT_Client {
                 System.out.println(" device(s) found");
             }
         }
-
-
     }
 }
