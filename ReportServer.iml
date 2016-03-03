@@ -26,7 +26,6 @@
     <orderEntry type="library" name="javax.servlet.jsp-3.1" level="project" />
     <orderEntry type="library" name="apache-ant-1.8.2" level="project" />
     <orderEntry type="library" name="ant-launcher-1.9.6" level="project" />
-    <orderEntry type="library" name="tools" level="project" />
     <orderEntry type="library" name="sqlite-jdbc-3.8.11.2" level="project" />
   </component>
 </module>

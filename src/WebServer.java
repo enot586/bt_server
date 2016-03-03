@@ -17,24 +17,34 @@ import java.io.IOException;
 
 public class WebServer {
 
+    public enum  WebServerState {
+        WEB_SERVER_NOT_INITIALIZE,
+        WEB_SERVER_INITIALIZING,
+        WEB_SERVER_ACTIVE,
+        WEB_SERVER_STOP,
+    }
+
+    private WebServerState state;
     private Server server;
     private String siteAddress;
 
-    WebServer(int port, String siteAddress_)
-    {
+    WebServer(int port, String siteAddress_) {
+        state = WebServerState.WEB_SERVER_NOT_INITIALIZE;
         server = new Server(port);
         siteAddress = siteAddress_;
     }
 
     private URI getWebRootResourceUri() throws FileNotFoundException, URISyntaxException {
-        URL indexUri = WebServer.class.getResource(siteAddress);
+        URL indexUri = this.getClass().getResource(siteAddress);
         if (indexUri == null) {
             throw new FileNotFoundException("Unable to find resource " + siteAddress);
         }
         return indexUri.toURI();
     }
 
-    public void init() throws FileNotFoundException, URISyntaxException {
+    synchronized public void init() throws FileNotFoundException, URISyntaxException {
+        state = WebServerState.WEB_SERVER_INITIALIZING;
+
         System.setProperty("org.apache.jasper.compiler.disablejsr199", "false");
 
         WebAppContext context = new WebAppContext();
@@ -50,7 +60,7 @@ public class WebServer {
         }
 
         context.setContextPath("/");
-        context.setClassLoader( new URLClassLoader(new URL[0], WebServer.class.getClassLoader() ) );
+        context.setClassLoader( new URLClassLoader(new URL[0], this.getClass().getClassLoader() ) );
         context.setParentLoaderPriority(true);
 
         // Add Default Servlet (must be named "default")
@@ -78,6 +88,7 @@ public class WebServer {
         holderJsp.setInitParameter("keepgenerated", "true");
         context.addServlet(holderJsp, "*.jsp");
 
+
         // Add Application Servlets
         ServletHolder tabSynchronizeHolder = new ServletHolder("TabSynchronize", TabSynchronize.class);
 
@@ -91,6 +102,8 @@ public class WebServer {
         tabSynchronizeHolder.setInitParameter("dirAllowed", "true");
         context.addServlet(tabSynchronizeHolder, "/TabSynchronize");
 
+        context.addServlet(Forwarder.class, "/date");
+
         ServletHolder exampleJspHolder = new ServletHolder();
         exampleJspHolder.setForcedPath("/WEB-INF/jsps/example.jsp");
         exampleJspHolder.setName("example.jsp");
@@ -99,9 +112,24 @@ public class WebServer {
         server.setHandler(context);
     }
 
-    public void start() throws Exception {
+    synchronized public WebServerState getState()
+    {
+        return state;
+    }
+
+    synchronized public void stop() throws Exception {
+        try {
+            server.stop();
+            state = WebServerState.WEB_SERVER_STOP;
+        } catch(Exception e) {
+
+        }
+    }
+
+    synchronized public void start() throws Exception {
         try {
             server.start();
+            state = WebServerState.WEB_SERVER_ACTIVE;
         } catch (Exception e) {
             System.out.println(e);
         }

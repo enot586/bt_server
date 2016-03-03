@@ -6,7 +6,7 @@
 </meta>
 </head>
 <body>
-
+    <%= request.getParameter("server") %>
     Current date is: <%=new java.util.Date()%>
 
 </body>
