@@ -5,14 +5,51 @@
     <meta name="description" content="">
     <meta name="keywords" content="">
     <title>Report server</title>
+    <script language="javascript" type="text/javascript">
+    var request = false;
+    try {
+        request = new XMLHttpRequest();
+    } catch (trymicrosoft) {
+        try {
+            request = new ActiveXObject("Msxml2.XMLHTTP");
+        } catch (othermicrosoft) {
+            try {
+                request = new ActiveXObject("Microsoft.XMLHTTP");
+            } catch (failed) {
+                request = false;
+            }
+        }
+    }
 
+    if (!request)
+     alert("Error initializing XMLHttpRequest!");
+
+    function getCustomerInfo() {
+        var url = "/btstatus";
+        request.open("GET", url, true);
+        request.onreadystatechange = updatePage;
+        request.send(null);
+    }
+
+    function updatePage() {
+        var response = request.responseText;
+        if (request.readyState == 4) {
+            if (request.status == 200) {
+                document.getElementById("btserverstatus").value = response;
+            } else
+                alert("status is " + request.status);
+        }S
+    }
+  </script>
 
   </head>
-  <body>
+  <body onload="getCustomerInfo()">
   	<img src="img\title.png" width="50%" alt="" title="" />
   
   	<H1>Report server</H1>
-  
+
+    <p>Bluetooth server status: <input type="text" name="text1" id="btserverstatus"></p>
+
     <div style=" text-align: left; text-indent: 0px; padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px;">
       <table width="100%" border="0" cellpadding="5" cellspacing="0" style="border-color: #ffffff; border-style: solid; background-color: #ffffff;">
         <tr valign="top">

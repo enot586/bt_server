@@ -13,7 +13,7 @@ import javax.microedition.io.StreamConnectionNotifier;
 import java.io.*;
 
 
-public class BluetoothServer {
+public class BluetoothServer extends CommonServer {
 
     //Размер поточного байтового буфера
     final int MAX_BUFFER_SIZE = 100000;
@@ -23,6 +23,10 @@ public class BluetoothServer {
     private String url;
     private StreamConnection currentConnection;
     private Thread serverThread;
+
+    BluetoothServer() {
+        setState(ServerState.SERVER_NOT_INITIALIZE);
+    }
 
     private StreamConnection createConection(String url) throws IOException {
         StreamConnectionNotifier streamConnNotifier = (StreamConnectionNotifier) Connector.open(url);
@@ -37,6 +41,7 @@ public class BluetoothServer {
     }
 
     public void init() {
+        setState(ServerState.SERVER_INITIALIZING);
         uuid = new UUID("1101", true);
         name = "Echo Server";
         url = "btspp://localhost:" + uuid + ";name=" + name;
@@ -51,6 +56,7 @@ public class BluetoothServer {
         }
 
         serverThread = new Thread( new ReaderThread() );
+        setState(ServerState.SERVER_READY_NOT_ACTIVE);
     }
 
     private class ReaderThread implements Runnable {
@@ -98,15 +104,17 @@ public class BluetoothServer {
     }
 
     //@FIXME:
-    public void stop() {
+    public void stop() throws IOException {
         try {
             currentConnection.close();
         } catch(IOException e) {
 
         }
+        setState(ServerState.SERVER_STOP);
     }
 
-    void start() throws IOException {
+    public void start() throws IOException {
         serverThread.start();
+        setState(ServerState.SERVER_ACTIVE);
     }
 }

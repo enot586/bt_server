@@ -12,24 +12,14 @@ import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.webapp.WebAppContext;
 
-import java.io.IOException;
 
+public class WebServer extends CommonServer {
 
-public class WebServer {
-
-    public enum  WebServerState {
-        WEB_SERVER_NOT_INITIALIZE,
-        WEB_SERVER_INITIALIZING,
-        WEB_SERVER_ACTIVE,
-        WEB_SERVER_STOP,
-    }
-
-    private WebServerState state;
     private Server server;
     private String siteAddress;
 
     WebServer(int port, String siteAddress_) {
-        state = WebServerState.WEB_SERVER_NOT_INITIALIZE;
+        setState(ServerState.SERVER_NOT_INITIALIZE);
         server = new Server(port);
         siteAddress = siteAddress_;
     }
@@ -43,7 +33,7 @@ public class WebServer {
     }
 
     synchronized public void init() throws FileNotFoundException, URISyntaxException {
-        state = WebServerState.WEB_SERVER_INITIALIZING;
+        setState(ServerState.SERVER_INITIALIZING);
 
         System.setProperty("org.apache.jasper.compiler.disablejsr199", "false");
 
@@ -102,7 +92,8 @@ public class WebServer {
         tabSynchronizeHolder.setInitParameter("dirAllowed", "true");
         context.addServlet(tabSynchronizeHolder, "/TabSynchronize");
 
-        context.addServlet(Forwarder.class, "/date");
+        context.addServlet(ServletForwarder.class, "/date");
+        context.addServlet(ServletBtStatus.class, "/btstatus");
 
         ServletHolder exampleJspHolder = new ServletHolder();
         exampleJspHolder.setForcedPath("/WEB-INF/jsps/example.jsp");
@@ -110,29 +101,27 @@ public class WebServer {
         context.addServlet(exampleJspHolder, "/example");
 
         server.setHandler(context);
+        setState(ServerState.SERVER_READY_NOT_ACTIVE);
     }
 
-    synchronized public WebServerState getState()
-    {
-        return state;
-    }
 
     synchronized public void stop() throws Exception {
         try {
             server.stop();
-            state = WebServerState.WEB_SERVER_STOP;
         } catch(Exception e) {
 
         }
+        setState(ServerState.SERVER_STOP);
     }
 
     synchronized public void start() throws Exception {
         try {
             server.start();
-            state = WebServerState.WEB_SERVER_ACTIVE;
+            setState(ServerState.SERVER_ACTIVE);
         } catch (Exception e) {
             System.out.println(e);
         }
+        setState(ServerState.SERVER_ACTIVE);
     }
 
 }
