@@ -1,4 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1" isELIgnored="false" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" isELIgnored="false" %>
 <html>
   <head>
     <meta charset="utf-8">
@@ -22,10 +22,9 @@
 
           for(Integer i : ids) {
             out.println("<tr class=\"user-row\"><td>"+i+
-                        "</td> <td>"+databaseDriver.getRoutesTableUser(i)+
+                        "</td><td>"+databaseDriver.getRoutesTableUser(i)+
                         "</td><td>"+databaseDriver.getRoutesTablePathRoutePicture(i)+
-                        "</td> <td>"+databaseDriver.getRoutesTableDate(i)+
-                        "</td></tr>");
+                        "</td><td>"+databaseDriver.getRoutesTableDate(i)+"</td></tr>");
           }
         } catch (java.sql.SQLException e) {
 

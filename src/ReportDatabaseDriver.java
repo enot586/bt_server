@@ -68,17 +68,17 @@ public class ReportDatabaseDriver {
     }
 
     public String getRoutesTableDate(int idRoute) throws SQLException {
-        ResultSet rs = databaseStatement.executeQuery("SELECT name FROM routs WHERE _id_route = "+idRoute);
+        ResultSet rs = databaseStatement.executeQuery("SELECT date_create FROM routs WHERE _id_route = "+idRoute);
         return rs.getString("date_create");
     }
 
     public int getRoutesTableActuality(int idRoute) throws SQLException {
-        ResultSet rs = databaseStatement.executeQuery("SELECT name FROM routs WHERE _id_route = "+idRoute);
+        ResultSet rs = databaseStatement.executeQuery("SELECT actuality FROM routs WHERE _id_route = "+idRoute);
         return rs.getInt("actuality");
     }
 
     public String getRoutesTablePathRoutePicture(int idRoute) throws SQLException {
-        ResultSet rs = databaseStatement.executeQuery("SELECT name FROM routs WHERE _id_route = "+idRoute);
+        ResultSet rs = databaseStatement.executeQuery("SELECT path_picture_route FROM routs WHERE _id_route = "+idRoute);
         return rs.getString("path_picture_route");
     }
 
