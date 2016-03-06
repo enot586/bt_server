@@ -54,7 +54,7 @@ public class WebServer extends CommonServer {
         context.setParentLoaderPriority(true);
 
         // Add Default Servlet (must be named "default")
-        ServletHolder holderDefault = new ServletHolder("default", DefaultServlet.class);
+        ServletHolder holderDefault = new ServletHolder("default", ServletForwarder.class);
 
         try {
             URI baseUri = getWebRootResourceUri();
@@ -94,6 +94,8 @@ public class WebServer extends CommonServer {
 
         context.addServlet(ServletForwarder.class, "/date");
         context.addServlet(ServletBtStatus.class, "/btstatus");
+        context.addServlet(ServletBtStart.class, "/btstart");
+        context.addServlet(ServletBtStop.class, "/btstop");
 
         ServletHolder exampleJspHolder = new ServletHolder();
         exampleJspHolder.setForcedPath("/WEB-INF/jsps/example.jsp");

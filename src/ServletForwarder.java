@@ -10,6 +10,6 @@ public class ServletForwarder extends HttpServlet
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
-        request.getRequestDispatcher("/example?server=active&password=true").forward(request,response);
+        request.getRequestDispatcher("/index.jsp").forward(request,response);
     }
 }

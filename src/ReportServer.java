@@ -6,12 +6,28 @@ public class ReportServer {
     private static WebServer webServer;
     private static BluetoothServer bluetoothServer;
 
-    public static CommonServer.ServerState getWebServerState() {
+    public static CommonServer.ServerState webServerGetState() {
         return webServer.getServerState();
     }
 
-    public static CommonServer.ServerState getBluetoothServerState() {
+    public static CommonServer.ServerState bluetoothServerGetState() {
         return bluetoothServer.getServerState();
+    }
+
+    public static void bluetoothServerStart() throws Exception {
+        try {
+            bluetoothServer.start();
+        } catch(Exception e) {
+
+        }
+    }
+
+    public static void bluetoothServerStop() throws Exception {
+        try {
+            bluetoothServer.stop();
+        } catch(Exception e) {
+
+        }
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {
@@ -20,13 +36,11 @@ public class ReportServer {
         bluetoothServer = new BluetoothServer();
 
         try {
+            bluetoothServer.init();
+
             webServer.init();
             if (webServer.getServerState() == CommonServer.ServerState.SERVER_READY_NOT_ACTIVE)
                 webServer.start();
-
-            bluetoothServer.init();
-            if (bluetoothServer.getServerState() == CommonServer.ServerState.SERVER_READY_NOT_ACTIVE)
-                bluetoothServer.start();
         }
         catch(Exception e) {
 
