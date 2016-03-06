@@ -1,3 +1,5 @@
+package reportserver;
+
 import javax.bluetooth.BluetoothStateException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;

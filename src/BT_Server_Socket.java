@@ -1,3 +1,5 @@
+package reportserver;
+
 import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -5,9 +7,6 @@ import java.io.InputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-/**
- * Created by m on 16.02.16.
- */
 public class BT_Server_Socket {
 
     void run() throws IOException {

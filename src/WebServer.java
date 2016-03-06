@@ -1,3 +1,5 @@
+package reportserver;
+
 import java.io.FileNotFoundException;
 
 import java.net.URI;

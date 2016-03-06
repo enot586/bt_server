@@ -91,6 +91,7 @@
                 <BR>
               </td>
             </tr>
+            <!--
             <tr valign="top">
               <td><p><a href="/date">Example jsp</a></p></td>
             </tr>
@@ -106,6 +107,7 @@
             <tr valign="top">
               <td><p><a href="/servlet2">Servlet 2</a></p></td>
             </tr>
+            -->
           </table>
         </td> 
     

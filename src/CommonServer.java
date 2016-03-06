@@ -1,3 +1,4 @@
+package reportserver;
 
 abstract public class CommonServer {
 
