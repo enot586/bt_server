@@ -1,10 +1,14 @@
 package reportserver;
 
+import javax.bluetooth.DiscoveryAgent;
+import javax.bluetooth.LocalDevice;
 import javax.bluetooth.RemoteDevice;
+import javax.microedition.io.Connection;
 import javax.microedition.io.Connector;
 import javax.microedition.io.StreamConnection;
 import javax.microedition.io.StreamConnectionNotifier;
 import java.io.*;
+import java.net.URL;
 
 public class BtStreamReader implements Runnable {
     //Размер поточного байтового буфера
@@ -27,12 +31,17 @@ public class BtStreamReader implements Runnable {
         connectionState = ConnectionState.CONNECTION_STATE_WAITING;
     }
 
-    synchronized public void stop() {
-        connectionState = ConnectionState.CONNECTION_STATE_WAITING;
-
+    public void stop() {
+        synchronized (connectionState) {
+            connectionState = ConnectionState.CONNECTION_STATE_WAITING;
+        }
         try {
-            currentConnection.close();
+            if (currentConnection != null)
+                currentConnection.close();
+
+            if (streamConnNotifier != null)
             streamConnNotifier.close();
+
         } catch (IOException e) {
             return;
         }
@@ -56,87 +65,118 @@ public class BtStreamReader implements Runnable {
         return connection;
     }
 
-    synchronized public void run() {
-        switch (connectionState) {
-            case CONNECTION_STATE_WAITING: {
-                break;
+    public void run() {
+        while (true) {
+            //прибиваем поток
+            if (Thread.currentThread().isInterrupted()) {
+                stop();
+                return;
             }
 
-            case CONNECTION_STATE_OPEN: {
-                try {
-                    streamConnNotifier = (StreamConnectionNotifier) Connector.open(url);
-                } catch (IOException e) {
-                    //@TODO: обработать правильно
-                    connectionState = ConnectionState.CONNECTION_STATE_WAITING;
-                    return;
+            switch (connectionState) {
+                case CONNECTION_STATE_WAITING: {
+                    break;
                 }
 
-                connectionState = ConnectionState.CONNECTION_STATE_CREATE_CONNECTION;
-                break;
-            }
+                case CONNECTION_STATE_OPEN: {
+                    try {
+                        LocalDevice local= LocalDevice.getLocalDevice();
+                        if (local.getDiscoverable() != 0) {
+                            local.setDiscoverable(DiscoveryAgent.GIAC);
+                        }
 
-            case CONNECTION_STATE_CREATE_CONNECTION: {
-                try {
-                    currentConnection = createConnection(url);
-                    System.out.println("Server Started. Waiting for clients to connect…");
-                } catch (IOException e1) {
-                    //@TODO: обработать правильно
-                    System.out.println("Server interrupted: "+e1);
-                    connectionState = ConnectionState.CONNECTION_STATE_WAITING;
-                    return;
+                        streamConnNotifier = (StreamConnectionNotifier)Connector.open(url);;
+                    } catch (IOException e) {
+                        synchronized (connectionState) {
+                            //@TODO: обработать правильно
+                            connectionState = ConnectionState.CONNECTION_STATE_WAITING;
+                        }
+                        break;
+                    }
+                    synchronized (connectionState) {
+                        connectionState = ConnectionState.CONNECTION_STATE_CREATE_CONNECTION;
+                    }
+                    break;
                 }
 
-                connectionState = ConnectionState.CONNECTION_STATE_OPEN_STREAM;
-                break;
-            }
-
-            case CONNECTION_STATE_OPEN_STREAM: {
-                try {
-                    //read string from spp client
-                    InputStream inStream = currentConnection.openInputStream();
-
-                    BufferedReader bReader = new BufferedReader(new InputStreamReader(inStream));
-
-                    byte[] mba = new byte[MAX_BUFFER_SIZE];
-                    int bytesRead;
-                    bytesRead = inStream.read(mba, 0, mba.length);
-
-                    FileOutputStream fileOutputStream;
-                    BufferedOutputStream bufferedOutputStream;
-
-                    fileOutputStream = new FileOutputStream("output.txt");
-                    bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
-
-                    bufferedOutputStream.write(mba, 0, bytesRead);
-
-                    bufferedOutputStream.flush();
-                    bufferedOutputStream.close();
-
-                    inStream.close();
-                } catch (IOException e) {
-                    System.out.println(e);
-                    connectionState = ConnectionState.CONNECTION_STATE_WAITING;
-                    return;
+                case CONNECTION_STATE_CREATE_CONNECTION: {
+                    try {
+                        StreamConnection newStreamConnection = createConnection(url);
+                        synchronized (connectionState) {
+                            currentConnection = newStreamConnection;
+                        }
+                        System.out.println("Server Started. Waiting for clients to connect…");
+                    } catch (IOException e1) {
+                        //@TODO: обработать правильно
+                        System.out.println("Server interrupted: " + e1);
+                        synchronized (connectionState) {
+                            connectionState = ConnectionState.CONNECTION_STATE_WAITING;
+                        }
+                        break;
+                    }
+                    synchronized (connectionState) {
+                        connectionState = ConnectionState.CONNECTION_STATE_OPEN_STREAM;
+                    }
+                    break;
                 }
 
-                try {
-                    //send response to spp client
-                    OutputStream outStream = currentConnection.openOutputStream();
-                    PrintWriter pWriter = new PrintWriter(new OutputStreamWriter(outStream));
-                    pWriter.write("Response String from SPP Server\r\n");
-                    pWriter.flush();
-                    pWriter.close();
+                case CONNECTION_STATE_OPEN_STREAM: {
+                    try {
+                        //read string from spp client
+                        InputStream inStream = currentConnection.openInputStream();
 
-                    currentConnection.close();
+                        BufferedReader bReader = new BufferedReader(new InputStreamReader(inStream));
 
-                    //переходим к ожиданию следующего сеанса
-                    connectionState = ConnectionState.CONNECTION_STATE_CREATE_CONNECTION;
-                } catch (IOException e) {
-                    System.out.println(e);
-                    connectionState = ConnectionState.CONNECTION_STATE_WAITING;
-                    return;
+                        byte[] mba = new byte[MAX_BUFFER_SIZE];
+                        int bytesRead;
+                        bytesRead = inStream.read(mba, 0, mba.length);
+
+                        FileOutputStream fileOutputStream;
+                        BufferedOutputStream bufferedOutputStream;
+
+                        URL synchDataBaseFile = this.getClass().getResource("/output.txt");
+
+                        fileOutputStream = new FileOutputStream(synchDataBaseFile.getFile());
+
+                        bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
+
+                        bufferedOutputStream.write(mba, 0, bytesRead);
+
+                        bufferedOutputStream.flush();
+                        bufferedOutputStream.close();
+
+                        inStream.close();
+                    } catch (IOException e) {
+                        System.out.println(e);
+                        synchronized (connectionState) {
+                            connectionState = ConnectionState.CONNECTION_STATE_WAITING;
+                        }
+                        break;
+                    }
+
+                    try {
+                        //send response to spp client
+                        OutputStream outStream = currentConnection.openOutputStream();
+                        PrintWriter pWriter = new PrintWriter(new OutputStreamWriter(outStream));
+                        pWriter.write("Response String from SPP Server\r\n");
+                        pWriter.flush();
+                        pWriter.close();
+
+                        currentConnection.close();
+
+                        //переходим к ожиданию следующего сеанса
+                        synchronized (connectionState) {
+                            connectionState = ConnectionState.CONNECTION_STATE_CREATE_CONNECTION;
+                        }
+                    } catch (IOException e) {
+                        System.out.println(e);
+                        synchronized (connectionState) {
+                            connectionState = ConnectionState.CONNECTION_STATE_WAITING;
+                        }
+                        break;
+                    }
+                    break;
                 }
-                break;
             }
         }
     }

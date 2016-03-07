@@ -3,11 +3,9 @@ package reportserver;
 abstract public class CommonServer {
 
     public enum  ServerState {
-        SERVER_NOT_INITIALIZE,
         SERVER_INITIALIZING,
-        SERVER_READY_NOT_ACTIVE,
         SERVER_ACTIVE,
-        SERVER_STOP,
+        SERVER_STOPPED,
     }
 
     private ServerState state;

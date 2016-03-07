@@ -10,7 +10,6 @@ import java.net.URLClassLoader;
 
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.jsp.JettyJspServlet;
-import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.webapp.WebAppContext;
 
@@ -21,7 +20,7 @@ public class WebServer extends CommonServer {
     private String siteAddress;
 
     WebServer(int port, String siteAddress_) {
-        setState(ServerState.SERVER_NOT_INITIALIZE);
+        setState(ServerState.SERVER_INITIALIZING);
         server = new Server(port);
         siteAddress = siteAddress_;
     }
@@ -105,7 +104,7 @@ public class WebServer extends CommonServer {
         context.addServlet(exampleJspHolder, "/example");
 
         server.setHandler(context);
-        setState(ServerState.SERVER_READY_NOT_ACTIVE);
+        setState(ServerState.SERVER_STOPPED);
     }
 
 
@@ -115,7 +114,7 @@ public class WebServer extends CommonServer {
         } catch(Exception e) {
 
         }
-        setState(ServerState.SERVER_STOP);
+        setState(ServerState.SERVER_STOPPED);
     }
 
     synchronized public void start() throws Exception {

@@ -1,13 +1,6 @@
 package reportserver;
-//import javax.bluetooth.DiscoveryAgent;
-//import javax.bluetooth.LocalDevice;
+
 import javax.bluetooth.UUID;
-//import javax.microedition.io.SocketConnection;
-import javax.microedition.io.StreamConnection;
-//import javax.obex.HeaderSet;
-//import javax.obex.Operation;
-//import javax.obex.ResponseCodes;
-//import javax.obex.ServerRequestHandler;
 import java.io.*;
 
 
@@ -20,7 +13,20 @@ public class BluetoothServer extends CommonServer {
     private BtStreamReader reader;
 
     BluetoothServer() {
-        setState(ServerState.SERVER_NOT_INITIALIZE);
+        setState(ServerState.SERVER_INITIALIZING);
+    }
+
+    private void createReaderThread() throws Exception {
+        reader = new BtStreamReader(url);
+        reader.start();
+
+        serverThread = new Thread(reader);
+        serverThread.start();
+    }
+
+    boolean isReadyToWork() {
+        if (getServerState() != ServerState.SERVER_INITIALIZING) return true;
+        return false;
     }
 
     public void init() throws IOException, Exception {
@@ -28,32 +34,33 @@ public class BluetoothServer extends CommonServer {
 
         uuid = new UUID("1101", true);
         name = "Echo Server";
-        url = "btspp://localhost:" + uuid + ";name=" + name;
+        url = "btspp://localhost:" + uuid + ";name=" + name+ ";authenticate=false;encrypt=false;";
         System.out.println("uuid: " + uuid);
-        //+ ";authenticate=false;encrypt=false;";
 
-        try {
-            reader = new BtStreamReader(url);
-            serverThread = new Thread(reader);
-            serverThread.start();
-        } catch (Exception e) {
-            System.out.println(e);
-            setState(ServerState.SERVER_NOT_INITIALIZE);
-            throw e;
-        }
-
-        setState(ServerState.SERVER_READY_NOT_ACTIVE);
+        setState(ServerState.SERVER_STOPPED);
     }
 
     synchronized public void stop() throws IOException {
-        setState(ServerState.SERVER_STOP);
-        reader.stop();
+        if (!isReadyToWork()) return;
+        setState(ServerState.SERVER_STOPPED);
+
+        reader.stop(); //необходимо на случай если сервер ожидает подключения, чтобы вывести его из ожидания
+
+        serverThread.interrupt();
     }
 
-    synchronized public void start() throws IOException {
+    synchronized public void start() throws Exception {
+        if ( !isReadyToWork() ) return;
+
         if (this.getServerState() != ServerState.SERVER_ACTIVE) {
+            try {
+                createReaderThread();
+            } catch (Exception e) {
+                System.out.println(e);
+                setState(ServerState.SERVER_STOPPED);
+                return;
+            }
             setState(ServerState.SERVER_ACTIVE);
-            reader.start();
         }
     }
 }

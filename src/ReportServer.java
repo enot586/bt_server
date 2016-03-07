@@ -3,6 +3,7 @@ package reportserver;
 import java.io.IOException;
 
 
+import java.net.URL;
 import java.sql.SQLException;
 
 
@@ -43,9 +44,10 @@ public class ReportServer {
     public static void main(String[] args) throws IOException, InterruptedException {
         reportDatabaseDriver = new ReportDatabaseDriver();
 
-        String url_to_base = System.getProperty("user.dir")+"/resources/app-data.db3";
+        URL databaseDir = ReportServer.class.getResource("/app-data.db3");
+
         try {
-            reportDatabaseDriver.init(url_to_base);
+            reportDatabaseDriver.init(databaseDir.toString());
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -57,15 +59,14 @@ public class ReportServer {
             bluetoothServer.init();
 
             webServer.init();
-            if (webServer.getServerState() == CommonServer.ServerState.SERVER_READY_NOT_ACTIVE)
-                webServer.start();
+            webServer.start();
         }
         catch(Exception e) {
             e.printStackTrace();
         }
 
-        while(true) {
-
+        while (true) {
+            //@TODO: мониторим сервера
         }
     }
 

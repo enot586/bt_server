@@ -62,6 +62,7 @@
   </script>
   
   <link rel="stylesheet" type="text/css" href="style.css">
+  <link rel="shortcut icon" href="img/favicon.ico" />
 
   </head>
 

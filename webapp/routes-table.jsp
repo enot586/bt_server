@@ -27,9 +27,8 @@
                         "</td><td>"+databaseDriver.getRoutesTableDate(i)+"</td></tr>");
           }
         } catch (java.sql.SQLException e) {
-
+          out.println("<tr class=\"user-row\"><td colspan=\"4\"><span class=\"error\">SQL query error...</span></td></tr>");
         }
-
       %>
     </table>
     </center>
