@@ -2,6 +2,9 @@ package reportserver;
 
 import javax.bluetooth.UUID;
 import java.io.*;
+import java.util.LinkedList;
+import java.util.NoSuchElementException;
+import java.util.Queue;
 
 
 public class BluetoothServer extends CommonServer {
@@ -11,13 +14,14 @@ public class BluetoothServer extends CommonServer {
     private String url;
     private Thread serverThread;
     private BtStreamReader reader;
+    LinkedList<String> receivedFilesQueue = new LinkedList<String>();
 
     BluetoothServer() {
         setState(ServerState.SERVER_INITIALIZING);
     }
 
     private void createReaderThread() throws Exception {
-        reader = new BtStreamReader(url);
+        reader = new BtStreamReader(this, url);
         reader.start();
 
         serverThread = new Thread(reader);
@@ -25,7 +29,7 @@ public class BluetoothServer extends CommonServer {
     }
 
     boolean isReadyToWork() {
-        if (getServerState() != ServerState.SERVER_INITIALIZING) return true;
+        if (this.getServerState() != ServerState.SERVER_INITIALIZING) return true;
         return false;
     }
 
@@ -50,9 +54,7 @@ public class BluetoothServer extends CommonServer {
     }
 
     synchronized public void start() throws Exception {
-        if ( !isReadyToWork() ) return;
-
-        if (this.getServerState() != ServerState.SERVER_ACTIVE) {
+        if (this.getServerState() == ServerState.SERVER_STOPPED) {
             try {
                 createReaderThread();
             } catch (Exception e) {
@@ -63,4 +65,20 @@ public class BluetoothServer extends CommonServer {
             setState(ServerState.SERVER_ACTIVE);
         }
     }
+
+    void pushReceiveFileName(String receivedFileName) {
+        synchronized (receivedFilesQueue) {
+            receivedFilesQueue.offer(receivedFileName);
+        }
+    }
+
+    String popReceiveFileName() throws NoSuchElementException {
+        String result;
+        synchronized (receivedFilesQueue) {
+            result = receivedFilesQueue.element();
+            receivedFilesQueue.remove();
+        }
+        return result;
+    }
+
 }

@@ -1,4 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1" isELIgnored="false" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" isELIgnored="false" %>
 <html>
   <head>
     <meta charset="utf-8">
@@ -75,17 +75,17 @@
         <td width="20%" valign="top" align="center">
         
           <img src="img/title.png" width="100%">
-          <table width="100%" class="left-menu">
+          <table width="100%" class="left-menu" cellspacing="0" cellspacing="0">
             <tr>
               <td>
-                <table>
+                <table width="100%" cellspacing="0" cellspacing="0">
                   <tr>
-                    <td>Bluetooth server status:</td>
-                    <td><div name="text1" class="btserver-status" id="btServerStatus">Reading status...</div></td>
+                    <td align="left" width="50%">Состояние процесса синхронизации:</td>
+                    <td align="left" bgcolor="#cccccc"><div name="text1" class="btserver-status" id="btServerStatus">Чтение состояния...</div></td>
                   </tr>
                   <tr>
-                    <td><a href="without-javascript.html" onClick="bluetoothServerStart(); return false">Bluetooth start</a></td>
-                    <td><a href="without-javascript.html" onClick="bluetoothServerStop(); return false">Bluetooth stop</a></td>
+                    <td align="left"><a href="without-javascript.html" onClick="bluetoothServerStart(); return false">Запустить</a></td>
+                    <td align="left"><a href="without-javascript.html" onClick="bluetoothServerStop(); return false">Остановить</a></td>
                   </tr>
                 </table>
 

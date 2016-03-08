@@ -12,6 +12,7 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.jsp.JettyJspServlet;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.webapp.WebAppContext;
+import reportserver.CommonServer;
 
 
 public class WebServer extends CommonServer {
@@ -33,7 +34,7 @@ public class WebServer extends CommonServer {
         return indexUri.toURI();
     }
 
-    synchronized public void init() throws FileNotFoundException, URISyntaxException {
+    public void init() throws FileNotFoundException, URISyntaxException {
         setState(ServerState.SERVER_INITIALIZING);
 
         System.setProperty("org.apache.jasper.compiler.disablejsr199", "false");
@@ -99,7 +100,7 @@ public class WebServer extends CommonServer {
         context.addServlet(ServletBtStop.class, "/btstop");
 
         ServletHolder exampleJspHolder = new ServletHolder();
-        exampleJspHolder.setForcedPath("/WEB-INF/jsps/example.jsp");
+        exampleJspHolder.setForcedPath("/example.jsp");
         exampleJspHolder.setName("example.jsp");
         context.addServlet(exampleJspHolder, "/example");
 
@@ -108,16 +109,17 @@ public class WebServer extends CommonServer {
     }
 
 
-    synchronized public void stop() throws Exception {
+    public void stop() throws Exception {
         try {
             server.stop();
         } catch(Exception e) {
 
         }
+
         setState(ServerState.SERVER_STOPPED);
     }
 
-    synchronized public void start() throws Exception {
+    public void start() throws Exception {
         try {
             server.start();
             setState(ServerState.SERVER_ACTIVE);

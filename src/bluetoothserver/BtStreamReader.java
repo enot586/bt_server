@@ -12,7 +12,7 @@ import java.net.URL;
 
 public class BtStreamReader implements Runnable {
     //Размер поточного байтового буфера
-    final int MAX_BUFFER_SIZE = 100000;
+    final int MAX_BUFFER_SIZE = 100*1024;
 
     public enum ConnectionState {
         CONNECTION_STATE_WAITING,
@@ -21,13 +21,21 @@ public class BtStreamReader implements Runnable {
         CONNECTION_STATE_OPEN_STREAM,
     }
 
+    private BluetoothServer parent;
     private String url;
     private ConnectionState connectionState;
     private StreamConnectionNotifier streamConnNotifier;
     private StreamConnection currentConnection;
 
-    BtStreamReader(String url_) {
+    BtStreamReader(BluetoothServer parent_, String url_) throws NullPointerException {
+
+        if ( (url_ == null) || (parent_ == null) ) {
+            NullPointerException criticalExepction = new NullPointerException();
+            throw criticalExepction;
+        }
+
         url = url_;
+        parent = parent_;
         connectionState = ConnectionState.CONNECTION_STATE_WAITING;
     }
 
@@ -125,7 +133,7 @@ public class BtStreamReader implements Runnable {
                         //read string from spp client
                         InputStream inStream = currentConnection.openInputStream();
 
-                        BufferedReader bReader = new BufferedReader(new InputStreamReader(inStream));
+                        BufferedReader bReader = new BufferedReader( new InputStreamReader(inStream) );
 
                         byte[] mba = new byte[MAX_BUFFER_SIZE];
                         int bytesRead;
@@ -134,9 +142,15 @@ public class BtStreamReader implements Runnable {
                         FileOutputStream fileOutputStream;
                         BufferedOutputStream bufferedOutputStream;
 
-                        URL synchDataBaseFile = this.getClass().getResource("/output.txt");
+                        URL synchDataBaseFile = this.getClass().getClassLoader().getResource("base-synchronization");
 
-                        fileOutputStream = new FileOutputStream(synchDataBaseFile.getFile());
+                        FileHandler   fileNameHandler = new FileHandler( synchDataBaseFile.getFile() );
+
+                        RemoteDevice remote = RemoteDevice.getRemoteDevice(currentConnection);
+                        String receivedFileName =
+                                fileNameHandler.generateNameForSynchronizationScript( remote.getBluetoothAddress() );
+
+                        fileOutputStream = new FileOutputStream(synchDataBaseFile.getPath()+"/"+receivedFileName);
 
                         bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
 
@@ -146,6 +160,8 @@ public class BtStreamReader implements Runnable {
                         bufferedOutputStream.close();
 
                         inStream.close();
+
+                        parent.pushReceiveFileName(receivedFileName);
                     } catch (IOException e) {
                         System.out.println(e);
                         synchronized (connectionState) {
@@ -153,6 +169,7 @@ public class BtStreamReader implements Runnable {
                         }
                         break;
                     }
+
 
                     try {
                         //send response to spp client

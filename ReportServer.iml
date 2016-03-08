@@ -3,15 +3,19 @@
   <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
     <content url="file://$MODULE_DIR$">
-      <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" packagePrefix="reportserver" />
       <sourceFolder url="file://$MODULE_DIR$/src/tests" isTestSource="true" packagePrefix="reportserver" />
       <sourceFolder url="file://$MODULE_DIR$/resources" type="java-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/webapp" type="java-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/webapp/img" type="java-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/webapp/WEB-INF" type="java-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/webapp/WEB-INF/classes" type="java-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/webapp/WEB-INF/jsps" type="java-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/webapp/WEB-INF/lib" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/resources/webapp" type="java-resource" relativeOutputPath="webapp" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/resources/webapp/img" type="java-resource" relativeOutputPath="webapp/img" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/resources/webapp/WEB-INF" type="java-resource" relativeOutputPath="webapp/WEB-INF" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/resources/webapp/WEB-INF/classes" type="java-resource" relativeOutputPath="webapp/WEB-INF/classes" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/resources/webapp/WEB-INF/jsps" type="java-resource" relativeOutputPath="webapp/WEB-INF/jsps" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/resources/webapp/WEB-INF/lib" type="java-resource" relativeOutputPath="webapp/WEB-INF/lib" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/webserver" isTestSource="false" packagePrefix="reportserver" />
+      <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" packagePrefix="reportserver" />
+      <sourceFolder url="file://$MODULE_DIR$/src/bluetoothserver" isTestSource="false" packagePrefix="reportserver" />
+      <sourceFolder url="file://$MODULE_DIR$/src/database" isTestSource="false" packagePrefix="reportserver" />
+      <sourceFolder url="file://$MODULE_DIR$/resources/base-synchronization" type="java-resource" relativeOutputPath="base-synchronization" generated="true" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
@@ -27,5 +31,6 @@
     <orderEntry type="library" name="apache-ant-1.8.2" level="project" />
     <orderEntry type="library" name="ant-launcher-1.9.6" level="project" />
     <orderEntry type="library" name="sqlite-jdbc-3.8.11.2" level="project" />
+    <orderEntry type="library" name="tools" level="project" />
   </component>
 </module>
