@@ -1,13 +1,22 @@
 package reportserver;
 
+import java.io.*;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.*;
 import java.util.ArrayList;
+import static java.nio.file.StandardCopyOption.*;
 
 public class ReportDatabaseDriver {
+    private String url;
     private Statement databaseStatement;
     private Connection dbConnection;
 
-    public void init(String url) throws SQLException {
+    public void init(String url_) throws SQLException {
+        url = url_;
+
         try {
             Class.forName("org.sqlite.JDBC");
 
@@ -47,6 +56,40 @@ public class ReportDatabaseDriver {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+    }
+
+    public void BackupCurrentDataBase() {
+        try {
+            databaseStatement.close();
+            dbConnection.close();
+
+            URL synchDataBaseFile = ReportServer.class.getClassLoader().getResource("base-synchronization");
+
+            if (synchDataBaseFile == null) {
+                //Files.createDirectory("base-synchronization", );
+            }
+
+            FileHandler fileHandler = new FileHandler(synchDataBaseFile.getFile());
+
+            File sourceFile = new File(synchDataBaseFile.getFile()+"/"+"app-data.db3");
+            File targetFile = new File(synchDataBaseFile.getFile()+"/"+fileHandler.generateNameForDataBase());
+
+            Files.copy( Paths.get(sourceFile.getAbsolutePath()),
+                        new FileOutputStream(targetFile));
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+    public void RunScript(SqlCommandList batch) {
+
     }
 
     public ArrayList<Integer> getRoutesTableIds() throws SQLException {

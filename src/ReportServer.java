@@ -6,8 +6,8 @@ import java.io.IOException;
 
 
 import java.net.URL;
-import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
+import java.sql.SQLSyntaxErrorException;
 import java.util.NoSuchElementException;
 
 
@@ -16,6 +16,7 @@ public class ReportServer {
     private static WebServer webServer;
     private static BluetoothServer bluetoothServer;
     private static ReportDatabaseDriver reportDatabaseDriver;
+    private static SqlCommandList sqlScript;
     private FileHandler fileHandler;
 
     public static CommonServer.ServerState webServerGetState() {
@@ -46,39 +47,11 @@ public class ReportServer {
         return reportDatabaseDriver;
     }
 
-    private static boolean CheckScriptSyntax(File script) {
-        return true;
-    }
-    private static boolean CheckScriptForDataDoubling(File script) {
-        return true;
-    }
-
-    private static void RunScript(File script) {
-
-    }
-
-    private static void BackupCurrentDataBase() {
-
-    }
-
-    private static void CheckReceviedFileFromBluetooth(BluetoothServer bt) {
-        try {
-            String newReceivedFileName = bt.popReceiveFileName();
-
-            URL synchDataBaseFile = ReportServer.class.getClassLoader().getResource("base-synchronization");
-            File scriptFile = new File(synchDataBaseFile.getFile());
-
-            //FileHandler fileNameHandler = new FileHandler( synchDataBaseFile.getFile() );
-            //fileNameHandler.getMD5ForFile(newReceivedFileName);
-
-            if ( CheckScriptSyntax(scriptFile) && CheckScriptForDataDoubling(scriptFile) ) {
-                BackupCurrentDataBase();
-                RunScript(scriptFile);
-            }
-
-        } catch(NoSuchElementException e) {
-
-        }
+    private static File getReceviedFileFromBluetooth(BluetoothServer bt) throws NoSuchElementException, FileNotFoundException {
+        String newReceivedFileName = "exp-db.sql";//bt.popReceiveFileName();
+        URL synchDataBaseFile = ReportServer.class.getClassLoader().getResource("base-synchronization");
+        if (synchDataBaseFile == null) throw new FileNotFoundException();
+        return (new File(synchDataBaseFile.getFile()+"/"+newReceivedFileName) );
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {
@@ -111,7 +84,17 @@ public class ReportServer {
 
         while (true) {
 
-            CheckReceviedFileFromBluetooth(bluetoothServer);
+            try {
+                File scriptFile = getReceviedFileFromBluetooth(bluetoothServer);
+                sqlScript = new SqlCommandList(scriptFile);
+
+                reportDatabaseDriver.BackupCurrentDataBase();
+                reportDatabaseDriver.RunScript(sqlScript);
+            } catch (NoSuchElementException e1) {
+
+            } catch (SQLSyntaxErrorException | FileNotFoundException e2) {
+                e2.printStackTrace();
+            }
 
             //TODO: мониторим сервера
         }

@@ -96,7 +96,7 @@ public class BtStreamReader implements Runnable {
                         streamConnNotifier = (StreamConnectionNotifier)Connector.open(url);;
                     } catch (IOException e) {
                         synchronized (connectionState) {
-                            //@TODO: обработать правильно
+                            //TODO: обработать правильно
                             connectionState = ConnectionState.CONNECTION_STATE_WAITING;
                         }
                         break;
@@ -115,7 +115,7 @@ public class BtStreamReader implements Runnable {
                         }
                         System.out.println("Server Started. Waiting for clients to connect…");
                     } catch (IOException e1) {
-                        //@TODO: обработать правильно
+                        //TODO: обработать правильно
                         System.out.println("Server interrupted: " + e1);
                         synchronized (connectionState) {
                             connectionState = ConnectionState.CONNECTION_STATE_WAITING;
