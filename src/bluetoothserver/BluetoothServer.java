@@ -1,5 +1,6 @@
 package reportserver;
 
+import javax.bluetooth.RemoteDevice;
 import javax.bluetooth.UUID;
 import java.io.*;
 import java.util.LinkedList;
@@ -79,6 +80,10 @@ public class BluetoothServer extends CommonServer {
             receivedFilesQueue.remove();
         }
         return result;
+    }
+
+    String getRemoteDeviceBluetoothAddress() throws IOException {
+        return reader.getRemoteDeviceBluetoothAddress();
     }
 
 }

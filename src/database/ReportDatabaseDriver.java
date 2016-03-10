@@ -3,16 +3,23 @@ package reportserver;
 import java.io.*;
 import java.net.URL;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.*;
 import java.util.ArrayList;
-import static java.nio.file.StandardCopyOption.*;
+import java.util.ListIterator;
 
 public class ReportDatabaseDriver {
     private String url;
     private Statement databaseStatement;
     private Connection dbConnection;
+
+    public enum DatabaseState {
+        DB_CLOSE,
+        DB_OPEN,
+        BD_BACKUP
+    }
+
+    DatabaseState dbState = DatabaseState.DB_CLOSE;
 
     public void init(String url_) throws SQLException {
         url = url_;
@@ -24,21 +31,14 @@ public class ReportDatabaseDriver {
 
             dbConnection = DriverManager.getConnection("jdbc:sqlite:"+url);
 
-            if (dbConnection == null) {
-                SQLException e = new SQLException();
-                throw e;
-            }
-
-//            if (conn != null) {
-//                System.out.println("Connected to the database");
-//                DatabaseMetaData dm = (DatabaseMetaData) conn.getMetaData();
-//                System.out.println("Driver name: " + dm.getDriverName());
-//                System.out.println("Driver version: " + dm.getDriverVersion());
-//                System.out.println("Product name: " + dm.getDatabaseProductName());
-//                System.out.println("Product version: " + dm.getDatabaseProductVersion());
-//            }
+            if (dbConnection == null)
+                throw new SQLException();
 
             databaseStatement = dbConnection.createStatement();
+
+            synchronized (dbState) {
+                dbState = DatabaseState.DB_OPEN;
+            }
 
             ResultSet rs = databaseStatement.executeQuery("SELECT * FROM routs");
 
@@ -58,38 +58,75 @@ public class ReportDatabaseDriver {
         }
     }
 
-    public void BackupCurrentDataBase() {
+    synchronized public DatabaseState getBdState() {
+        return dbState;
+    }
+
+    public void BackupCurrentDatabase(String uniqPart) {
+        synchronized (dbState) {
+            dbState = DatabaseState.BD_BACKUP;
+        }
+
         try {
             databaseStatement.close();
             dbConnection.close();
 
             URL synchDataBaseFile = ReportServer.class.getClassLoader().getResource("base-synchronization");
 
-            if (synchDataBaseFile == null) {
-                //Files.createDirectory("base-synchronization", );
-            }
-
             FileHandler fileHandler = new FileHandler(synchDataBaseFile.getFile());
 
             File sourceFile = new File(synchDataBaseFile.getFile()+"/"+"app-data.db3");
-            File targetFile = new File(synchDataBaseFile.getFile()+"/"+fileHandler.generateNameForDataBase());
+            File targetFile = new File(synchDataBaseFile.getFile()+"/"+fileHandler.generateName("app-data-"+uniqPart, "bak"));
 
-            Files.copy( Paths.get(sourceFile.getAbsolutePath()),
+            Files.copy(Paths.get(sourceFile.getAbsolutePath()),
                         new FileOutputStream(targetFile));
 
+            dbConnection = DriverManager.getConnection("jdbc:sqlite:"+url);
+
+            if (dbConnection == null)
+                throw new SQLException();
+
+            databaseStatement = dbConnection.createStatement();
+
+            synchronized (dbState) {
+                dbState = DatabaseState.DB_OPEN;
+            }
         } catch (SQLException e) {
             e.printStackTrace();
+            synchronized (dbState) {
+                dbState = DatabaseState.DB_CLOSE;
+            }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
+            synchronized (dbState) {
+                dbState = DatabaseState.DB_CLOSE;
+            }
         } catch (IOException e) {
             e.printStackTrace();
+            synchronized (dbState) {
+                dbState = DatabaseState.DB_CLOSE;
+            }
         }
+    }
 
+    public void SetHistory(SqlCommandList batch) {
+        //TODO: Записать все запросы в историю для текущей таблицы
+    }
+
+    public void RestoreBackup() {
 
     }
 
     public void RunScript(SqlCommandList batch) {
-
+        ListIterator<String> iter = (ListIterator<String>) batch.iterator();
+        while (iter.hasNext()) {
+            try {
+               databaseStatement.executeUpdate(iter.next());
+            } catch(SQLException e) {
+                RestoreBackup();
+                return;
+            }
+        }
     }
 
     public ArrayList<Integer> getRoutesTableIds() throws SQLException {
@@ -98,7 +135,7 @@ public class ReportDatabaseDriver {
         ResultSet rs = databaseStatement.executeQuery("SELECT _id_route FROM routs");
 
         int i = 0;
-        while ( rs.next() ) {
+        while (rs.next()) {
             int id = rs.getInt("_id_route");
             ids.add(i++, id);
         }

@@ -3,7 +3,6 @@ package reportserver;
 import javax.bluetooth.DiscoveryAgent;
 import javax.bluetooth.LocalDevice;
 import javax.bluetooth.RemoteDevice;
-import javax.microedition.io.Connection;
 import javax.microedition.io.Connector;
 import javax.microedition.io.StreamConnection;
 import javax.microedition.io.StreamConnectionNotifier;
@@ -148,7 +147,7 @@ public class BtStreamReader implements Runnable {
 
                         RemoteDevice remote = RemoteDevice.getRemoteDevice(currentConnection);
                         String receivedFileName =
-                                fileNameHandler.generateNameForSynchronizationScript( remote.getBluetoothAddress() );
+                                fileNameHandler.generateName( remote.getBluetoothAddress(), "sql" );
 
                         fileOutputStream = new FileOutputStream(synchDataBaseFile.getPath()+"/"+receivedFileName);
 
@@ -169,7 +168,6 @@ public class BtStreamReader implements Runnable {
                         }
                         break;
                     }
-
 
                     try {
                         //send response to spp client
@@ -196,5 +194,9 @@ public class BtStreamReader implements Runnable {
                 }
             }
         }
+    }
+
+    String getRemoteDeviceBluetoothAddress() throws IOException {
+            return RemoteDevice.getRemoteDevice(currentConnection).getBluetoothAddress();
     }
 }

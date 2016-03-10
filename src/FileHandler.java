@@ -8,7 +8,6 @@ import java.util.Date;
 
 public class FileHandler {
     private String currentDir;
-    private final String synchronizationScriptExtension = "sql";
 
     FileHandler(String currentDir_) {
         currentDir = currentDir_;
@@ -36,22 +35,14 @@ public class FileHandler {
         return digest;
     }
 
-    public String generateNameForDataBase() {
-        return "app-data-arch-userId-date-time.db";
-    }
-
-    public String generateNameForSynchronizationScript() {
-        return "no";
-    }
-
-    public String generateNameForSynchronizationScript(String uniqPart) {
+    public String generateName(String uniqPart, String ext) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy-HH-mm-ss");
         String finishDate = dateFormat.format(new Date());
-        String name = uniqPart+"_"+finishDate+"."+synchronizationScriptExtension;
+        String name = uniqPart+"-"+finishDate+"."+ext;
         File newFile = new File(name);
 
         for (int i = 0; (i < Integer.MAX_VALUE) && newFile.exists(); ++i) {
-            name = uniqPart+finishDate+"("+i+")."+synchronizationScriptExtension;
+            name = uniqPart+finishDate+"("+i+")."+ext;
             newFile = new File(name);
         }
 

@@ -6,24 +6,25 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.sql.SQLSyntaxErrorException;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
-public class SqlCommandList {
-    private LinkedList<String> listSqlQueryes = new LinkedList<String>();
+public class SqlCommandList implements Iterable<String> {
+    private LinkedList<String> listSqlQueries = new LinkedList<String>();
 
     SqlCommandList(File file) throws FileNotFoundException, SQLSyntaxErrorException {
         this.addFromFile(file);
     }
 
     public int getSqlQueriesNumber() {
-        return listSqlQueryes.size();
+        return listSqlQueries.size();
     }
 
     public String popQuery() throws NoSuchElementException {
-        String result = listSqlQueryes.element();
-        listSqlQueryes.remove();
+        String result = listSqlQueries.element();
+        listSqlQueries.remove();
         return result;
     }
 
@@ -58,13 +59,17 @@ public class SqlCommandList {
         while ( stringScanner.hasNext() ) {
             String rightFormat = deletePrefixSuffix( stringScanner.next() );
             if (checkSqlSyntax(rightFormat)) {
-                listSqlQueryes.add(rightFormat);
+                listSqlQueries.add(rightFormat);
             } else {
-                listSqlQueryes.clear();
+                listSqlQueries.clear();
                 throw (new SQLSyntaxErrorException());
             }
         }
     }
 
+    @Override
+    public Iterator<String> iterator() {
+        return listSqlQueries.listIterator();
+    }
 
 }

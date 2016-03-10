@@ -5,12 +5,12 @@
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/src/tests" isTestSource="true" packagePrefix="reportserver" />
       <sourceFolder url="file://$MODULE_DIR$/resources" type="java-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/resources/webapp" type="java-resource" relativeOutputPath="webapp" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/resources/webapp/img" type="java-resource" relativeOutputPath="webapp/img" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/resources/webapp/WEB-INF" type="java-resource" relativeOutputPath="webapp/WEB-INF" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/resources/webapp/WEB-INF/classes" type="java-resource" relativeOutputPath="webapp/WEB-INF/classes" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/resources/webapp/WEB-INF/jsps" type="java-resource" relativeOutputPath="webapp/WEB-INF/jsps" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/resources/webapp/WEB-INF/lib" type="java-resource" relativeOutputPath="webapp/WEB-INF/lib" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/resources/webapp" type="java-resource" relativeOutputPath="reportserver/webapp" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/resources/webapp/img" type="java-resource" relativeOutputPath="reportserver/webapp/img" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/resources/webapp/WEB-INF" type="java-resource" relativeOutputPath="reportserver/webapp/WEB-INF" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/resources/webapp/WEB-INF/classes" type="java-resource" relativeOutputPath="reportserver/webapp/WEB-INF/classes" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/resources/webapp/WEB-INF/jsps" type="java-resource" relativeOutputPath="reportserver/webapp/WEB-INF/jsps" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/resources/webapp/WEB-INF/lib" type="java-resource" relativeOutputPath="reportserver/webapp/WEB-INF/lib" generated="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/webserver" isTestSource="false" packagePrefix="reportserver" />
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" packagePrefix="reportserver" />
       <sourceFolder url="file://$MODULE_DIR$/src/bluetoothserver" isTestSource="false" packagePrefix="reportserver" />
