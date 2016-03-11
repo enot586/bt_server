@@ -142,8 +142,17 @@ public class ReportDatabaseDriver {
         return ids;
     }
 
-    public String getRoutesTableUser(int idRoute) throws SQLException {
-        ResultSet rs = databaseStatement.executeQuery("SELECT name FROM routs WHERE _id_route = "+idRoute);
+    public String getUserNameFromDetourTable(int idDetour) throws SQLException {
+        ResultSet rs = databaseStatement.executeQuery("SELECT id_user FROM detour WHERE _id_detour = "+idDetour);
+        int userId = rs.getInt("id_user");
+        rs = databaseStatement.executeQuery("SELECT fio FROM users WHERE _id_user = "+userId);
+        return rs.getString("fio");
+    }
+
+    public String getRouteNameFromDetourTable(int idDetour) throws SQLException {
+        ResultSet rs = databaseStatement.executeQuery("SELECT id_route FROM detour WHERE _id_detour = "+idDetour);
+        int routeId = rs.getInt("id_user");
+        rs = databaseStatement.executeQuery("SELECT name FROM routs WHERE _id_route = "+routeId);
         return rs.getString("name");
     }
 

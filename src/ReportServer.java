@@ -1,6 +1,7 @@
 package reportserver;
 
 import javax.bluetooth.RemoteDevice;
+import javax.servlet.AsyncContext;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -9,17 +10,21 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.sql.SQLSyntaxErrorException;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 
 public class ReportServer {
 
+    private static Map< WebActionType, AsyncContext > webActions;
     private static WebServer webServer;
     private static BluetoothServer bluetoothServer;
     private static ReportDatabaseDriver reportDatabaseDriver;
     private static SqlCommandList sqlScript;
 
     public static void main(String[] args) throws IOException, InterruptedException {
+
+        //TODO: сгенерировать структуру каталогов проекта
 
         try {
             reportDatabaseDriver = new ReportDatabaseDriver();
@@ -84,7 +89,7 @@ public class ReportServer {
     }
 
     private static File getReceviedFileFromBluetooth(BluetoothServer bt) throws NoSuchElementException, FileNotFoundException {
-        String newReceivedFileName = "exp-db.sql";//bt.popReceiveFileName();
+        String newReceivedFileName = /*"exp-db.sql";*/bt.popReceiveFileName();
         URL synchDataBaseFile = ReportServer.class.getClassLoader().getResource("base-synchronization");
         if (synchDataBaseFile == null) throw new FileNotFoundException();
         return (new File(synchDataBaseFile.getFile()+"/"+newReceivedFileName) );
@@ -104,11 +109,25 @@ public class ReportServer {
 //            }
 
             reportDatabaseDriver.RunScript(sqlScript);
+
+            try {
+                ReportServer.getWebAction(WebActionType.WEB_ACTION_REFRESH_DETOUR_TABLE).complete();
+            } catch (NullPointerException e) {
+
+            }
         } catch (NoSuchElementException e1) {
 
         } catch (SQLSyntaxErrorException | FileNotFoundException e2) {
             e2.printStackTrace();
         }
+    }
+
+    synchronized public static void putWebAction(WebActionType type, AsyncContext context) {
+        webActions.put(type, context);
+    }
+
+    synchronized public static AsyncContext getWebAction(WebActionType type) throws NullPointerException {
+        return webActions.get(type);
     }
 
 }

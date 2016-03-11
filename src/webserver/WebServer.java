@@ -14,6 +14,8 @@ import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.webapp.WebAppContext;
 import reportserver.CommonServer;
 
+import javax.servlet.AsyncContext;
+
 
 public class WebServer extends CommonServer {
 
@@ -80,7 +82,6 @@ public class WebServer extends CommonServer {
         holderJsp.setInitParameter("keepgenerated", "true");
         context.addServlet(holderJsp, "*.jsp");
 
-
         // Add Application Servlets
         ServletHolder tabSynchronizeHolder = new ServletHolder("TabSynchronize", TabSynchronize.class);
 
@@ -99,6 +100,8 @@ public class WebServer extends CommonServer {
         context.addServlet(ServletBtStart.class, "/btstart");
         context.addServlet(ServletBtStop.class, "/btstop");
 
+        context.addServlet(ServletTableRefresh.class, "/tablerefresh");
+
         ServletHolder exampleJspHolder = new ServletHolder();
         exampleJspHolder.setForcedPath("/example.jsp");
         exampleJspHolder.setName("example.jsp");
@@ -107,7 +110,6 @@ public class WebServer extends CommonServer {
         server.setHandler(context);
         setState(ServerState.SERVER_STOPPED);
     }
-
 
     public void stop() throws Exception {
         try {
