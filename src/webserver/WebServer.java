@@ -29,7 +29,7 @@ public class WebServer extends CommonServer {
     }
 
     private URI getWebRootResourceUri() throws FileNotFoundException, URISyntaxException {
-        URL indexUri = this.getClass().getResource(siteAddress);
+        URL indexUri = this.getClass().getClassLoader().getResource(siteAddress);
         if (indexUri == null) {
             throw new FileNotFoundException("Unable to find resource " + siteAddress);
         }

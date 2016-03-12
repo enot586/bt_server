@@ -37,11 +37,15 @@
       </tr>
       <%
       try {
-          reportserver.ReportDatabaseDriver databaseDriver = reportserver.ReportServer.getDatabaseDriver();
+        reportserver.ReportDatabaseDriver databaseDriver = reportserver.ReportServer.getDatabaseDriver();
 
-          java.util.ArrayList<Integer> ids = databaseDriver.getDetourTableIds();
+        //Если надо отобразить всю таблицу
+        //java.util.ArrayList<Integer> ids = databaseDriver.getDetourTableIds();
 
-          for(Integer i : ids) {
+        //Считываем последние 30 записей
+        java.util.ArrayList<Integer> ids = databaseDriver.getLatest10IdsDetour();
+
+        for(Integer i : ids) {
             boolean isFinishedRoute = databaseDriver.getStatusFromDetourTable(i);
 
             String rowStyle = (isFinishedRoute) ?  "finish-row" : "unfinish-row";
@@ -51,10 +55,10 @@
                         "</td><td>"+databaseDriver.getRouteNameFromDetourTable(i)+
                         "</td><td>"+databaseDriver.getStartTimeFromDetourTable(i)+
                         "</td><td>"+databaseDriver.getEndTimeFromDetourTable(i)+"</td></tr>");
-          }
-        } catch (java.sql.SQLException e) {
-          out.println("<tr class=\"user-row\"><td colspan=\"5\"><span class=\"error\">SQL query error...</span></td></tr>");
         }
+      } catch (java.sql.SQLException e) {
+        out.println("<tr class=\"user-row\"><td colspan=\"5\"><span class=\"error\">SQL query error...</span></td></tr>");
+      }
       %>
     </table>
     </center>

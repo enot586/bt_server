@@ -136,6 +136,20 @@ public class ReportDatabaseDriver {
         }
     }
 
+    public ArrayList<Integer> getLatest10IdsDetour() throws SQLException {
+        ArrayList<Integer> ids = new  ArrayList<Integer>();
+
+        ResultSet rs = databaseStatement.executeQuery("SELECT _id_detour FROM detour ORDER BY _id_detour DESC LIMIT 10");
+
+        int i = 0;
+        while (rs.next()) {
+            int id = rs.getInt("_id_detour");
+            ids.add(i++, id);
+        }
+        return ids;
+
+    }
+
     public ArrayList<Integer> getDetourTableIds() throws SQLException {
         ArrayList<Integer> ids = new  ArrayList<Integer>();
 

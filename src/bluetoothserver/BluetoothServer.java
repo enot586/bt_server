@@ -49,9 +49,8 @@ public class BluetoothServer extends CommonServer {
         if (!isReadyToWork()) return;
         setState(ServerState.SERVER_STOPPED);
 
-        reader.stop(); //необходимо на случай если сервер ожидает подключения, чтобы вывести его из ожидания
-
-        serverThread.interrupt();
+        if (reader != null) reader.stop(); //необходимо на случай если сервер ожидает подключения, чтобы вывести его из ожидания
+        if (serverThread != null) serverThread.interrupt();
     }
 
     synchronized public void start() throws Exception {

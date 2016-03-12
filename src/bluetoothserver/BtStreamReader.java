@@ -141,7 +141,7 @@ public class BtStreamReader implements Runnable {
                         FileOutputStream fileOutputStream;
                         BufferedOutputStream bufferedOutputStream;
 
-                        String synchDataBaseFile = "/base-synchronization";
+                        String synchDataBaseFile = "base-synchronization";
 
                         FileHandler   fileNameHandler = new FileHandler(synchDataBaseFile);
 

@@ -38,7 +38,7 @@ public class ReportServer {
         }
 
         try {
-            webServer = new WebServer(8080, "/webapp");
+            webServer = new WebServer(8080, "webapp");
             bluetoothServer = new BluetoothServer();
 
             bluetoothServer.init();
@@ -89,7 +89,7 @@ public class ReportServer {
 
     private static File getReceviedFileFromBluetooth(BluetoothServer bt) throws NoSuchElementException, FileNotFoundException {
         String newReceivedFileName = /*"exp-db.sql";*/bt.popReceiveFileName();
-        String synchDataBaseFile = "/base-synchronization";
+        String synchDataBaseFile = "base-synchronization";
         return (new File(synchDataBaseFile+"/"+newReceivedFileName) );
     }
 
