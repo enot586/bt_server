@@ -129,14 +129,14 @@ public class ReportDatabaseDriver {
         }
     }
 
-    public ArrayList<Integer> getRoutesTableIds() throws SQLException {
+    public ArrayList<Integer> getDetourTableIds() throws SQLException {
         ArrayList<Integer> ids = new  ArrayList<Integer>();
 
-        ResultSet rs = databaseStatement.executeQuery("SELECT _id_route FROM routs");
+        ResultSet rs = databaseStatement.executeQuery("SELECT _id_detour FROM detour");
 
         int i = 0;
         while (rs.next()) {
-            int id = rs.getInt("_id_route");
+            int id = rs.getInt("_id_detour");
             ids.add(i++, id);
         }
         return ids;
@@ -151,19 +151,24 @@ public class ReportDatabaseDriver {
 
     public String getRouteNameFromDetourTable(int idDetour) throws SQLException {
         ResultSet rs = databaseStatement.executeQuery("SELECT id_route FROM detour WHERE _id_detour = "+idDetour);
-        int routeId = rs.getInt("id_user");
+        int routeId = rs.getInt("id_route");
         rs = databaseStatement.executeQuery("SELECT name FROM routs WHERE _id_route = "+routeId);
         return rs.getString("name");
     }
 
-    public String getRoutesTableDate(int idRoute) throws SQLException {
-        ResultSet rs = databaseStatement.executeQuery("SELECT date_create FROM routs WHERE _id_route = "+idRoute);
-        return rs.getString("date_create");
+    public String getStartTimeFromDetourTable(int idDetour) throws SQLException {
+        ResultSet rs = databaseStatement.executeQuery("SELECT time_start FROM detour WHERE _id_detour = "+idDetour);
+        return rs.getString("time_start");
     }
 
-    public int getRoutesTableActuality(int idRoute) throws SQLException {
-        ResultSet rs = databaseStatement.executeQuery("SELECT actuality FROM routs WHERE _id_route = "+idRoute);
-        return rs.getInt("actuality");
+    public String getEndTimeFromDetourTable(int idDetour) throws SQLException {
+        ResultSet rs = databaseStatement.executeQuery("SELECT time_stop FROM detour WHERE _id_detour = "+idDetour);
+        return rs.getString("time_stop");
+    }
+
+    public boolean getStatusFromDetourTable(int idDetour) throws SQLException {
+        ResultSet rs = databaseStatement.executeQuery("SELECT finished FROM detour WHERE _id_detour = "+idDetour);
+        return rs.getBoolean("finished");
     }
 
     public String getRoutesTablePathRoutePicture(int idRoute) throws SQLException {

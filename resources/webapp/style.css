@@ -5,11 +5,25 @@
   font-weight:bold;
 }
 
-.user-row { 
+.user-row {
   background-color:#eeeeee;
   font-family:verdana; 
   font-size:10pt; 
   font-weight:normal; 
+}
+
+.finish-row {
+  background-color:#CCFFCC;
+  font-family:verdana;
+  font-size:10pt;
+  font-weight:normal;
+}
+
+.unfinish-row {
+  background-color:#FFCCCC;
+  font-family:verdana;
+  font-size:10pt;
+  font-weight:normal;
 }
 
 .left-menu { 

@@ -30,22 +30,27 @@
     <center>
     <table width="90%" style="border-width:1px; border-color:#ffffff; border-style:solid; background-color:#ffffff;">
       <tr class="title-user-row">
-        <td>id</td> <td>User</td> <td>Route</td> <td>Date</td>
+        <td>id</td> <td>User</td> <td>Route</td> <td>Start</td> <td>End</td>
       </tr>
       <%
       try {
           reportserver.ReportDatabaseDriver databaseDriver = reportserver.ReportServer.getDatabaseDriver();
 
-          java.util.ArrayList<Integer> ids = databaseDriver.getRoutesTableIds();
+          java.util.ArrayList<Integer> ids = databaseDriver.getDetourTableIds();
 
           for(Integer i : ids) {
-            out.println("<tr class=\"user-row\"><td>"+i+
+            boolean isFinishedRoute = databaseDriver.getStatusFromDetourTable(i);
+
+            String rowStyle = (isFinishedRoute) ?  "finish-row" : "unfinish-row";
+
+            out.println("<tr class=\" "+ rowStyle +"\"><td>"+i+
                         "</td><td>"+databaseDriver.getUserNameFromDetourTable(i)+
                         "</td><td>"+databaseDriver.getRouteNameFromDetourTable(i)+
-                        "</td><td>"+databaseDriver.getRoutesTableDate(i)+"</td></tr>");
+                        "</td><td>"+databaseDriver.getStartTimeFromDetourTable(i)+
+                        "</td><td>"+databaseDriver.getEndTimeFromDetourTable(i)+"</td></tr>");
           }
         } catch (java.sql.SQLException e) {
-          out.println("<tr class=\"user-row\"><td colspan=\"4\"><span class=\"error\">SQL query error...</span></td></tr>");
+          out.println("<tr class=\"user-row\"><td colspan=\"5\"><span class=\"error\">SQL query error...</span></td></tr>");
         }
       %>
     </table>
