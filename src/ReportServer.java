@@ -89,9 +89,8 @@ public class ReportServer {
 
     private static File getReceviedFileFromBluetooth(BluetoothServer bt) throws NoSuchElementException, FileNotFoundException {
         String newReceivedFileName = /*"exp-db.sql";*/bt.popReceiveFileName();
-        URL synchDataBaseFile = ReportServer.class.getClassLoader().getResource("");
-        if (synchDataBaseFile == null) throw new FileNotFoundException();
-        return (new File(synchDataBaseFile.getFile()+"/"+newReceivedFileName) );
+        String synchDataBaseFile = "/base-synchronization";
+        return (new File(synchDataBaseFile+"/"+newReceivedFileName) );
     }
 
     private static void receiveFileHandler() {

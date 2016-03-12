@@ -141,15 +141,15 @@ public class BtStreamReader implements Runnable {
                         FileOutputStream fileOutputStream;
                         BufferedOutputStream bufferedOutputStream;
 
-                        URL synchDataBaseFile = this.getClass().getClassLoader().getResource("");
+                        String synchDataBaseFile = "/base-synchronization";
 
-                        FileHandler   fileNameHandler = new FileHandler( synchDataBaseFile.getFile() );
+                        FileHandler   fileNameHandler = new FileHandler(synchDataBaseFile);
 
                         RemoteDevice remote = RemoteDevice.getRemoteDevice(currentConnection);
                         String receivedFileName =
                                 fileNameHandler.generateName( remote.getBluetoothAddress(), "sql" );
 
-                        fileOutputStream = new FileOutputStream(synchDataBaseFile.getPath()+"/"+receivedFileName);
+                        fileOutputStream = new FileOutputStream(synchDataBaseFile+"/"+receivedFileName);
 
                         bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
 

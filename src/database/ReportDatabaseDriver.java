@@ -71,12 +71,12 @@ public class ReportDatabaseDriver {
             databaseStatement.close();
             dbConnection.close();
 
-            URL synchDataBaseFile = ReportServer.class.getClassLoader().getResource("");
+            String synchDataBaseFile = "base-synchronization";
 
-            FileHandler fileHandler = new FileHandler(synchDataBaseFile.getFile());
+            FileHandler fileHandler = new FileHandler(synchDataBaseFile);
 
-            File sourceFile = new File(synchDataBaseFile.getFile()+"/"+"app-data.db3");
-            File targetFile = new File(synchDataBaseFile.getFile()+"/"+fileHandler.generateName("app-data-"+uniqPart, "bak"));
+            File sourceFile = new File(synchDataBaseFile+"/"+"app-data.db3");
+            File targetFile = new File(synchDataBaseFile+"/"+fileHandler.generateName("app-data-"+uniqPart, "bak"));
 
             Files.copy(Paths.get(sourceFile.getAbsolutePath()),
                         new FileOutputStream(targetFile));
@@ -126,6 +126,13 @@ public class ReportDatabaseDriver {
                 RestoreBackup();
                 return;
             }
+        }
+
+        try {
+            databaseStatement.executeUpdate("COMMIT");
+        } catch(SQLException e) {
+            RestoreBackup();
+            return;
         }
     }
 
