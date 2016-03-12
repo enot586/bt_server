@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <exclude-output />
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/src/tests" isTestSource="true" packagePrefix="reportserver" />
+      <sourceFolder url="file://$MODULE_DIR$/src/webserver" isTestSource="false" packagePrefix="reportserver" />
+      <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" packagePrefix="reportserver" />
+      <sourceFolder url="file://$MODULE_DIR$/src/bluetoothserver" isTestSource="false" packagePrefix="reportserver" />
+      <sourceFolder url="file://$MODULE_DIR$/src/database" isTestSource="false" packagePrefix="reportserver" />
+      <sourceFolder url="file://$MODULE_DIR$/resources" type="java-resource" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="bluecove-2.1.0" level="project" />
+    <orderEntry type="library" name="jetty-all-server-8.1.19.v20160209" level="project" />
+    <orderEntry type="library" name="servlet-api-3.1" level="project" />
+    <orderEntry type="library" name="jetty-jsp-9.2.10.v20150310" level="project" />
+    <orderEntry type="library" name="apache-jsp-9.2.0.M0" level="project" />
+    <orderEntry type="library" name="jetty-annotations-9.3.7.v20160115" level="project" />
+    <orderEntry type="library" name="jetty-plus-9.3.7.v20160115" level="project" />
+    <orderEntry type="library" name="org.apache.jasper.glassfish_2.1.0.v201007080150" level="project" />
+    <orderEntry type="library" name="javax.servlet.jsp-3.1" level="project" />
+    <orderEntry type="library" name="apache-ant-1.8.2" level="project" />
+    <orderEntry type="library" name="ant-launcher-1.9.6" level="project" />
+    <orderEntry type="library" name="sqlite-jdbc-3.8.11.2" level="project" />
+    <orderEntry type="library" name="tools" level="project" />
+  </component>
+</module>

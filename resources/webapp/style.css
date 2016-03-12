@@ -1,0 +1,49 @@
+.title-user-row { 
+  background-color:#cccccc; 
+  font-family:verdana; 
+  font-size:12pt; 
+  font-weight:bold;
+}
+
+.user-row {
+  background-color:#eeeeee;
+  font-family:verdana; 
+  font-size:10pt; 
+  font-weight:normal; 
+}
+
+.finish-row {
+  background-color:#CCFFCC;
+  font-family:verdana;
+  font-size:10pt;
+  font-weight:normal;
+}
+
+.unfinish-row {
+  background-color:#FFCCCC;
+  font-family:verdana;
+  font-size:10pt;
+  font-weight:normal;
+}
+
+.left-menu { 
+  background-color:#eeeeee; 
+  border-width:1px; border-color:#000000; border-spacing:1px;
+  text-align:left; text-indent:0px; padding:0px 0px 0px 0px; margin:0px 0px 0px 0px; 
+}
+
+.error {
+  color:#ff0000;
+  font-size:13px;
+}
+
+.btserver-status {
+  font-family:verdana;
+  font-size:8pt;
+  font-weight:normal;
+  color:#ff0000;
+}
+
+iframe {
+  border-width:0px;
+}
