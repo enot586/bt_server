@@ -1,6 +1,5 @@
 package reportserver;
 
-import javax.bluetooth.RemoteDevice;
 import javax.servlet.AsyncContext;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -10,17 +9,18 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.sql.SQLSyntaxErrorException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
 
 public class ReportServer {
 
-    private static Map< WebActionType, AsyncContext > webActions;
     private static WebServer webServer;
     private static BluetoothServer bluetoothServer;
     private static ReportDatabaseDriver reportDatabaseDriver;
     private static SqlCommandList sqlScript;
+    private static Map< WebActionType, AsyncContext > webActions = new HashMap< WebActionType, AsyncContext >();
 
     public static void main(String[] args) throws IOException, InterruptedException {
 
@@ -28,8 +28,7 @@ public class ReportServer {
 
         try {
             reportDatabaseDriver = new ReportDatabaseDriver();
-            URL databaseDir = ReportServer.class.getClassLoader().getResource("base-synchronization/app-data.db3");
-            reportDatabaseDriver.init(databaseDir.toString());
+            reportDatabaseDriver.init("base-synchronization/app-data.db3");
         } catch (SQLException e) {
             e.printStackTrace();
             return;
@@ -39,7 +38,7 @@ public class ReportServer {
         }
 
         try {
-            webServer = new WebServer(8080, "webapp");
+            webServer = new WebServer(8080, "/webapp");
             bluetoothServer = new BluetoothServer();
 
             bluetoothServer.init();
@@ -90,7 +89,7 @@ public class ReportServer {
 
     private static File getReceviedFileFromBluetooth(BluetoothServer bt) throws NoSuchElementException, FileNotFoundException {
         String newReceivedFileName = /*"exp-db.sql";*/bt.popReceiveFileName();
-        URL synchDataBaseFile = ReportServer.class.getClassLoader().getResource("base-synchronization");
+        URL synchDataBaseFile = ReportServer.class.getClassLoader().getResource("");
         if (synchDataBaseFile == null) throw new FileNotFoundException();
         return (new File(synchDataBaseFile.getFile()+"/"+newReceivedFileName) );
     }

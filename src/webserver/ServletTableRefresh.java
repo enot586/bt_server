@@ -13,11 +13,8 @@ public class ServletTableRefresh extends HttpServlet {
         AsyncContext asyncContext = request.startAsync();
         asyncContext.setTimeout(0);
 
-        try {
-            ReportServer.putWebAction(WebActionType.WEB_ACTION_REFRESH_DETOUR_TABLE,
-                    asyncContext);
-        } catch(Exception e) {
+        ReportServer.putWebAction(WebActionType.WEB_ACTION_REFRESH_DETOUR_TABLE,
+                                    asyncContext);
 
-        }
     }
 }

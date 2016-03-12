@@ -13,14 +13,17 @@
         $.ajax({
           url: '/tablerefresh',
           type: 'get',
-          dataType: 'json',
 
           success: function()
           {
-              window.location.reload();
+              window.location.reload(true);
           }
         });
     });
+
+    function doAlert(i) {
+        alert("ACHTUNG! "+i);
+    }
 
     </script>
   </head>
@@ -43,7 +46,7 @@
 
             String rowStyle = (isFinishedRoute) ?  "finish-row" : "unfinish-row";
 
-            out.println("<tr class=\" "+ rowStyle +"\"><td>"+i+
+            out.println("<tr class=\" "+ rowStyle +"\" id=\""+i+"\" onClick=\"doAlert("+i+")\"><td>"+i+
                         "</td><td>"+databaseDriver.getUserNameFromDetourTable(i)+
                         "</td><td>"+databaseDriver.getRouteNameFromDetourTable(i)+
                         "</td><td>"+databaseDriver.getStartTimeFromDetourTable(i)+

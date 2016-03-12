@@ -141,7 +141,7 @@ public class BtStreamReader implements Runnable {
                         FileOutputStream fileOutputStream;
                         BufferedOutputStream bufferedOutputStream;
 
-                        URL synchDataBaseFile = this.getClass().getClassLoader().getResource("base-synchronization");
+                        URL synchDataBaseFile = this.getClass().getClassLoader().getResource("");
 
                         FileHandler   fileNameHandler = new FileHandler( synchDataBaseFile.getFile() );
 

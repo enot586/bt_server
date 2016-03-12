@@ -71,7 +71,7 @@ public class ReportDatabaseDriver {
             databaseStatement.close();
             dbConnection.close();
 
-            URL synchDataBaseFile = ReportServer.class.getClassLoader().getResource("base-synchronization");
+            URL synchDataBaseFile = ReportServer.class.getClassLoader().getResource("");
 
             FileHandler fileHandler = new FileHandler(synchDataBaseFile.getFile());
 
