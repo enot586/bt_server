@@ -22,59 +22,17 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="ReportServer.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="ReportServer.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/ReportServer.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="34" column="30" selection-start-line="34" selection-start-column="30" selection-end-line="34" selection-end-column="30" />
+            <state vertical-scroll-proportion="0.18604651">
+              <caret line="40" column="54" selection-start-line="40" selection-start-column="54" selection-end-line="40" selection-end-column="54" />
               <folding>
-                <element signature="imports" expanded="false" />
-                <element signature="e#1655#1656#0" expanded="false" />
-                <element signature="e#1704#1705#0" expanded="false" />
-                <element signature="e#1776#1777#0" expanded="false" />
-                <element signature="e#1831#1832#0" expanded="false" />
                 <element signature="method#bluetoothServerStart#0;class#ReportServer#0" expanded="false" />
                 <element signature="method#bluetoothServerStop#0;class#ReportServer#0" expanded="false" />
                 <element signature="method#getDatabaseDriver#0;class#ReportServer#0" expanded="false" />
                 <element signature="method#putWebAction#0;class#ReportServer#0" expanded="false" />
                 <element signature="method#getWebAction#0;class#ReportServer#0" expanded="false" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ReportDatabaseDriver.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/database/ReportDatabaseDriver.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="164" column="0" selection-start-line="164" selection-start-column="0" selection-end-line="164" selection-end-column="0" />
-              <folding>
-                <element signature="imports" expanded="false" />
-                <element signature="method#init#0;class#ReportDatabaseDriver#0" expanded="false" />
-                <element signature="e#1763#1764#0" expanded="false" />
-                <element signature="e#1793#1794#0" expanded="false" />
-                <element signature="method#SetHistory#0;class#ReportDatabaseDriver#0" expanded="false" />
-                <element signature="method#RestoreBackup#0;class#ReportDatabaseDriver#0" expanded="false" />
-                <element signature="method#getLatest10IdsDetour#0;class#ReportDatabaseDriver#0" expanded="false" />
-                <element signature="method#getDetourTableIds#0;class#ReportDatabaseDriver#0" expanded="false" />
-                <element signature="method#getUserNameFromDetourTable#0;class#ReportDatabaseDriver#0" expanded="false" />
-                <element signature="method#getRouteNameFromDetourTable#0;class#ReportDatabaseDriver#0" expanded="false" />
-                <element signature="method#getStartTimeFromDetourTable#0;class#ReportDatabaseDriver#0" expanded="false" />
-                <element signature="method#getEndTimeFromDetourTable#0;class#ReportDatabaseDriver#0" expanded="false" />
-                <element signature="method#getStatusFromDetourTable#0;class#ReportDatabaseDriver#0" expanded="false" />
-                <element signature="method#getRoutesTablePathRoutePicture#0;class#ReportDatabaseDriver#0" expanded="false" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="routes-table.jsp" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/resources/webapp/routes-table.jsp">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.32467532">
-              <caret line="10" column="0" selection-start-line="10" selection-start-column="0" selection-end-line="10" selection-end-column="0" />
-              <folding>
-                <element signature="n#style#0;n#table#0;n#center#0;n#body#0;n#html#0;n#!!top" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -206,7 +164,9 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="PackagesPane" />
       <pane id="Scope" />
+      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -385,8 +345,6 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="Scratches" />
-      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -394,7 +352,7 @@
     <property name="settings.editor.splitter.proportion" value="0.2221135" />
     <property name="ToolWindowMaven Projects.ShowToolbar" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/resources" />
-    <property name="project.structure.last.edited" value="Problems" />
+    <property name="project.structure.last.edited" value="Artifacts" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
     <property name="DefaultHtmlFileTemplate" value="HTML File" />
@@ -413,10 +371,13 @@
       <recent name="D:\projects\reportserver\src\bluetoothserver" />
     </key>
   </component>
-  <component name="RunManager" selected="JAR Application.reportserver.jar">
+  <component name="RunManager" selected="Application.ReportServer">
     <configuration default="false" name="reportserver.jar" type="JarApplication" factoryName="JAR Application" temporary="true">
       <option name="JAR_PATH" value="$PROJECT_DIR$/out/artifacts/reportserver_jar/reportserver.jar" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+      <option name="ALTERNATIVE_JRE_PATH" value="1.8" />
       <envs />
+      <module name="reportserver" />
       <method />
     </configuration>
     <configuration default="true" type="#org.jetbrains.idea.devkit.run.PluginConfigurationType" factoryName="Plugin">
@@ -567,12 +528,12 @@
       <option name="VM_PARAMETERS" value="" />
       <option name="PROGRAM_PARAMETERS" value="" />
       <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
       <option name="ALTERNATIVE_JRE_PATH" value="1.8" />
       <option name="ENABLE_SWING_INSPECTOR" value="false" />
       <option name="ENV_VARIABLES" />
       <option name="PASS_PARENT_ENVS" value="true" />
-      <module name="ReportServer" />
+      <module name="reportserver" />
       <envs />
       <method />
     </configuration>
@@ -616,7 +577,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1696" height="1036" extended-state="6" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32743362" sideWeight="0.49600798" order="6" side_tool="false" content_ui="tabs" />
@@ -627,7 +588,7 @@
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25553098" sideWeight="0.5690709" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.22249389" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.22493887" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Structure" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.19621027" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -671,11 +632,6 @@
         <state vertical-scroll-proportion="0.0">
           <caret line="34" column="30" selection-start-line="34" selection-start-column="30" selection-end-line="34" selection-end-column="30" />
           <folding>
-            <element signature="imports" expanded="false" />
-            <element signature="e#1655#1656#0" expanded="false" />
-            <element signature="e#1704#1705#0" expanded="false" />
-            <element signature="e#1776#1777#0" expanded="false" />
-            <element signature="e#1831#1832#0" expanded="false" />
             <element signature="method#bluetoothServerStart#0;class#ReportServer#0" expanded="false" />
             <element signature="method#bluetoothServerStop#0;class#ReportServer#0" expanded="false" />
             <element signature="method#getDatabaseDriver#0;class#ReportServer#0" expanded="false" />
@@ -690,10 +646,7 @@
         <state vertical-scroll-proportion="0.0">
           <caret line="164" column="0" selection-start-line="164" selection-start-column="0" selection-end-line="164" selection-end-column="0" />
           <folding>
-            <element signature="imports" expanded="false" />
             <element signature="method#init#0;class#ReportDatabaseDriver#0" expanded="false" />
-            <element signature="e#1763#1764#0" expanded="false" />
-            <element signature="e#1793#1794#0" expanded="false" />
             <element signature="method#SetHistory#0;class#ReportDatabaseDriver#0" expanded="false" />
             <element signature="method#RestoreBackup#0;class#ReportDatabaseDriver#0" expanded="false" />
             <element signature="method#getLatest10IdsDetour#0;class#ReportDatabaseDriver#0" expanded="false" />
@@ -989,11 +942,6 @@
         <state vertical-scroll-proportion="0.0">
           <caret line="113" column="17" selection-start-line="113" selection-start-column="17" selection-end-line="113" selection-end-column="17" />
           <folding>
-            <element signature="imports" expanded="false" />
-            <element signature="e#1655#1656#0" expanded="false" />
-            <element signature="e#1704#1705#0" expanded="false" />
-            <element signature="e#1776#1777#0" expanded="false" />
-            <element signature="e#1831#1832#0" expanded="false" />
             <element signature="method#bluetoothServerStart#0;class#ReportServer#0" expanded="false" />
             <element signature="method#bluetoothServerStop#0;class#ReportServer#0" expanded="false" />
             <element signature="method#getDatabaseDriver#0;class#ReportServer#0" expanded="false" />
@@ -1076,34 +1024,22 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/ReportServer.java">
+    <entry file="file://$PROJECT_DIR$/resources/webapp/routes-table.jsp">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="34" column="30" selection-start-line="34" selection-start-column="30" selection-end-line="34" selection-end-column="30" />
+        <state vertical-scroll-proportion="0.45454547">
+          <caret line="14" column="22" selection-start-line="14" selection-start-column="22" selection-end-line="14" selection-end-column="22" />
           <folding>
-            <element signature="imports" expanded="false" />
-            <element signature="e#1655#1656#0" expanded="false" />
-            <element signature="e#1704#1705#0" expanded="false" />
-            <element signature="e#1776#1777#0" expanded="false" />
-            <element signature="e#1831#1832#0" expanded="false" />
-            <element signature="method#bluetoothServerStart#0;class#ReportServer#0" expanded="false" />
-            <element signature="method#bluetoothServerStop#0;class#ReportServer#0" expanded="false" />
-            <element signature="method#getDatabaseDriver#0;class#ReportServer#0" expanded="false" />
-            <element signature="method#putWebAction#0;class#ReportServer#0" expanded="false" />
-            <element signature="method#getWebAction#0;class#ReportServer#0" expanded="false" />
+            <element signature="n#style#0;n#table#0;n#center#0;n#body#0;n#html#0;n#!!top" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/database/ReportDatabaseDriver.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
+        <state vertical-scroll-proportion="0.37984496">
           <caret line="164" column="0" selection-start-line="164" selection-start-column="0" selection-end-line="164" selection-end-column="0" />
           <folding>
-            <element signature="imports" expanded="false" />
             <element signature="method#init#0;class#ReportDatabaseDriver#0" expanded="false" />
-            <element signature="e#1763#1764#0" expanded="false" />
-            <element signature="e#1793#1794#0" expanded="false" />
             <element signature="method#SetHistory#0;class#ReportDatabaseDriver#0" expanded="false" />
             <element signature="method#RestoreBackup#0;class#ReportDatabaseDriver#0" expanded="false" />
             <element signature="method#getLatest10IdsDetour#0;class#ReportDatabaseDriver#0" expanded="false" />
@@ -1118,12 +1054,16 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/resources/webapp/routes-table.jsp">
+    <entry file="file://$PROJECT_DIR$/src/ReportServer.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.32467532">
-          <caret line="10" column="0" selection-start-line="10" selection-start-column="0" selection-end-line="10" selection-end-column="0" />
+        <state vertical-scroll-proportion="0.18604651">
+          <caret line="40" column="54" selection-start-line="40" selection-start-column="54" selection-end-line="40" selection-end-column="54" />
           <folding>
-            <element signature="n#style#0;n#table#0;n#center#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="method#bluetoothServerStart#0;class#ReportServer#0" expanded="false" />
+            <element signature="method#bluetoothServerStop#0;class#ReportServer#0" expanded="false" />
+            <element signature="method#getDatabaseDriver#0;class#ReportServer#0" expanded="false" />
+            <element signature="method#putWebAction#0;class#ReportServer#0" expanded="false" />
+            <element signature="method#getWebAction#0;class#ReportServer#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -1144,6 +1084,7 @@
             <option name="proportions">
               <list>
                 <option value="0.2" />
+                <option value="0.5" />
               </list>
             </option>
           </splitter-proportions>
@@ -1179,7 +1120,6 @@
             <option name="proportions">
               <list>
                 <option value="0.2" />
-                <option value="0.6" />
               </list>
             </option>
           </splitter-proportions>

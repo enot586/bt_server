@@ -1,0 +1,21 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="reportserver:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/reportserver_jar</output-path>
+    <root id="archive" name="reportserver.jar">
+      <element id="module-output" name="reportserver" />
+      <element id="extracted-dir" path="C:/Program Files/Java/jdk1.8.0_25/lib/tools.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/jars/org.apache.jasper.glassfish_2.1.0.v201007080150.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/jars/sqlite-jdbc-3.8.11.2.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/jars/apache-ant-1.8.2.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/jars/jetty-plus-9.3.7.v20160115.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/jars/apache-jsp-9.2.0.M0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/jars/jetty-all-server-8.1.19.v20160209.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/jars/ant-launcher-1.9.6.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/jars/javax.servlet.jsp-3.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/jars/bluecove-2.1.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/jars/servlet-api-3.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/jars/jetty-annotations-9.3.7.v20160115.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/jars/jetty-jsp-9.2.10.v20150310.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>
