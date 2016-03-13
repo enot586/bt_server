@@ -1,5 +1,7 @@
 package reportserver;
 
+import org.apache.log4j.Logger;
+
 import javax.bluetooth.RemoteDevice;
 import javax.bluetooth.UUID;
 import java.io.*;

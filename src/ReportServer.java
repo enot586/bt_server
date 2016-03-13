@@ -4,15 +4,13 @@ import javax.servlet.AsyncContext;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-
-
-import java.net.URL;
 import java.sql.SQLException;
 import java.sql.SQLSyntaxErrorException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
-
+import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
 
 public class ReportServer {
 
@@ -21,8 +19,12 @@ public class ReportServer {
     private static ReportDatabaseDriver reportDatabaseDriver;
     private static SqlCommandList sqlScript;
     private static Map< WebActionType, AsyncContext > webActions = new HashMap< WebActionType, AsyncContext >();
+    private static final Logger log = Logger.getLogger(ReportServer.class);
 
     public static void main(String[] args) throws IOException, InterruptedException {
+
+        PropertyConfigurator.configure("log4j.properties");
+        log.info("Application started");
 
         //TODO: сгенерировать структуру каталогов проекта
 
@@ -30,10 +32,10 @@ public class ReportServer {
             reportDatabaseDriver = new ReportDatabaseDriver();
             reportDatabaseDriver.init("base-synchronization/app-data.db3");
         } catch (SQLException e) {
-            e.printStackTrace();
+            log.error(e);
             return;
         } catch(Exception e) {
-            e.printStackTrace();
+            log.error(e);
             return;
         }
 
@@ -47,7 +49,7 @@ public class ReportServer {
             webServer.start();
         }
         catch(Exception e) {
-            e.printStackTrace();
+            log.error(e);
             return;
         }
 
@@ -71,7 +73,7 @@ public class ReportServer {
         try {
             bluetoothServer.start();
         } catch(Exception e) {
-            e.printStackTrace();
+            log.error(e);
         }
     }
 
@@ -79,7 +81,7 @@ public class ReportServer {
         try {
             bluetoothServer.stop();
         } catch(Exception e) {
-            e.printStackTrace();
+            log.error(e);
         }
     }
 
@@ -116,7 +118,7 @@ public class ReportServer {
         } catch (NoSuchElementException e1) {
 
         } catch (SQLSyntaxErrorException | FileNotFoundException e2) {
-            e2.printStackTrace();
+            log.error(e2);
         }
     }
 
@@ -127,5 +129,4 @@ public class ReportServer {
     synchronized public static AsyncContext getWebAction(WebActionType type) throws NullPointerException {
         return webActions.get(type);
     }
-
 }

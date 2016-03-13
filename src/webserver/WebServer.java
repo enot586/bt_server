@@ -8,6 +8,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 
+import org.apache.log4j.Logger;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.jsp.JettyJspServlet;
 import org.eclipse.jetty.servlet.ServletHolder;
@@ -21,6 +22,7 @@ public class WebServer extends CommonServer {
 
     private Server server;
     private String siteAddress;
+    private static Logger log = Logger.getLogger(ReportServer.class);
 
     WebServer(int port, String siteAddress_) {
         setState(ServerState.SERVER_INITIALIZING);
@@ -31,7 +33,9 @@ public class WebServer extends CommonServer {
     private URI getWebRootResourceUri() throws FileNotFoundException, URISyntaxException {
         URL indexUri = this.getClass().getClassLoader().getResource(siteAddress);
         if (indexUri == null) {
-            throw new FileNotFoundException("Unable to find resource " + siteAddress);
+            FileNotFoundException e = new FileNotFoundException("Unable to find resource " + siteAddress);
+            log.error(e);
+            throw e;
         }
         return indexUri.toURI();
     }
@@ -40,6 +44,9 @@ public class WebServer extends CommonServer {
         setState(ServerState.SERVER_INITIALIZING);
 
         System.setProperty("org.apache.jasper.compiler.disablejsr199", "false");
+
+        //Для того чтобы jetty писала в лог в базу через log4j
+        System.setProperty("org.eclipse.jetty.util.log.class", "org.eclipse.jetty.util.log.Slf4jLog");
 
         WebAppContext context = new WebAppContext();
 
@@ -50,7 +57,8 @@ public class WebServer extends CommonServer {
             URI baseUri = getWebRootResourceUri();
             context.setResourceBase( baseUri.toASCIIString() );
         } catch (URISyntaxException e) {
-
+            log.error(e);
+            return;
         }
 
         context.setContextPath("/");
@@ -64,7 +72,8 @@ public class WebServer extends CommonServer {
             URI baseUri = getWebRootResourceUri();
             holderDefault.setInitParameter("resourceBase", baseUri.toASCIIString());
         } catch  (URISyntaxException e) {
-
+            log.error(e);
+            return;
         }
 
         holderDefault.setInitParameter("dirAllowed", "true");
@@ -83,18 +92,6 @@ public class WebServer extends CommonServer {
         context.addServlet(holderJsp, "*.jsp");
 
         // Add Application Servlets
-        ServletHolder tabSynchronizeHolder = new ServletHolder("TabSynchronize", TabSynchronize.class);
-
-        try {
-            URI baseUri = getWebRootResourceUri();
-            tabSynchronizeHolder.setInitParameter( "resourceBase", baseUri.toASCIIString() );
-        } catch  (URISyntaxException e) {
-
-        }
-
-        tabSynchronizeHolder.setInitParameter("dirAllowed", "true");
-        context.addServlet(tabSynchronizeHolder, "/TabSynchronize");
-
         context.addServlet(ServletForwarder.class, "/date");
         context.addServlet(ServletBtStatus.class, "/btstatus");
         context.addServlet(ServletBtStart.class, "/btstart");
@@ -115,7 +112,8 @@ public class WebServer extends CommonServer {
         try {
             server.stop();
         } catch(Exception e) {
-
+            log.error(e);
+            return;
         }
 
         setState(ServerState.SERVER_STOPPED);
@@ -126,7 +124,8 @@ public class WebServer extends CommonServer {
             server.start();
             setState(ServerState.SERVER_ACTIVE);
         } catch (Exception e) {
-            System.out.println(e);
+            log.error(e);
+
         }
         setState(ServerState.SERVER_ACTIVE);
     }

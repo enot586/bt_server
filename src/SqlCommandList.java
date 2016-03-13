@@ -1,6 +1,8 @@
 package reportserver;
 
 
+import org.apache.log4j.Logger;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -13,6 +15,7 @@ import java.util.Scanner;
 
 public class SqlCommandList implements Iterable<String> {
     private LinkedList<String> listSqlQueries = new LinkedList<String>();
+    private static Logger log = Logger.getLogger(SqlCommandList.class);
 
     SqlCommandList(File file) throws FileNotFoundException, SQLSyntaxErrorException {
         this.addFromFile(file);
@@ -62,7 +65,9 @@ public class SqlCommandList implements Iterable<String> {
                 listSqlQueries.add(rightFormat);
             } else {
                 listSqlQueries.clear();
-                throw (new SQLSyntaxErrorException());
+                SQLSyntaxErrorException e = new SQLSyntaxErrorException();
+                log.error(e);
+                throw e;
             }
         }
     }

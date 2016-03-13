@@ -1,5 +1,7 @@
 package reportserver;
 
+import org.apache.log4j.Logger;
+
 import javax.bluetooth.DiscoveryAgent;
 import javax.bluetooth.LocalDevice;
 import javax.bluetooth.RemoteDevice;
@@ -25,11 +27,12 @@ public class BtStreamReader implements Runnable {
     private ConnectionState connectionState;
     private StreamConnectionNotifier streamConnNotifier;
     private StreamConnection currentConnection;
+    private static Logger log = Logger.getLogger(BtStreamReader.class);
 
     BtStreamReader(BluetoothServer parent_, String url_) throws NullPointerException {
-
         if ( (url_ == null) || (parent_ == null) ) {
             NullPointerException criticalExepction = new NullPointerException();
+            log.error(criticalExepction);
             throw criticalExepction;
         }
 
@@ -50,6 +53,7 @@ public class BtStreamReader implements Runnable {
             streamConnNotifier.close();
 
         } catch (IOException e) {
+            log.error(e);
             return;
         }
     }
@@ -116,6 +120,7 @@ public class BtStreamReader implements Runnable {
                     } catch (IOException e1) {
                         //TODO: обработать правильно
                         System.out.println("Server interrupted: " + e1);
+                        log.info("Bluetooth reader interrupted: "+e1);
                         synchronized (connectionState) {
                             connectionState = ConnectionState.CONNECTION_STATE_WAITING;
                         }
@@ -162,7 +167,7 @@ public class BtStreamReader implements Runnable {
 
                         parent.pushReceiveFileName(receivedFileName);
                     } catch (IOException e) {
-                        System.out.println(e);
+                        log.warn(e);
                         synchronized (connectionState) {
                             connectionState = ConnectionState.CONNECTION_STATE_WAITING;
                         }
@@ -184,7 +189,7 @@ public class BtStreamReader implements Runnable {
                             connectionState = ConnectionState.CONNECTION_STATE_CREATE_CONNECTION;
                         }
                     } catch (IOException e) {
-                        System.out.println(e);
+                        log.warn(e);
                         synchronized (connectionState) {
                             connectionState = ConnectionState.CONNECTION_STATE_WAITING;
                         }

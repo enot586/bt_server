@@ -1,5 +1,6 @@
 package reportserver;
 
+import org.apache.log4j.Logger;
 import reportserver.ReportServer;
 
 import javax.bluetooth.BluetoothStateException;
@@ -12,6 +13,7 @@ import java.io.IOException;
 
 public class ServletBtStatus extends HttpServlet
 {
+    private static Logger log = Logger.getLogger(ServletBtStatus.class);
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
@@ -20,7 +22,7 @@ public class ServletBtStatus extends HttpServlet
             response.setStatus(HttpServletResponse.SC_OK);
             response.getWriter().println(ReportServer.bluetoothServerGetState().toString());
         } catch (BluetoothStateException e) {
-            System.err.println("Cannot get bluetooth server status: " + e);
+            log.error(e);
         }
     }
 }
