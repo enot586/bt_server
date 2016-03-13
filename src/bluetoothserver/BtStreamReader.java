@@ -69,10 +69,8 @@ public class BtStreamReader implements Runnable {
     private StreamConnection createConnection(String url) throws IOException {
         StreamConnection connection = streamConnNotifier.acceptAndOpen();
         RemoteDevice dev = RemoteDevice.getRemoteDevice(connection);
-
-        System.out.println("Remote device address:"+dev.getBluetoothAddress());
-        System.out.println("Remote device name:"+dev.getFriendlyName(true));
-
+        log.info("Remote device address:"+dev.getBluetoothAddress());
+        log.info("Remote device name:"+dev.getFriendlyName(true));
         return connection;
     }
 
@@ -100,6 +98,7 @@ public class BtStreamReader implements Runnable {
                     } catch (IOException e) {
                         synchronized (connectionState) {
                             //TODO: обработать правильно
+                            log.warn(e);
                             connectionState = ConnectionState.CONNECTION_STATE_WAITING;
                         }
                         break;
@@ -116,10 +115,8 @@ public class BtStreamReader implements Runnable {
                         synchronized (connectionState) {
                             currentConnection = newStreamConnection;
                         }
-                        System.out.println("Server Started. Waiting for clients to connect…");
                     } catch (IOException e1) {
                         //TODO: обработать правильно
-                        System.out.println("Server interrupted: " + e1);
                         log.info("Bluetooth reader interrupted: "+e1);
                         synchronized (connectionState) {
                             connectionState = ConnectionState.CONNECTION_STATE_WAITING;

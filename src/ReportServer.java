@@ -23,35 +23,49 @@ public class ReportServer {
 
     public static void main(String[] args) throws IOException, InterruptedException {
 
+        System.out.println("Application status:\t\t[INIT]");
+        System.out.println("--------------------------------");
+
         PropertyConfigurator.configure("log4j.properties");
         log.info("Application started");
 
-        //TODO: сгенерировать структуру каталогов проекта
-
+        System.out.print("Database driver\t\t");
         try {
             reportDatabaseDriver = new ReportDatabaseDriver();
             reportDatabaseDriver.init("base-synchronization/app-data.db3");
+            System.out.print("[OK]\n");
         } catch (SQLException e) {
+            System.out.print("[FAIL]\n");
             log.error(e);
             return;
         } catch(Exception e) {
+            System.out.print("[FAIL]\n");
             log.error(e);
             return;
         }
 
         try {
+            System.out.print("Web server init\t\t");
             webServer = new WebServer(8080, "webapp");
-            bluetoothServer = new BluetoothServer();
-
-            bluetoothServer.init();
-
             webServer.init();
+            System.out.print("[OK]\n");
+
+            System.out.print("Bluetooth driver init\t\t");
+            bluetoothServer = new BluetoothServer();
+            bluetoothServer.init();
+            System.out.print("[OK]\n");
+
+            System.out.print("Web server start\t\t");
             webServer.start();
-        }
-        catch(Exception e) {
+            System.out.print("[OK]\n");
+        } catch(Exception e) {
+            System.out.print("[FAIL]\n");
             log.error(e);
             return;
         }
+
+        System.out.println("--------------------------------");
+        System.out.println("Application status:\t\t[RUNNING]");
 
         while (true) {
 

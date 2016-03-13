@@ -18,6 +18,7 @@ public class BluetoothServer extends CommonServer {
     private Thread serverThread;
     private BtStreamReader reader;
     LinkedList<String> receivedFilesQueue = new LinkedList<String>();
+    private static final Logger log = Logger.getLogger(BluetoothServer.class);
 
     BluetoothServer() {
         setState(ServerState.SERVER_INITIALIZING);
@@ -38,19 +39,17 @@ public class BluetoothServer extends CommonServer {
 
     public void init() throws IOException, Exception {
         setState(ServerState.SERVER_INITIALIZING);
-
         uuid = new UUID("1101", true);
         name = "Echo Server";
         url = "btspp://localhost:" + uuid + ";name=" + name+ ";authenticate=false;encrypt=false;";
-        System.out.println("uuid: " + uuid);
-
+        log.info("Bluetooth server init\n uuid: " + uuid);
         setState(ServerState.SERVER_STOPPED);
     }
 
     synchronized public void stop() throws IOException {
         if (!isReadyToWork()) return;
         setState(ServerState.SERVER_STOPPED);
-
+        log.info("Bluetooth server stop()");
         if (reader != null) reader.stop(); //необходимо на случай если сервер ожидает подключения, чтобы вывести его из ожидания
         if (serverThread != null) serverThread.interrupt();
     }
@@ -60,10 +59,11 @@ public class BluetoothServer extends CommonServer {
             try {
                 createReaderThread();
             } catch (Exception e) {
-                System.out.println(e);
+                log.error(e);
                 setState(ServerState.SERVER_STOPPED);
                 return;
             }
+            log.info("Bluetooth server start()");
             setState(ServerState.SERVER_ACTIVE);
         }
     }
