@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
+import org.json.simple.JSONObject;
 
 public class ReportServer {
 
@@ -22,6 +23,24 @@ public class ReportServer {
     private static final Logger log = Logger.getLogger(ReportServer.class);
 
     public static void main(String[] args) throws IOException, InterruptedException {
+
+//        String ddd = "{\"type\":3,\"size\":10,\"userId\":2}BODY_BODY BODY;###";
+//
+//        PacketReceiver receiver = new PacketReceiver();
+//
+//        if (!receiver.isHeaderReceived()) {
+//            receiver.receiveHeader(ddd.getBytes());
+//        }
+//
+//        if (receiver.isHeaderReceived()) {
+//            JSONObject header = receiver.getHeader();
+//            long body_size = (long)header.get("size");
+//
+//            if (body_size > 0) {
+//                byte[] body_mody = receiver.receiveBody(ddd.getBytes());
+//                System.out.println(body_mody[3]);
+//            }
+//        }
 
         System.out.println("Application status:\t\t[INIT]");
         System.out.println("--------------------------------");

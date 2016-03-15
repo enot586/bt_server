@@ -4,6 +4,8 @@ import org.json.simple.*;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import java.util.Arrays;
+
 public class PacketReceiver {
 
     private enum ReceiverFsm {
@@ -16,9 +18,9 @@ public class PacketReceiver {
     private JSONObject header;
     private StringBuffer jsonString = new StringBuffer();
 
-    private boolean isHeaderReceived = false;
+    private int bodyBytesCounter = 0;
+    private boolean isJSONHeaderReceived = false;
     private int byteIndex = 0;
-    private int numberReceivingBodyBytes = 0;
 
     private JSONObject checkJSON(String str) throws ParseException {
         JSONParser parser = new JSONParser();
@@ -26,8 +28,8 @@ public class PacketReceiver {
         return jsonHeader;
     }
 
-    public boolean isJSONHeaderReceived() {
-        return isHeaderReceived;
+    public boolean isHeaderReceived() {
+        return isJSONHeaderReceived;
     }
 
     public JSONObject getHeader() {
@@ -38,9 +40,9 @@ public class PacketReceiver {
         return jsonString.length();
     }
 
-    public int receiveHandlerFsm(byte[] packetBuffer, int bufferSize, byte[] destBuffer) {
+    public boolean receiveHeader(byte[] packetBuffer) {
 
-        while (byteIndex < bufferSize) {
+        while (byteIndex < packetBuffer.length) {
 
             switch (receivePacketFsm) {
 
@@ -58,15 +60,15 @@ public class PacketReceiver {
                         header = checkJSON(jsonString.append((char) packetBuffer[byteIndex]).toString());
 
                         boolean isCorrectJSONFormat =   (null != header.get("type")) &&
-                                                        (null != header.get("size")) &&
-                                                        (null != header.get("userId"));
+                                (null != header.get("size")) &&
+                                (null != header.get("userId"));
 
                         if (isCorrectJSONFormat) {
-                            isHeaderReceived = true;
-                            numberReceivingBodyBytes = 0;
-
+                            isJSONHeaderReceived = true;
                             //if ((int)header.get("size") > 0) {
                                 receivePacketFsm = ReceiverFsm.RECEIVER_BODY;
+                                ++byteIndex;
+                                return true;
                             //}
                         }
                         else
@@ -74,27 +76,35 @@ public class PacketReceiver {
                             receivePacketFsm = ReceiverFsm.RECEIVER_SEARCH_HEADER;
                         }
                     } catch (ParseException e) {
-
+                        if (jsonString.length() > 200) {
+                            jsonString.delete(0, jsonString.length());
+                            receivePacketFsm = ReceiverFsm.RECEIVER_SEARCH_HEADER;
+                        }
                     }
 
                     ++byteIndex;
                     break;
                 }
-
-                case RECEIVER_BODY: {
-                    try {
-                        numberReceivingBodyBytes = (byteIndex - jsonString.length()+1);
-                        destBuffer[numberReceivingBodyBytes-1] = packetBuffer[byteIndex];
-                        ++byteIndex;
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    break;
-                }
             }
         }
+        byteIndex = 0;
+        return false;
+    }
 
-        return numberReceivingBodyBytes;
+    public byte[] receiveBody(byte[] packetBuffer) {
+        switch (receivePacketFsm) {
+             case RECEIVER_BODY: {
+                try {
+                    byte[] result = Arrays.copyOfRange(packetBuffer, byteIndex, packetBuffer.length);
+                    bodyBytesCounter+= (packetBuffer.length - byteIndex+1);
+                    return result;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
+            }
+        }
+        return null;
     }
 
 }
