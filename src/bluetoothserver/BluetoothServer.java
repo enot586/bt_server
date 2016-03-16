@@ -42,7 +42,8 @@ public class BluetoothServer extends CommonServer {
         uuid = new UUID("1101", true);
         name = "Echo Server";
         url = "btspp://localhost:" + uuid + ";name=" + name+ ";authenticate=false;encrypt=false;";
-        log.info("Bluetooth server init\n uuid: " + uuid);
+        log.info("Bluetooth server init");
+        log.info("uuid: " + uuid);
         setState(ServerState.SERVER_STOPPED);
     }
 

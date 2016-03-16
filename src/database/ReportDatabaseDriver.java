@@ -123,8 +123,8 @@ public class ReportDatabaseDriver {
             try {
                databaseStatement.executeUpdate(iter.next());
             } catch(SQLException e) {
-                RestoreBackup();
-                return;
+                //RestoreBackup();
+                //return;
             }
         }
 

@@ -42,49 +42,46 @@ public class ReportServer {
 //            }
 //        }
 
-        System.out.println("Application status:\t\t[INIT]");
-        System.out.println("--------------------------------");
-
         PropertyConfigurator.configure("log4j.properties");
-        log.info("Application started");
 
-        System.out.print("Database driver\t\t");
+        log.info("Application status:\t\t[INIT]");
+
+        String logMessage = "Database driver\t\t";
         try {
             reportDatabaseDriver = new ReportDatabaseDriver();
             reportDatabaseDriver.init("base-synchronization/app-data.db3");
-            System.out.print("[OK]\n");
+            log.info(logMessage+"[OK]");
         } catch (SQLException e) {
-            System.out.print("[FAIL]\n");
+            log.info(logMessage+"[FAIL]");
             log.error(e);
             return;
         } catch(Exception e) {
-            System.out.print("[FAIL]\n");
+            log.info(logMessage+"[FAIL]");
             log.error(e);
             return;
         }
 
+        logMessage = "Web server init\t\t";
         try {
-            System.out.print("Web server init\t\t");
             webServer = new WebServer(8080, "webapp");
             webServer.init();
-            System.out.print("[OK]\n");
+            log.info(logMessage+"[OK]");
 
-            System.out.print("Bluetooth driver init\t\t");
+            logMessage = "Bluetooth driver init\t\t";
             bluetoothServer = new BluetoothServer();
             bluetoothServer.init();
-            System.out.print("[OK]\n");
+            log.info(logMessage+"[OK]");
 
-            System.out.print("Web server start\t\t");
+            logMessage = "Web server start\t\t";
             webServer.start();
-            System.out.print("[OK]\n");
+            log.info(logMessage+"[OK]");
         } catch(Exception e) {
-            System.out.print("[FAIL]\n");
+            log.info(logMessage+"[FAIL]");
             log.error(e);
             return;
         }
 
-        System.out.println("--------------------------------");
-        System.out.println("Application status:\t\t[RUNNING]");
+        log.info("Application status:\t\t[RUNNING]");
 
         while (true) {
 
