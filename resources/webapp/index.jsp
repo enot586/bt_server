@@ -67,8 +67,7 @@
   </head>
 
   <body onload="getBluetoothServerStatus()" bgcolor="#ffffff">
-  	
-   	<H1>Report server</H1>
+   	<H1 class="main-title">Report server</H1>
 
     <table width="100%" height="100%" cellspacing="0" cellspacing="0" border="0">
       <tr>
@@ -90,6 +89,23 @@
                 </table>
 
                 <BR>
+              </td>
+            </tr>
+
+            <tr>
+              <td>
+              Журнал событий:
+              <table width="100%" cellspacing="0" cellspacing="0" bgcolor="darkred">
+                <tr><td align="left">23:32:10 01.02.2016</td><td align="left">Ошибка: Всё плохо !</td></tr>
+                <tr><td align="left">23:32:10 01.02.2016</td><td align="left">Ошибка: Всё плохо !</td></tr>
+                <tr><td align="left">23:32:10 01.02.2016</td><td align="left">Ошибка: Всё плохо !</td></tr>
+                <tr><td align="left">23:32:10 01.02.2016</td><td align="left">Ошибка: Всё плохо !</td></tr>
+                <tr><td align="left">23:32:10 01.02.2016</td><td align="left">Ошибка: Всё плохо !</td></tr>
+                <tr><td align="left">23:32:10 01.02.2016</td><td align="left">Ошибка: Всё плохо !</td></tr>
+                <tr><td align="left">23:32:10 01.02.2016</td><td align="left">Ошибка: Всё плохо !</td></tr>
+                <tr><td align="left">23:32:10 01.02.2016</td><td align="left">Ошибка: Всё плохо !</td></tr>
+                <tr><td align="left">23:32:10 01.02.2016</td><td align="left">Ошибка: Всё плохо !</td></tr>
+              </table>
               </td>
             </tr>
             <!--

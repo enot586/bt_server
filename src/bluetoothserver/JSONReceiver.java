@@ -6,12 +6,11 @@ import org.json.simple.parser.ParseException;
 
 import java.util.Arrays;
 
-public class PacketReceiver {
+public class JSONReceiver {
 
     private enum ReceiverFsm {
         RECEIVER_SEARCH_HEADER,
         RECEIVER_HEADER,
-        RECEIVER_BODY,
     }
     private ReceiverFsm receivePacketFsm = ReceiverFsm.RECEIVER_SEARCH_HEADER;
 
@@ -40,7 +39,7 @@ public class PacketReceiver {
         return jsonString.length();
     }
 
-    public boolean receiveHeader(byte[] packetBuffer) {
+    public int receiveHeader(byte[] packetBuffer) {
 
         while (byteIndex < packetBuffer.length) {
 
@@ -59,24 +58,16 @@ public class PacketReceiver {
                     try {
                         header = checkJSON(jsonString.append((char) packetBuffer[byteIndex]).toString());
 
-                        boolean isCorrectJSONFormat =   (null != header.get("type")) &&
-                                (null != header.get("size")) &&
-                                (null != header.get("userId"));
-
-                        if (isCorrectJSONFormat) {
+                        if (header.containsKey("type")) {
                             isJSONHeaderReceived = true;
-                            //if ((int)header.get("size") > 0) {
-                                receivePacketFsm = ReceiverFsm.RECEIVER_BODY;
-                                ++byteIndex;
-                                return true;
-                            //}
+                             return byteIndex;
                         }
                         else
                         {
                             receivePacketFsm = ReceiverFsm.RECEIVER_SEARCH_HEADER;
                         }
                     } catch (ParseException e) {
-                        if (jsonString.length() > 200) {
+                        if (jsonString.length() > 500) {
                             jsonString.delete(0, jsonString.length());
                             receivePacketFsm = ReceiverFsm.RECEIVER_SEARCH_HEADER;
                         }
@@ -88,23 +79,8 @@ public class PacketReceiver {
             }
         }
         byteIndex = 0;
-        return false;
+        return packetBuffer.length;
     }
 
-    public byte[] receiveBody(byte[] packetBuffer) {
-        switch (receivePacketFsm) {
-             case RECEIVER_BODY: {
-                try {
-                    byte[] result = Arrays.copyOfRange(packetBuffer, byteIndex, packetBuffer.length);
-                    bodyBytesCounter+= (packetBuffer.length - byteIndex+1);
-                    return result;
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                break;
-            }
-        }
-        return null;
-    }
 
 }

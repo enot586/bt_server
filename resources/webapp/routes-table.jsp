@@ -33,7 +33,11 @@
     <center>
     <table width="90%" style="border-width:1px; border-color:#ffffff; border-style:solid; background-color:#ffffff;">
       <tr class="title-user-row">
-        <td>id</td> <td>User</td> <td>Route</td> <td>Start</td> <td>End</td>
+        <td><a href="" class="sort-title">id</a></td>
+        <td><a href="" class="sort-title">User</a></td>
+        <td><a href="" class="sort-title">Route</a></td>
+        <td><a href="" class="sort-title">Start</a></td>
+        <td><a href="" class="sort-title">End</a></td>
       </tr>
       <%
       try {

@@ -2,42 +2,44 @@ package reportserver;
 
 import org.apache.log4j.Logger;
 
-import javax.bluetooth.RemoteDevice;
 import javax.bluetooth.UUID;
 import java.io.*;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
-import java.util.Queue;
 
 
-public class BluetoothServer extends CommonServer {
+class BluetoothServer extends CommonServer {
 
     private UUID uuid;
     private String name;
     private String url;
     private Thread serverThread;
-    private BtStreamReader reader;
-    LinkedList<String> receivedFilesQueue = new LinkedList<String>();
+    private BluetoothConnectionHandler connectionHandler;
+    private final LinkedList<BluetoothTransaction> receivedTransactionsQueue = new LinkedList<BluetoothTransaction>();
+    private final LinkedList<BluetoothTransaction> sendTransactionsQueue = new LinkedList<BluetoothTransaction>();
     private static final Logger log = Logger.getLogger(BluetoothServer.class);
 
     BluetoothServer() {
         setState(ServerState.SERVER_INITIALIZING);
     }
 
-    private void createReaderThread() throws Exception {
-        reader = new BtStreamReader(this, url);
-        reader.start();
+    synchronized boolean sendData(BluetoothTransaction transaction) {
+        return sendTransactionsQueue.offer(transaction);
+    }
 
-        serverThread = new Thread(reader);
+    private void createConnectionHandlerThread() throws Exception {
+        connectionHandler = new BluetoothConnectionHandler(this, url);
+        connectionHandler.start();
+
+        serverThread = new Thread(connectionHandler);
         serverThread.start();
     }
 
     boolean isReadyToWork() {
-        if (this.getServerState() != ServerState.SERVER_INITIALIZING) return true;
-        return false;
+        return this.getServerState() != ServerState.SERVER_INITIALIZING;
     }
 
-    public void init() throws IOException, Exception {
+    void init() throws IOException, Exception {
         setState(ServerState.SERVER_INITIALIZING);
         uuid = new UUID("1101", true);
         name = "Echo Server";
@@ -51,14 +53,14 @@ public class BluetoothServer extends CommonServer {
         if (!isReadyToWork()) return;
         setState(ServerState.SERVER_STOPPED);
         log.info("Bluetooth server stop()");
-        if (reader != null) reader.stop(); //необходимо на случай если сервер ожидает подключения, чтобы вывести его из ожидания
+        if (connectionHandler != null) connectionHandler.stop(); //необходимо на случай если сервер ожидает подключения, чтобы вывести его из ожидания
         if (serverThread != null) serverThread.interrupt();
     }
 
     synchronized public void start() throws Exception {
         if (this.getServerState() == ServerState.SERVER_STOPPED) {
             try {
-                createReaderThread();
+                createConnectionHandlerThread();
             } catch (Exception e) {
                 log.error(e);
                 setState(ServerState.SERVER_STOPPED);
@@ -69,23 +71,25 @@ public class BluetoothServer extends CommonServer {
         }
     }
 
-    void pushReceiveFileName(String receivedFileName) {
-        synchronized (receivedFilesQueue) {
-            receivedFilesQueue.offer(receivedFileName);
-        }
+    synchronized void pushReceivedTransaction(BluetoothTransaction receivedTransaction) {
+        receivedTransactionsQueue.offer(receivedTransaction);
     }
 
-    String popReceiveFileName() throws NoSuchElementException {
-        String result;
-        synchronized (receivedFilesQueue) {
-            result = receivedFilesQueue.element();
-            receivedFilesQueue.remove();
-        }
+    synchronized BluetoothTransaction popReceivedTransaction() throws NoSuchElementException {
+        BluetoothTransaction result;
+        result = receivedTransactionsQueue.element();
+        receivedTransactionsQueue.remove();
         return result;
     }
 
     String getRemoteDeviceBluetoothAddress() throws IOException {
-        return reader.getRemoteDeviceBluetoothAddress();
+        return connectionHandler.getRemoteDeviceBluetoothAddress();
     }
 
+    synchronized BluetoothTransaction popSendTransaction() throws NoSuchElementException {
+        BluetoothTransaction result;
+        result = sendTransactionsQueue.element();
+        sendTransactionsQueue.remove();
+        return result;
+    }
 }

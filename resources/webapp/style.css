@@ -1,4 +1,9 @@
-.title-user-row { 
+.main-title {
+  color:#ffffff;
+  background-color:#000080;
+}
+
+.title-user-row {
   background-color:#cccccc; 
   font-family:verdana; 
   font-size:12pt; 
@@ -42,6 +47,13 @@
   font-size:8pt;
   font-weight:normal;
   color:#ff0000;
+}
+
+.sort-title {
+  font-family:verdana;
+  font-size:10pt;
+  font-weight:bold;
+  color:#000080;
 }
 
 iframe {

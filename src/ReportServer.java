@@ -24,24 +24,6 @@ public class ReportServer {
 
     public static void main(String[] args) throws IOException, InterruptedException {
 
-//        String ddd = "{\"type\":3,\"size\":10,\"userId\":2}BODY_BODY BODY;###";
-//
-//        PacketReceiver receiver = new PacketReceiver();
-//
-//        if (!receiver.isHeaderReceived()) {
-//            receiver.receiveHeader(ddd.getBytes());
-//        }
-//
-//        if (receiver.isHeaderReceived()) {
-//            JSONObject header = receiver.getHeader();
-//            long body_size = (long)header.get("size");
-//
-//            if (body_size > 0) {
-//                byte[] body_mody = receiver.receiveBody(ddd.getBytes());
-//                System.out.println(body_mody[3]);
-//            }
-//        }
-
         PropertyConfigurator.configure("log4j.properties");
 
         log.info("Application status:\t\t[INIT]");
@@ -51,10 +33,6 @@ public class ReportServer {
             reportDatabaseDriver = new ReportDatabaseDriver();
             reportDatabaseDriver.init("base-synchronization/app-data.db3");
             log.info(logMessage+"[OK]");
-        } catch (SQLException e) {
-            log.info(logMessage+"[FAIL]");
-            log.error(e);
-            return;
         } catch(Exception e) {
             log.info(logMessage+"[FAIL]");
             log.error(e);
@@ -84,10 +62,71 @@ public class ReportServer {
         log.info("Application status:\t\t[RUNNING]");
 
         while (true) {
+            bluetoothTransactionHandler(bluetoothServer);
+        }
+    }
 
-            receiveFileHandler();
+    private static void bluetoothTransactionHandler(BluetoothServer bt) throws FileNotFoundException {
+        try {
+            BluetoothTransaction newReceivedTransaction = bt.popReceivedTransaction();
 
-            //TODO: мониторим сервера
+            long type = (long)newReceivedTransaction.getHeader().get("type");
+
+            if (BluetoothPacketType.SQL_QUERIES.getId() == type) {
+                bluetoothSqlQueriesTransactionHandler(bt, newReceivedTransaction);
+            }
+
+            if (BluetoothPacketType.SYNCH_REQUEST.getId() == type) {
+                bluetoothSynchTransactionHandler(bt, newReceivedTransaction);
+            }
+
+            if (BluetoothPacketType.BINARY_FILE.getId() == type) {
+                bluetoothBinaryTransactionHandler(bt, newReceivedTransaction);
+            }
+        } catch (NoSuchElementException e) {
+
+        }
+    }
+
+    private static void bluetoothBinaryTransactionHandler(BluetoothServer bt, BluetoothTransaction transaction) {
+
+    }
+
+    private static void bluetoothSynchTransactionHandler(BluetoothServer bt, BluetoothTransaction transaction) {
+
+    }
+
+    private static void bluetoothSqlQueriesTransactionHandler(BluetoothServer bt, BluetoothTransaction transaction) {
+        String synchDataBaseFile = "base-synchronization";
+        File scriptFile = new File(synchDataBaseFile + "/" + transaction.getFileName());
+        int status = 0;
+
+        try {
+            sqlScript = new SqlCommandList(scriptFile);
+            status = BluetoothTransactionStatus.DONE.getId();
+        } catch (SQLSyntaxErrorException e) {
+            log.warn(e);
+            status = BluetoothTransactionStatus.ERROR.getId();
+        } catch (FileNotFoundException e) {
+            log.error(e);
+            status = BluetoothTransactionStatus.ERROR.getId();
+            return;
+        }
+
+        JSONObject header = new JSONObject();
+        header.put("type",      new Long(BluetoothPacketType.RESPONSE.getId()));
+        header.put("userId",    (Long)(transaction.getHeader().get("userId")));
+        header.put("size",      (Long)(transaction.getHeader().get("size")));
+        header.put("status",    new Long(status));
+        bt.sendData(new BluetoothTransaction(header));
+
+        reportDatabaseDriver.BackupCurrentDatabase(Integer.toString(reportDatabaseDriver.getDbSynchId()));
+        reportDatabaseDriver.RunScript(sqlScript);
+
+        try {
+            ReportServer.getWebAction(WebActionType.WEB_ACTION_REFRESH_DETOUR_TABLE).complete();
+        } catch (NullPointerException e) {
+
         }
     }
 
@@ -117,39 +156,6 @@ public class ReportServer {
 
     public static ReportDatabaseDriver getDatabaseDriver() throws SQLException {
         return reportDatabaseDriver;
-    }
-
-    private static File getReceviedFileFromBluetooth(BluetoothServer bt) throws NoSuchElementException, FileNotFoundException {
-        String newReceivedFileName = /*"exp-db.sql";*/bt.popReceiveFileName();
-        String synchDataBaseFile = "base-synchronization";
-        return (new File(synchDataBaseFile+"/"+newReceivedFileName) );
-    }
-
-    private static void receiveFileHandler() {
-        try {
-            File scriptFile = getReceviedFileFromBluetooth(bluetoothServer);
-            sqlScript = new SqlCommandList(scriptFile);
-
-//            try {
-//                String remoteDiviceAddress = bluetoothServer.getRemoteDeviceBluetoothAddress();
-                reportDatabaseDriver.BackupCurrentDatabase("0000"/*remoteDiviceAddress*/);
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//                return;
-//            }
-
-            reportDatabaseDriver.RunScript(sqlScript);
-
-            try {
-                ReportServer.getWebAction(WebActionType.WEB_ACTION_REFRESH_DETOUR_TABLE).complete();
-            } catch (NullPointerException e) {
-
-            }
-        } catch (NoSuchElementException e1) {
-
-        } catch (SQLSyntaxErrorException | FileNotFoundException e2) {
-            log.error(e2);
-        }
     }
 
     synchronized public static void putWebAction(WebActionType type, AsyncContext context) {

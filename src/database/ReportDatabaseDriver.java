@@ -13,6 +13,8 @@ public class ReportDatabaseDriver {
     private Statement databaseStatement;
     private Connection dbConnection;
 
+    private int dataBaseSynchId = 0;
+
     public enum DatabaseState {
         DB_CLOSE,
         DB_OPEN,
@@ -20,6 +22,10 @@ public class ReportDatabaseDriver {
     }
 
     DatabaseState dbState = DatabaseState.DB_CLOSE;
+
+    public int getDbSynchId() {
+        return dataBaseSynchId;
+    }
 
     public void init(String url_) throws SQLException {
         url = url_;

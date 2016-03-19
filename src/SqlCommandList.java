@@ -3,10 +3,7 @@ package reportserver;
 
 import org.apache.log4j.Logger;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
+import java.io.*;
 import java.sql.SQLSyntaxErrorException;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -56,8 +53,7 @@ public class SqlCommandList implements Iterable<String> {
 
     private void addFromFile(File script) throws FileNotFoundException, SQLSyntaxErrorException {
         InputStream inputstream = new FileInputStream(script);
-
-        Scanner stringScanner = new Scanner(inputstream, "UTF-8").useDelimiter(";");
+        Scanner stringScanner = new Scanner(new BufferedInputStream(inputstream), "UTF-8").useDelimiter(";");
 
         while ( stringScanner.hasNext() ) {
             String rightFormat = deletePrefixSuffix( stringScanner.next() );
