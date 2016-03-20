@@ -11,7 +11,6 @@ public class ReportDatabaseDriver {
     private String url;
     private Statement databaseStatement;
     private Connection dbConnection;
-
     private int dataBaseSynchId = 0;
 
     public enum DatabaseState {
@@ -114,7 +113,7 @@ public class ReportDatabaseDriver {
         }
     }
 
-    public void SetHistory(SqlCommandList batch) {
+    public void SetToHistory(String query, int databaseId) {
         //TODO: Записать все запросы в историю для текущей таблицы
     }
 
@@ -125,14 +124,23 @@ public class ReportDatabaseDriver {
     void RunScript(int userId, SqlCommandList batch) {
         try {
             boolean isAdmin = isUserAdmin(userId);
+
             ListIterator<String> iter = (ListIterator<String>) batch.iterator();
             while (iter.hasNext()) {
                if (isAdmin || isAcceptableTableInQuery(iter.next()))  {
                    databaseStatement.executeUpdate(iter.next());
+                   SetToHistory(iter.next(), dataBaseSynchId+1);
                }
             }
 
+            //если все этапы прошли корректно увеличиваем версию
+            if (isAdmin) {
+                ++dataBaseSynchId;
+                //TODO: занести dataBaseSynchId в БД !!!
+            }
+
             databaseStatement.executeUpdate("COMMIT");
+
         } catch (SQLException e) {
 //            RestoreBackup();
 //            return;
