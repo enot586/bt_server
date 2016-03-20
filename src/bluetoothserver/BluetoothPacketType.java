@@ -1,6 +1,6 @@
 package reportserver;
 
-public enum BluetoothPacketType {
+enum BluetoothPacketType {
     /**
      * Транзакции могут быть следующих типов:
      *      1.Состоит только из JSON заголовка, если наличие данных для передачи/приема не подразумевается:

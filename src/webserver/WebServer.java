@@ -18,7 +18,7 @@ import reportserver.CommonServer;
 import javax.servlet.AsyncContext;
 
 
-public class WebServer extends CommonServer {
+class WebServer extends CommonServer {
 
     private Server server;
     private String siteAddress;

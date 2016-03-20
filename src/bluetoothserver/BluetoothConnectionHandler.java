@@ -14,11 +14,11 @@ import java.util.NoSuchElementException;
 
 import org.json.simple.JSONObject;
 
-public class BluetoothConnectionHandler implements Runnable {
+class BluetoothConnectionHandler implements Runnable {
     //Размер поточного байтового буфера
     final int MAX_BUFFER_SIZE = 100*1024;
 
-    public enum ConnectionState {
+    private enum ConnectionState {
         CONNECTION_STATE_WAITING,
         CONNECTION_STATE_OPEN,
         CONNECTION_STATE_CREATE_CONNECTION,

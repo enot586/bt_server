@@ -1,5 +1,7 @@
 package reportserver;
 
+import org.apache.log4j.Logger;
+
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -7,25 +9,22 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
-public class ReportDatabaseDriver {
+class ReportDatabaseDriver {
     private String url;
     private Statement databaseStatement;
     private Connection dbConnection;
-    private int dataBaseSynchId = 0;
+    private Integer dataBaseSynchId = 0;
+    private static final Logger log = Logger.getLogger(ReportDatabaseDriver.class);
 
     public enum DatabaseState {
-        DB_CLOSE,
-        DB_OPEN,
-        BD_BACKUP
+        CLOSE,
+        OPEN,
+        BACKUP
     }
 
-    DatabaseState dbState = DatabaseState.DB_CLOSE;
+    private DatabaseState dbState = DatabaseState.CLOSE;
 
-    public int getDbSynchId() {
-        return dataBaseSynchId;
-    }
-
-    public void init(String url_) throws SQLException {
+    void init(String url_) throws SQLException {
         url = url_;
 
         try {
@@ -41,34 +40,36 @@ public class ReportDatabaseDriver {
             databaseStatement = dbConnection.createStatement();
 
             synchronized (dbState) {
-                dbState = DatabaseState.DB_OPEN;
+                dbState = DatabaseState.OPEN;
             }
 
-            ResultSet rs = databaseStatement.executeQuery("SELECT * FROM routs");
-
-            while ( rs.next() ) {
-                int supplierID = rs.getInt("_id_route");
-                String routesName = rs.getString("name");
-                String routesDate = rs.getString("date_create");
-                int routesActivity = rs.getInt("actuality");
-                String routesPath = rs.getString("path_picture_route");
-            }
         } catch (ClassNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error(e);
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error(e);
         }
+    }
+
+    int getDatabaseVersion() {
+        return dataBaseSynchId;
+    }
+
+    Integer getDatabaseVersion(String mac_address) throws SQLException {
+        ResultSet rs = databaseStatement.executeQuery("SELECT id_version FROM clients_version WHERE mac = \""+mac_address+"\"");
+        if (!rs.next()) {
+            return null;
+        }
+
+        return new Integer(rs.getInt("id_version"));
     }
 
     synchronized public DatabaseState getBdState() {
         return dbState;
     }
 
-    public void BackupCurrentDatabase(String uniqPart) {
+    void BackupCurrentDatabase(String uniqPart) {
         synchronized (dbState) {
-            dbState = DatabaseState.BD_BACKUP;
+            dbState = DatabaseState.BACKUP;
         }
 
         try {
@@ -93,28 +94,43 @@ public class ReportDatabaseDriver {
             databaseStatement = dbConnection.createStatement();
 
             synchronized (dbState) {
-                dbState = DatabaseState.DB_OPEN;
+                dbState = DatabaseState.OPEN;
             }
         } catch (SQLException e) {
             e.printStackTrace();
             synchronized (dbState) {
-                dbState = DatabaseState.DB_CLOSE;
+                dbState = DatabaseState.CLOSE;
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             synchronized (dbState) {
-                dbState = DatabaseState.DB_CLOSE;
+                dbState = DatabaseState.CLOSE;
             }
         } catch (IOException e) {
             e.printStackTrace();
             synchronized (dbState) {
-                dbState = DatabaseState.DB_CLOSE;
+                dbState = DatabaseState.CLOSE;
             }
         }
     }
 
-    public void SetToHistory(String query, int databaseId) {
-        //TODO: Записать все запросы в историю для текущей таблицы
+    private void SetToHistory(String query, int databaseId) throws SQLException {
+        //Записать все запросы в историю для текущей версии таблицы
+        databaseStatement.executeUpdate("INSERT INTO history (id_version, query) value("+databaseId+",\""+query+"\")");
+    }
+
+    public void initDatabaseVersion(String mac) throws SQLException {
+        dataBaseSynchId = getDatabaseVersion(mac);
+
+        if (null == dataBaseSynchId) {
+            databaseStatement.executeUpdate("INSERT INTO clients_version (id_version, mac) VALUES("+0+",\""+mac+"\")");
+            dataBaseSynchId = new Integer(0);
+        }
+    }
+
+    private void incrementDatabaseVersion(String mac_address) throws SQLException {
+        databaseStatement.executeUpdate("UPDATE clients_versions SET id_version="+(dataBaseSynchId+1)+" WHERE mac = "+mac_address);
+        ++dataBaseSynchId;
     }
 
     private void RestoreBackup() {
@@ -135,8 +151,7 @@ public class ReportDatabaseDriver {
 
             //если все этапы прошли корректно увеличиваем версию
             if (isAdmin) {
-                ++dataBaseSynchId;
-                //TODO: занести dataBaseSynchId в БД !!!
+                incrementDatabaseVersion(ReportServer.getBluetoothMacAddress());
             }
 
             databaseStatement.executeUpdate("COMMIT");

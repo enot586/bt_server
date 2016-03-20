@@ -6,7 +6,7 @@ import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class FileHandler {
+class FileHandler {
     private String currentDir;
 
     FileHandler(String currentDir_) {

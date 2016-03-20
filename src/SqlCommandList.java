@@ -10,7 +10,7 @@ import java.util.LinkedList;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
-public class SqlCommandList implements Iterable<String> {
+class SqlCommandList implements Iterable<String> {
     private LinkedList<String> listSqlQueries = new LinkedList<String>();
     private static Logger log = Logger.getLogger(SqlCommandList.class);
 

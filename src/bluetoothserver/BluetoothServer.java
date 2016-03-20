@@ -2,6 +2,8 @@ package reportserver;
 
 import org.apache.log4j.Logger;
 
+import javax.bluetooth.BluetoothStateException;
+import javax.bluetooth.LocalDevice;
 import javax.bluetooth.UUID;
 import java.io.*;
 import java.util.LinkedList;
@@ -85,6 +87,15 @@ class BluetoothServer extends CommonServer {
     String getRemoteDeviceBluetoothAddress() throws IOException {
         return connectionHandler.getRemoteDeviceBluetoothAddress();
     }
+
+    String getLocalHostMacAddress() {
+        try {
+            LocalDevice host = LocalDevice.getLocalDevice();
+            return host.getBluetoothAddress();
+        } catch (BluetoothStateException e) {
+            return null;
+        }
+     }
 
     synchronized BluetoothTransaction popSendTransaction() throws NoSuchElementException {
         BluetoothTransaction result;

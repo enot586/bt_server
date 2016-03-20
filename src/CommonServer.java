@@ -1,6 +1,6 @@
 package reportserver;
 
-abstract public class CommonServer {
+abstract class CommonServer {
 
     public enum  ServerState {
         SERVER_INITIALIZING,

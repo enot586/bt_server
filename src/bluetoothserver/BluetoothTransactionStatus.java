@@ -1,6 +1,6 @@
 package reportserver;
 
-public enum BluetoothTransactionStatus {
+enum BluetoothTransactionStatus {
     DONE      (0),  //Если выполнилось успешно
     NOT_DONE  (1),  //Если принялось но не выполнелось
     ERROR     (2),  //Если плохо принялось

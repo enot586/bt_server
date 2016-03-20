@@ -6,7 +6,7 @@ import org.json.simple.parser.ParseException;
 
 import java.util.Arrays;
 
-public class JSONReceiver {
+class JSONReceiver {
 
     private enum ReceiverFsm {
         RECEIVER_SEARCH_HEADER,

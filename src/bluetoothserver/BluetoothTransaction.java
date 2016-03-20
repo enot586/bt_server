@@ -2,7 +2,7 @@ package reportserver;
 
 import org.json.simple.JSONObject;
 
-public class BluetoothTransaction {
+class BluetoothTransaction {
     public enum Type {
         PARAMS,
         BYTE_ARRAY,

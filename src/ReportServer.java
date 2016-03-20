@@ -28,18 +28,7 @@ public class ReportServer {
 
         log.info("Application status:\t\t[INIT]");
 
-        String logMessage = "Database driver\t\t";
-        try {
-            reportDatabaseDriver = new ReportDatabaseDriver();
-            reportDatabaseDriver.init("base-synchronization/app-data.db3");
-            log.info(logMessage+"[OK]");
-        } catch(Exception e) {
-            log.info(logMessage+"[FAIL]");
-            log.error(e);
-            return;
-        }
-
-        logMessage = "Web server init\t\t";
+        String logMessage = "Web server init\t\t";
         try {
             webServer = new WebServer(8080, "webapp");
             webServer.init();
@@ -53,6 +42,19 @@ public class ReportServer {
             logMessage = "Web server start\t\t";
             webServer.start();
             log.info(logMessage+"[OK]");
+        } catch(Exception e) {
+            log.info(logMessage+"[FAIL]");
+            log.error(e);
+            return;
+        }
+
+        logMessage = "Database driver\t\t";
+        try {
+            reportDatabaseDriver = new ReportDatabaseDriver();
+            reportDatabaseDriver.init("base-synchronization/app-data.db3");
+            log.info(logMessage+"[OK]");
+
+            reportDatabaseDriver.initDatabaseVersion(getBluetoothMacAddress());
         } catch(Exception e) {
             log.info(logMessage+"[FAIL]");
             log.error(e);
@@ -120,7 +122,7 @@ public class ReportServer {
         header.put("status",    new Long(status));
         bt.sendData(new BluetoothTransaction(header));
 
-        reportDatabaseDriver.BackupCurrentDatabase(Integer.toString(reportDatabaseDriver.getDbSynchId()));
+        reportDatabaseDriver.BackupCurrentDatabase(Integer.toString(reportDatabaseDriver.getDatabaseVersion()));
 
         long userId = (long)(transaction.getHeader().get("userId"));
         reportDatabaseDriver.RunScript((int)userId, sqlScript);
@@ -132,12 +134,7 @@ public class ReportServer {
         }
     }
 
-
-    public static CommonServer.ServerState webServerGetState() {
-        return webServer.getServerState();
-    }
-
-    static CommonServer.ServerState bluetoothServerGetState() {
+    static CommonServer.ServerState getStateBluetoothServer() {
         return bluetoothServer.getServerState();
     }
 
@@ -157,8 +154,8 @@ public class ReportServer {
         }
     }
 
-    public static ReportDatabaseDriver getDatabaseDriver() throws SQLException {
-        return reportDatabaseDriver;
+    static String getBluetoothMacAddress() {
+        return bluetoothServer.getLocalHostMacAddress();
     }
 
     synchronized static void putWebAction(WebActionType type, AsyncContext context) {
