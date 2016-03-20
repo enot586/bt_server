@@ -121,24 +121,27 @@ public class ReportServer {
         bt.sendData(new BluetoothTransaction(header));
 
         reportDatabaseDriver.BackupCurrentDatabase(Integer.toString(reportDatabaseDriver.getDbSynchId()));
-        reportDatabaseDriver.RunScript(sqlScript);
+
+        long userId = (long)(transaction.getHeader().get("userId"));
+        reportDatabaseDriver.RunScript((int)userId, sqlScript);
 
         try {
             ReportServer.getWebAction(WebActionType.WEB_ACTION_REFRESH_DETOUR_TABLE).complete();
         } catch (NullPointerException e) {
-
+            //по каким-то причинам ajax соединение установлено не было
         }
     }
+
 
     public static CommonServer.ServerState webServerGetState() {
         return webServer.getServerState();
     }
 
-    public static CommonServer.ServerState bluetoothServerGetState() {
+    static CommonServer.ServerState bluetoothServerGetState() {
         return bluetoothServer.getServerState();
     }
 
-    public static void bluetoothServerStart() throws Exception {
+    static void bluetoothServerStart() throws Exception {
         try {
             bluetoothServer.start();
         } catch(Exception e) {
@@ -146,7 +149,7 @@ public class ReportServer {
         }
     }
 
-    public static void bluetoothServerStop() throws Exception {
+    static void bluetoothServerStop() throws Exception {
         try {
             bluetoothServer.stop();
         } catch(Exception e) {
@@ -158,7 +161,7 @@ public class ReportServer {
         return reportDatabaseDriver;
     }
 
-    synchronized public static void putWebAction(WebActionType type, AsyncContext context) {
+    synchronized static void putWebAction(WebActionType type, AsyncContext context) {
         webActions.put(type, context);
     }
 

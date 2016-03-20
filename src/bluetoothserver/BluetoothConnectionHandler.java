@@ -157,7 +157,6 @@ public class BluetoothConnectionHandler implements Runnable {
     }
 
     private void sendHandler(StreamConnection connection) {
-
         try {
             BluetoothTransaction transactionForSend = parent.popSendTransaction();
 

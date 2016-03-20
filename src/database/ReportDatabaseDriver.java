@@ -1,7 +1,6 @@
 package reportserver;
 
 import java.io.*;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.*;
@@ -119,26 +118,24 @@ public class ReportDatabaseDriver {
         //TODO: Записать все запросы в историю для текущей таблицы
     }
 
-    public void RestoreBackup() {
+    private void RestoreBackup() {
 
     }
 
-    public void RunScript(SqlCommandList batch) {
-        ListIterator<String> iter = (ListIterator<String>) batch.iterator();
-        while (iter.hasNext()) {
-            try {
-               databaseStatement.executeUpdate(iter.next());
-            } catch(SQLException e) {
-                //RestoreBackup();
-                //return;
-            }
-        }
-
+    void RunScript(int userId, SqlCommandList batch) {
         try {
+            boolean isAdmin = isUserAdmin(userId);
+            ListIterator<String> iter = (ListIterator<String>) batch.iterator();
+            while (iter.hasNext()) {
+               if (isAdmin || isAcceptableTableInQuery(iter.next()))  {
+                   databaseStatement.executeUpdate(iter.next());
+               }
+            }
+
             databaseStatement.executeUpdate("COMMIT");
-        } catch(SQLException e) {
-            RestoreBackup();
-            return;
+        } catch (SQLException e) {
+//            RestoreBackup();
+//            return;
         }
     }
 
@@ -203,4 +200,21 @@ public class ReportDatabaseDriver {
         return rs.getString("path_picture_route");
     }
 
+    public boolean isUserAdmin(int userId) throws SQLException {
+        ResultSet rs = databaseStatement.executeQuery("SELECT is_admine FROM users WHERE _id_user = "+userId);
+        return rs.getBoolean("is_admine");
+    }
+
+    boolean isAcceptableTableInQuery(String query) {
+        String[] words = query.split(" ");
+        if ((words[0] == "INSERT") || (words[0] == "DELETE") ) {
+            return (words[2] == "\"detour\"");
+        }
+
+        if (words[0] == "UPDATE") {
+            return (words[1] == "\"detour\"");
+        }
+
+        return false;
+    }
 }
