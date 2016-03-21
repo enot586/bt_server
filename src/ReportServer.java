@@ -3,12 +3,12 @@ package reportserver;
 import javax.servlet.AsyncContext;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.sql.SQLSyntaxErrorException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.NoSuchElementException;
+import java.util.*;
+
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.json.simple.JSONObject;
@@ -95,7 +95,52 @@ public class ReportServer {
     }
 
     private static void bluetoothSynchTransactionHandler(BluetoothServer bt, BluetoothTransaction transaction) {
+        try {
+            int clientVersion = reportDatabaseDriver.checkClientVersion(bt.getRemoteDeviceBluetoothAddress());
+            int dbVersion = reportDatabaseDriver.getDatabaseVersion();
 
+            if ( clientVersion < dbVersion ) {
+                if (dbVersion - clientVersion < 10) {
+                    ArrayList<String> sourceHistory = new ArrayList<String>();
+
+                    for (int currentVersion = (clientVersion + 1); currentVersion < dbVersion; ++currentVersion) {
+                        sourceHistory.addAll(reportDatabaseDriver.GetClientHistory(currentVersion));
+                    }
+
+                    JSONObject header = new JSONObject();
+                    header.put("type", new Long(BluetoothPacketType.SQL_QUERIES.getId()));
+                    header.put("userId", (Long) (transaction.getHeader().get("userId")));
+                    header.put("size", (Long) (transaction.getHeader().get("size")));
+
+                    try {
+                        File temp = File.createTempFile("client_history", ".tmp");
+                        temp.deleteOnExit();
+
+                        FileWriter writer = new FileWriter(temp);
+
+                        writer.write(header.toJSONString());
+
+                        Iterator it = sourceHistory.iterator();
+                        while (it.hasNext()) {
+                            writer.write((String) it.next() + ";");
+                        }
+
+                        bt.sendData(new BluetoothTransaction(header, temp.getAbsolutePath()));
+                    } catch (IOException e) {
+                        log.error(e);
+                    }
+                }
+                else {
+                    //TODO: передать файлик
+                }
+            } else {
+                //TODO: перебиваем версию на актуальную и шлем все изменения от 0
+            }
+        } catch (SQLException e) {
+            log.warn(e);
+        } catch (IOException e) {
+            log.warn(e);
+        }
     }
 
     private static void bluetoothSqlQueriesTransactionHandler(BluetoothServer bt, BluetoothTransaction transaction) {
@@ -131,6 +176,7 @@ public class ReportServer {
             ReportServer.getWebAction(WebActionType.WEB_ACTION_REFRESH_DETOUR_TABLE).complete();
         } catch (NullPointerException e) {
             //по каким-то причинам ajax соединение установлено не было
+            log.warn(e);
         }
     }
 
@@ -158,6 +204,10 @@ public class ReportServer {
         return bluetoothServer.getLocalHostMacAddress();
     }
 
+    public static ReportDatabaseDriver getDatabaseDriver() throws SQLException {
+        return reportDatabaseDriver;
+    }
+
     synchronized static void putWebAction(WebActionType type, AsyncContext context) {
         webActions.put(type, context);
     }
@@ -165,4 +215,5 @@ public class ReportServer {
     synchronized public static AsyncContext getWebAction(WebActionType type) throws NullPointerException {
         return webActions.get(type);
     }
+
 }

@@ -1,5 +1,6 @@
 package reportserver;
 
+import com.intel.bluetooth.RemoteDeviceHelper;
 import org.apache.log4j.Logger;
 
 import javax.bluetooth.DiscoveryAgent;
@@ -9,6 +10,7 @@ import javax.microedition.io.Connector;
 import javax.microedition.io.StreamConnection;
 import javax.microedition.io.StreamConnectionNotifier;
 import java.io.*;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.NoSuchElementException;
 
@@ -93,7 +95,7 @@ class BluetoothConnectionHandler implements Runnable {
 
                 case CONNECTION_STATE_OPEN: {
                     try {
-                        LocalDevice local= LocalDevice.getLocalDevice();
+                        LocalDevice local = LocalDevice.getLocalDevice();
                         if (local.getDiscoverable() != 0) {
                             local.setDiscoverable(DiscoveryAgent.GIAC);
                         }
@@ -132,6 +134,7 @@ class BluetoothConnectionHandler implements Runnable {
                     synchronized (connectionState) {
                         connectionState = ConnectionState.CONNECTION_STATE_WORKING;
                     }
+
                     break;
                 }
 
