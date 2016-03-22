@@ -17,15 +17,15 @@ class BluetoothServer extends CommonServer {
     private String url;
     private Thread serverThread;
     private BluetoothConnectionHandler connectionHandler;
-    private final LinkedList<BluetoothTransaction> receivedTransactionsQueue = new LinkedList<BluetoothTransaction>();
-    private final LinkedList<BluetoothTransaction> sendTransactionsQueue = new LinkedList<BluetoothTransaction>();
+    private final LinkedList<BluetoothSimpleTransaction> receivedTransactionsQueue = new LinkedList<BluetoothSimpleTransaction>();
+    private final LinkedList<BluetoothSimpleTransaction> sendTransactionsQueue = new LinkedList<BluetoothSimpleTransaction>();
     private static final Logger log = Logger.getLogger(BluetoothServer.class);
 
     BluetoothServer() {
         setState(ServerState.SERVER_INITIALIZING);
     }
 
-    synchronized boolean sendData(BluetoothTransaction transaction) {
+    synchronized boolean sendData(BluetoothSimpleTransaction transaction) {
         return sendTransactionsQueue.offer(transaction);
     }
 
@@ -73,12 +73,12 @@ class BluetoothServer extends CommonServer {
         }
     }
 
-    synchronized void pushReceivedTransaction(BluetoothTransaction receivedTransaction) {
+    synchronized void pushReceivedTransaction(BluetoothSimpleTransaction receivedTransaction) {
         receivedTransactionsQueue.offer(receivedTransaction);
     }
 
-    synchronized BluetoothTransaction popReceivedTransaction() throws NoSuchElementException {
-        BluetoothTransaction result;
+    synchronized BluetoothSimpleTransaction popReceivedTransaction() throws NoSuchElementException {
+        BluetoothSimpleTransaction result;
         result = receivedTransactionsQueue.element();
         receivedTransactionsQueue.remove();
         return result;
@@ -97,8 +97,8 @@ class BluetoothServer extends CommonServer {
         }
      }
 
-    synchronized BluetoothTransaction popSendTransaction() throws NoSuchElementException {
-        BluetoothTransaction result;
+    synchronized BluetoothSimpleTransaction popSendTransaction() throws NoSuchElementException {
+        BluetoothSimpleTransaction result;
         result = sendTransactionsQueue.element();
         sendTransactionsQueue.remove();
         return result;

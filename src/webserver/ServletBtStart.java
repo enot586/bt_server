@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-class ServletBtStart extends HttpServlet
+public class ServletBtStart extends HttpServlet
 {
     private static Logger log = Logger.getLogger(ServletBtStart.class);
 

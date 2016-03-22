@@ -70,31 +70,42 @@ public class ReportServer {
 
     private static void bluetoothTransactionHandler(BluetoothServer bt) throws FileNotFoundException {
         try {
-            BluetoothTransaction newReceivedTransaction = bt.popReceivedTransaction();
+            BluetoothSimpleTransaction newReceivedTransaction = bt.popReceivedTransaction();
 
-            long type = (long)newReceivedTransaction.getHeader().get("type");
-
-            if (BluetoothPacketType.SQL_QUERIES.getId() == type) {
-                bluetoothSqlQueriesTransactionHandler(bt, newReceivedTransaction);
-            }
+            long type = (long) newReceivedTransaction.getHeader().get("type");
 
             if (BluetoothPacketType.SYNCH_REQUEST.getId() == type) {
                 bluetoothSynchTransactionHandler(bt, newReceivedTransaction);
+                return;
+            }
+
+            if (BluetoothPacketType.SQL_QUERIES.getId() == type) {
+                try {
+                    bluetoothSqlQueriesTransactionHandler(bt, (BluetoothFileTransaction) newReceivedTransaction);
+                } catch (ClassCastException e) {
+                    log.warn(e);
+                }
+                return;
             }
 
             if (BluetoothPacketType.BINARY_FILE.getId() == type) {
-                bluetoothBinaryTransactionHandler(bt, newReceivedTransaction);
+                try {
+                    bluetoothBinaryTransactionHandler(bt, (BluetoothByteTransaction) newReceivedTransaction);
+                } catch(ClassCastException e){
+                    log.warn(e);
+                }
+                return;
             }
         } catch (NoSuchElementException e) {
 
         }
     }
 
-    private static void bluetoothBinaryTransactionHandler(BluetoothServer bt, BluetoothTransaction transaction) {
+    private static void bluetoothBinaryTransactionHandler(BluetoothServer bt, BluetoothByteTransaction transaction) {
 
     }
 
-    private static void bluetoothSynchTransactionHandler(BluetoothServer bt, BluetoothTransaction transaction) {
+    private static void bluetoothSynchTransactionHandler(BluetoothServer bt, BluetoothSimpleTransaction transaction) {
         try {
             int clientVersion = reportDatabaseDriver.checkClientVersion(bt.getRemoteDeviceBluetoothAddress());
             int dbVersion = reportDatabaseDriver.getDatabaseVersion();
@@ -125,7 +136,7 @@ public class ReportServer {
                             writer.write((String) it.next() + ";");
                         }
 
-                        bt.sendData(new BluetoothTransaction(header, temp.getAbsolutePath()));
+                        bt.sendData(new BluetoothFileTransaction(header, temp.getAbsolutePath()));
                     } catch (IOException e) {
                         log.error(e);
                     }
@@ -143,7 +154,7 @@ public class ReportServer {
         }
     }
 
-    private static void bluetoothSqlQueriesTransactionHandler(BluetoothServer bt, BluetoothTransaction transaction) {
+    private static void bluetoothSqlQueriesTransactionHandler(BluetoothServer bt, BluetoothFileTransaction transaction) {
         String synchDataBaseFile = "base-synchronization";
         File scriptFile = new File(synchDataBaseFile + "/" + transaction.getFileName());
         int status = 0;
@@ -165,7 +176,7 @@ public class ReportServer {
         header.put("userId",    (Long)(transaction.getHeader().get("userId")));
         header.put("size",      (Long)(transaction.getHeader().get("size")));
         header.put("status",    new Long(status));
-        bt.sendData(new BluetoothTransaction(header));
+        bt.sendData(new BluetoothSimpleTransaction(header));
 
         reportDatabaseDriver.BackupCurrentDatabase(Integer.toString(reportDatabaseDriver.getDatabaseVersion()));
 

@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 
-class ServletBtStatus extends HttpServlet
+public class ServletBtStatus extends HttpServlet
 {
     private static Logger log = Logger.getLogger(ServletBtStatus.class);
     @Override

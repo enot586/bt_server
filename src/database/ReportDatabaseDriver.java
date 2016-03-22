@@ -156,13 +156,11 @@ public class ReportDatabaseDriver {
         ++dataBaseSynchId;
     }
 
-    private void RestoreBackup() {
-
-    }
-
     void RunScript(int userId, SqlCommandList batch) {
         try {
             boolean isAdmin = isUserAdmin(userId);
+
+            dbConnection.setAutoCommit(false);
 
             ListIterator<String> iter = (ListIterator<String>) batch.iterator();
             while (iter.hasNext()) {
@@ -177,12 +175,40 @@ public class ReportDatabaseDriver {
                 incrementDatabaseVersion(ReportServer.getBluetoothMacAddress());
             }
 
-            databaseStatement.executeUpdate("COMMIT");
+            dbConnection.commit();
 
         } catch (SQLException e) {
-//            RestoreBackup();
-//            return;
+            try {
+                dbConnection.rollback();
+            } catch (SQLException e1) {
+                log.warn(e1);
+            }
         }
+        finally {
+            try {
+                dbConnection.setAutoCommit(true);
+            } catch (SQLException e) {
+                log.warn(e);
+            }
+        }
+    }
+
+    private boolean isUserAdmin(int userId) throws SQLException {
+        ResultSet rs = databaseStatement.executeQuery("SELECT is_admine FROM users WHERE _id_user = "+userId);
+        return rs.getBoolean("is_admine");
+    }
+
+    private boolean isAcceptableTableInQuery(String query) {
+        String[] words = query.split(" ");
+        if ((words[0] == "INSERT") || (words[0] == "DELETE") ) {
+            return (words[2] == "\"detour\"");
+        }
+
+        if (words[0] == "UPDATE") {
+            return (words[1] == "\"detour\"");
+        }
+
+        return false;
     }
 
     public ArrayList<Integer> getLatest10IdsDetour() throws SQLException {
@@ -246,21 +272,4 @@ public class ReportDatabaseDriver {
         return rs.getString("path_picture_route");
     }
 
-    public boolean isUserAdmin(int userId) throws SQLException {
-        ResultSet rs = databaseStatement.executeQuery("SELECT is_admine FROM users WHERE _id_user = "+userId);
-        return rs.getBoolean("is_admine");
-    }
-
-    boolean isAcceptableTableInQuery(String query) {
-        String[] words = query.split(" ");
-        if ((words[0] == "INSERT") || (words[0] == "DELETE") ) {
-            return (words[2] == "\"detour\"");
-        }
-
-        if (words[0] == "UPDATE") {
-            return (words[1] == "\"detour\"");
-        }
-
-        return false;
-    }
 }
