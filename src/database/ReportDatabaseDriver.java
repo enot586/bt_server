@@ -31,9 +31,9 @@ public class ReportDatabaseDriver {
         try {
             Class.forName("org.sqlite.JDBC");
 
-            DriverManager.registerDriver( new org.sqlite.JDBC() );
-
-            dbConnection = DriverManager.getConnection("jdbc:sqlite:"+url);
+            //DriverManager.registerDriver( new org.sqlite.JDBC() );
+            DriverManager.registerDriver( new net.sf.log4jdbc.DriverSpy() );
+            dbConnection = DriverManager.getConnection("jdbc:log4jdbc:sqlite:"+url);
 
             if (dbConnection == null)
                 throw new SQLException();

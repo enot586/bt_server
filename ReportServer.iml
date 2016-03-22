@@ -29,5 +29,6 @@
     <orderEntry type="library" name="slf4j-api-1.7.18" level="project" />
     <orderEntry type="library" name="slf4j-log4j12-1.7.18" level="project" />
     <orderEntry type="library" name="com.googlecode.json-simple:json-simple:1.1.1" level="project" />
+    <orderEntry type="library" name="log4jdbc4-1.2" level="project" />
   </component>
 </module>
