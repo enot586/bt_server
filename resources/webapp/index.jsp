@@ -5,6 +5,7 @@
     <meta name="description" content="">
     <meta name="keywords" content="">
     <title>Report server</title>
+    <script src="jquery-1.12.1.js"></script>
     <script language="javascript" type="text/javascript">
     var request = false;
     try {
@@ -56,8 +57,38 @@
         }
     }
 
+    var userMessageNumber = 0;
 
+    // Сообщения для пользователя
+    function addUserMessageRow(text) {
+      var currentDate = new Date();
+      $('#userMessageTable').prepend("<tr><td><div class=\"debug-message\">"+currentDate.toLocaleString()+"</div></td>"+
+                                     "<td><div class=\"debug-message\">"+text+"</div></td></tr>");
 
+      ++userMessageNumber;
+
+      if (userMessageNumber > 5) {
+        $('#userMessageTable').children().find('tr').last().remove();
+      }
+    }
+
+    function userMessageHandler() {
+      $.ajax({
+        url: '/usermessage',
+        type: 'get',
+        dataType: "text",
+        success: function(data, textStatus)
+        {
+          addUserMessageRow(data);
+          userMessageHandler();
+        }
+      });
+    }
+
+    function onLoadRuner() {
+      getBluetoothServerStatus();
+      userMessageHandler();
+    }
 
   </script>
   
@@ -66,7 +97,7 @@
 
   </head>
 
-  <body onload="getBluetoothServerStatus()" bgcolor="#ffffff">
+  <body onload="onLoadRuner()" bgcolor="#ffffff">
    	<H1 class="main-title">Report server</H1>
 
     <table width="100%" height="100%" cellspacing="0" cellspacing="0" border="0">
@@ -79,7 +110,10 @@
               <td>
                 <table width="100%" cellspacing="0" cellspacing="0">
                   <tr>
-                    <td align="left" width="50%">Состояние процесса синхронизации:</td>
+                    <td align="left" colspan="2"><div name="bluetooth-address" class="bluetooth-mac" id="btMacAddress">Bluetooth mac: <%= reportserver.ReportServer.getBluetoothMacAddress() %></div></td>
+                  </tr>
+                  <tr>
+                    <td align="left" width="50%"><div class="bluetooth-mac">Состояние процесса синхронизации:</div></td>
                     <td align="left" bgcolor="#cccccc"><div name="text1" class="btserver-status" id="btServerStatus">Чтение состояния...</div></td>
                   </tr>
                   <tr>
@@ -95,36 +129,25 @@
             <tr>
               <td>
               Журнал событий:
-              <table width="100%" cellspacing="0" cellspacing="0" bgcolor="darkred">
-                <tr><td align="left">23:32:10 01.02.2016</td><td align="left">Ошибка: Всё плохо !</td></tr>
-                <tr><td align="left">23:32:10 01.02.2016</td><td align="left">Ошибка: Всё плохо !</td></tr>
-                <tr><td align="left">23:32:10 01.02.2016</td><td align="left">Ошибка: Всё плохо !</td></tr>
-                <tr><td align="left">23:32:10 01.02.2016</td><td align="left">Ошибка: Всё плохо !</td></tr>
-                <tr><td align="left">23:32:10 01.02.2016</td><td align="left">Ошибка: Всё плохо !</td></tr>
-                <tr><td align="left">23:32:10 01.02.2016</td><td align="left">Ошибка: Всё плохо !</td></tr>
-                <tr><td align="left">23:32:10 01.02.2016</td><td align="left">Ошибка: Всё плохо !</td></tr>
-                <tr><td align="left">23:32:10 01.02.2016</td><td align="left">Ошибка: Всё плохо !</td></tr>
-                <tr><td align="left">23:32:10 01.02.2016</td><td align="left">Ошибка: Всё плохо !</td></tr>
+              <table width="100%" cellspacing="0" cellspacing="0" id="userMessageTable">
+                <!--  <tr id="debug-massage1" class="debug-message"><td align="left">23:32:10 01.02.2016</td><td align="left">Ошибка: Всё плохо !</td></tr>
+                  <tr id="debug-massage2" class="debug-message"><td align="left">23:32:10 01.02.2016</td><td align="left">Ошибка: Всё плохо !</td></tr>
+                  <tr id="debug-massage3" class="debug-message"><td align="left">23:32:10 01.02.2016</td><td align="left">Ошибка: Всё плохо !</td></tr>
+                  <tr id="debug-massage4" class="debug-message"><td align="left">23:32:10 01.02.2016</td><td align="left">Ошибка: Всё плохо !</td></tr>
+                  <tr id="debug-massage5" class="debug-message"><td align="left">23:32:10 01.02.2016</td><td align="left">Ошибка: Всё плохо !</td></tr>
+                  <tr id="debug-massage6" class="debug-message"><td align="left">23:32:10 01.02.2016</td><td align="left">Ошибка: Всё плохо !</td></tr>
+                  <tr id="debug-massage7" class="debug-message"><td align="left">23:32:10 01.02.2016</td><td align="left">Ошибка: Всё плохо !</td></tr>
+                  <tr id="debug-massage8" class="debug-message"><td align="left">23:32:10 01.02.2016</td><td align="left">Ошибка: Всё плохо !</td></tr>
+                  <tr id="debug-massage9" class="debug-message"><td align="left">23:32:10 01.02.2016</td><td align="left">Ошибка: Всё плохо !</td></tr>-->
+                <%
+                 for(int i = 0; i < 10; ++i) {
+                  out.println("<tr><td><div class=\"debug-message\">Example date"+i+"</div></td>"+
+                              "<td><div class=\"debug-message\">Example message"+i+"</div></td></tr>");
+                  }
+                %>
               </table>
               </td>
             </tr>
-            <!--
-            <tr valign="top">
-              <td><p><a href="/date">Example jsp</a></p></td>
-            </tr>
-            <tr valign="top">
-              <td><p><a href="BluetoothSynchronization.html">Tab synchronize</a></p></td>
-            </tr>
-            <tr valign="top">
-              <td><p><a href="/servlet0">Servlet 0</a></p></td>
-            </tr>
-            <tr valign="top">
-              <td><p><a href="/servlet1">Servlet 1</a></p></td>
-            </tr>
-            <tr valign="top">
-              <td><p><a href="/servlet2">Servlet 2</a></p></td>
-            </tr>
-            -->
           </table>
         </td> 
     

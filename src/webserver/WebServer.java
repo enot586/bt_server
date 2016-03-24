@@ -98,6 +98,7 @@ class WebServer extends CommonServer {
         context.addServlet(ServletBtStop.class, "/btstop");
 
         context.addServlet(ServletTableRefresh.class, "/tablerefresh");
+        context.addServlet(ServletUserMessageHandler.class, "/usermessage");
 
         ServletHolder exampleJspHolder = new ServletHolder();
         exampleJspHolder.setForcedPath("/example.jsp");

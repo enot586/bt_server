@@ -184,7 +184,7 @@ public class ReportServer {
         reportDatabaseDriver.RunScript((int)userId, sqlScript);
 
         try {
-            ReportServer.getWebAction(WebActionType.WEB_ACTION_REFRESH_DETOUR_TABLE).complete();
+            ReportServer.getWebAction(WebActionType.REFRESH_DETOUR_TABLE).complete();
         } catch (NullPointerException e) {
             //по каким-то причинам ajax соединение установлено не было
             log.warn(e);
@@ -211,7 +211,7 @@ public class ReportServer {
         }
     }
 
-    static String getBluetoothMacAddress() {
+    public static String getBluetoothMacAddress() {
         return bluetoothServer.getLocalHostMacAddress();
     }
 
