@@ -66,7 +66,6 @@ public class ReportServer {
 
         while (true) {
             bluetoothTransactionHandler(bluetoothServer);
-
             userMessageHandler();
         }
     }
@@ -93,7 +92,7 @@ public class ReportServer {
 
             if (BluetoothPacketType.BINARY_FILE.getId() == type) {
                 try {
-                    bluetoothBinaryTransactionHandler(bt, (BluetoothByteTransaction) newReceivedTransaction);
+                    bluetoothBinaryTransactionHandler(bt, (BluetoothFileTransaction) newReceivedTransaction);
                 } catch(ClassCastException e){
                     log.warn(e);
                 }
@@ -104,8 +103,20 @@ public class ReportServer {
         }
     }
 
-    private static void bluetoothBinaryTransactionHandler(BluetoothServer bt, BluetoothByteTransaction transaction) {
+    private static void bluetoothBinaryTransactionHandler(BluetoothServer bt, BluetoothFileTransaction transaction) {
+        String synchDataBaseFile = "base-synchronization";
+        File scriptFile = new File(synchDataBaseFile + "/" + transaction.getFileName());
 
+        int status = BluetoothTransactionStatus.DONE.getId();
+
+        JSONObject header = new JSONObject();
+        header.put("type",      new Long(BluetoothPacketType.RESPONSE.getId()));
+        header.put("userId",    (Long)(transaction.getHeader().get("userId")));
+        header.put("size",      (Long)(transaction.getHeader().get("size")));
+        header.put("status",    new Long(status));
+        bt.sendData(new BluetoothSimpleTransaction(header));
+
+        ReportServer.sendUserMessage("Binary final success received");
     }
 
     private static void bluetoothSynchTransactionHandler(BluetoothServer bt, BluetoothSimpleTransaction transaction) {

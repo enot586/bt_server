@@ -17,6 +17,7 @@ import org.json.simple.JSONObject;
 class BluetoothConnectionHandler implements Runnable {
     //Размер поточного байтового буфера
     private final int MAX_BUFFER_SIZE = 100*1024;
+    private long timeoutStartTime = 0;
 
     private enum ConnectionState {
         CONNECTION_STATE_WAITING,
@@ -129,8 +130,10 @@ class BluetoothConnectionHandler implements Runnable {
                         }
                         break;
                     }
+
                     synchronized (connectionState) {
                         connectionState = ConnectionState.CONNECTION_STATE_WORKING;
+                        refreshTransactionTimeout();
                     }
 
                     break;
@@ -140,10 +143,26 @@ class BluetoothConnectionHandler implements Runnable {
                     receiveHandler(currentConnection);
                     sendHandler();
 
+                    if (isTransactionTimeout()) {
+                        stop();
+                        synchronized (connectionState) {
+                            connectionState = ConnectionState.CONNECTION_STATE_OPEN;
+                        }
+                        log.warn("Transaction timeout");
+                    }
+
                     break;
                 }
             }
         }
+    }
+
+    private void refreshTransactionTimeout() {
+        timeoutStartTime = System.currentTimeMillis()+5000;
+    }
+
+    private boolean isTransactionTimeout() {
+        return (System.currentTimeMillis() >= timeoutStartTime);
     }
 
     private void receiveHandler(StreamConnection connection) {
@@ -164,6 +183,8 @@ class BluetoothConnectionHandler implements Runnable {
             //Отправляем заголовок
             try {
                 senderStream.write(transactionForSend.getHeader().toJSONString().getBytes());
+                senderStream.flush();
+                log.info("Send header");
             } catch (IOException e) {
                 log.warn(e);
             }
@@ -172,6 +193,8 @@ class BluetoothConnectionHandler implements Runnable {
             try {
                 BluetoothByteTransaction byteTransaction = (BluetoothByteTransaction) transactionForSend;
                 senderStream.write(byteTransaction.getBody());
+                senderStream.flush();
+                log.info("Send byteTransaction");
                 return;
             } catch (IOException e1) {
                 log.warn(e1);
@@ -190,8 +213,10 @@ class BluetoothConnectionHandler implements Runnable {
                     numberOfBytes = fileReader.read(buffer);
                     if (numberOfBytes > 0) {
                         senderStream.write(buffer, 0, numberOfBytes);
+                        senderStream.flush();
                     }
                 }
+                log.info("Send fileTransaction");
                 return;
             } catch (IOException e) {
                 log.warn(e);
@@ -210,13 +235,16 @@ class BluetoothConnectionHandler implements Runnable {
     }
 
     private BluetoothSimpleTransaction dataReceiving(StreamConnection connection) throws IOException {
-        String synchDataBaseFile = "base-synchronization";
-        String receivedFileName = initReceivedFileName(connection, synchDataBaseFile);
-        JSONReceiver receiver = new JSONReceiver();
 
         if (inStream.available() == 0) {
             throw new NoSuchElementException();
         }
+
+        refreshTransactionTimeout();
+
+        String synchDataBaseFile = "base-synchronization";
+        String receivedFileName = initReceivedFileName(connection, synchDataBaseFile);
+        JSONReceiver receiver = new JSONReceiver();
 
         byte[] tempBuffer = new byte[MAX_BUFFER_SIZE];
         long transactionTotalSize = 0;
@@ -227,6 +255,8 @@ class BluetoothConnectionHandler implements Runnable {
                 //read string from spp client
                 int bytesRead = inStream.read(tempBuffer, 0, tempBuffer.length);
                 int indexLastHeaderByte = receiver.receiveHeader(tempBuffer);
+
+                refreshTransactionTimeout();
 
                 if (receiver.isHeaderReceived()) {
                     JSONObject header = receiver.getHeader();
@@ -260,10 +290,10 @@ class BluetoothConnectionHandler implements Runnable {
         while (byteIndexInFile < transactionTotalSize) {
             try {
                 int bytesRead = inStream.read(tempBuffer, 0, tempBuffer.length);
-
+                refreshTransactionTimeout();
                 FileOutputStream fileOutputStream = new FileOutputStream(synchDataBaseFile + "/" + receivedFileName, true);
                 BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
-                bufferedOutputStream.write(tempBuffer, byteIndexInFile, bytesRead);
+                bufferedOutputStream.write(tempBuffer, 0, bytesRead);
                 bufferedOutputStream.flush();
                 bufferedOutputStream.close();
                 byteIndexInFile += bytesRead;
