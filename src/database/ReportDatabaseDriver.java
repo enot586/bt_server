@@ -65,14 +65,25 @@ public class ReportDatabaseDriver {
     }
 
     public int checkClientVersion(String mac_address) throws SQLException {
-        ResultSet rs = databaseStatement.executeQuery("SELECT id_version FROM clients_version WHERE mac = \"" + mac_address + "\"");
+        ResultSet rs = databaseStatement.executeQuery("SELECT id_version FROM clients_version WHERE mac = \""+mac_address+"\"");
 
         if (!rs.next()) {
-            databaseStatement.executeUpdate("INSERT INTO clients_version (id_version, mac) VALUES (0, \"" + mac_address + "\")");
+            databaseStatement.executeUpdate("INSERT INTO clients_version (id_version, mac) VALUES (0, \""+mac_address+"\")");
             return 0;
         } else {
             return (int)rs.getInt("id_version");
         }
+    }
+
+    public void setClientVersion(String mac_address, int id_version) throws SQLException {
+        ResultSet rs = databaseStatement.executeQuery("SELECT id_version FROM clients_version WHERE mac = \""+mac_address+"\"");
+
+        if (!rs.next()) {
+            databaseStatement.executeUpdate("INSERT INTO clients_version (id_version, mac) VALUES ("+id_version+", \""+mac_address+"\")");
+        } else {
+            databaseStatement.executeUpdate("UPDATE clients_version id_version="+id_version+" WHERE mac=\""+mac_address+"\"");
+        }
+
     }
 
     public int getDatabaseVersion() {

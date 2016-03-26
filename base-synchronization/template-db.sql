@@ -82,3 +82,8 @@ CREATE TABLE "user_messages" (
                        "message" TEXT,
                        "message_date" TEXT
                        );
+
+CREATE TABLE "pictures" (
+                       "_id_picture" INTEGER PRIMARY KEY AUTOINCREMENT,
+                       "picture_path" TEXT,
+                       );

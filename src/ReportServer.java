@@ -92,18 +92,22 @@ public class ReportServer {
 
             if (BluetoothPacketType.BINARY_FILE.getId() == type) {
                 try {
-                    bluetoothBinaryTransactionHandler(bt, (BluetoothFileTransaction) newReceivedTransaction);
+                    bluetoothBinaryFileTransactionHandler(bt, (BluetoothFileTransaction) newReceivedTransaction);
                 } catch(ClassCastException e){
                     log.warn(e);
                 }
                 return;
+            }
+
+            if (BluetoothPacketType.SESSION_CLOSE.getId() == type) {
+                sendUserMessage("Текущая сессия закончена");
             }
         } catch (NoSuchElementException e) {
 
         }
     }
 
-    private static void bluetoothBinaryTransactionHandler(BluetoothServer bt, BluetoothFileTransaction transaction) {
+    private static void bluetoothBinaryFileTransactionHandler(BluetoothServer bt, BluetoothFileTransaction transaction) {
         String synchDataBaseFile = "base-synchronization";
         File scriptFile = new File(synchDataBaseFile + "/" + transaction.getFileName());
 
@@ -123,7 +127,55 @@ public class ReportServer {
         try {
             int clientVersion = reportDatabaseDriver.checkClientVersion(bt.getRemoteDeviceBluetoothAddress());
             int dbVersion = reportDatabaseDriver.getDatabaseVersion();
+            int realClientVersion = (int)transaction.getHeader().get("version");
 
+            //Если версия базы в планшете некорректная
+            if  ( (realClientVersion != clientVersion)   ||
+                  (realClientVersion > dbVersion)        ||
+                  (clientVersion > dbVersion) ) {
+                sendUserMessage("Некорректная версия базы на планшете. Обновление базы.");
+
+                //перебиваем версию
+                reportDatabaseDriver.setClientVersion(bt.getRemoteDeviceBluetoothAddress(), 0);
+
+                //передать файлик базы данных целиком
+                try {
+                    File databaseFile = new File("base-synchronization/app-data.db3");
+                    if (databaseFile.exists()) {
+                        JSONObject header = new JSONObject();
+                        header.put("type", new Long(BluetoothPacketType.BINARY_FILE.getId()));
+                        header.put("userId", (Long) (transaction.getHeader().get("userId")));
+                        header.put("size", (Long) databaseFile.length());
+                        header.put("filename", "app-data.db3");
+
+                        bt.sendData(new BluetoothFileTransaction(header, databaseFile.getAbsolutePath()));
+                    } else {
+                        log.error("Database not exist !!!");
+                    }
+                } catch (SecurityException e) {
+                    log.warn(e);
+                }
+
+                //FIXME: как-то скинуть версию базы для планшета?
+
+                return;
+            }
+
+            //FIXME: (clientVersion == dbVersion == 0) непонятно что делать
+
+            //версия актуальна, синхронизировать нечего
+            if ( (dbVersion > 0) && (clientVersion == dbVersion) ) {
+                JSONObject header = new JSONObject();
+                header.put("type", new Long(BluetoothPacketType.RESPONSE.getId()));
+                header.put("userId", (Long) (transaction.getHeader().get("userId")));
+                header.put("status", new Long(BluetoothTransactionStatus.DONE.getId()));
+                header.put("size", new Long(0));
+
+                bt.sendData(new BluetoothSimpleTransaction(header));
+                return;
+            }
+
+            //Передаем всю положенную клиенту историю
             if ( clientVersion < dbVersion ) {
                 if (dbVersion - clientVersion < 10) {
                     ArrayList<String> sourceHistory = new ArrayList<String>();
@@ -156,10 +208,24 @@ public class ReportServer {
                     }
                 }
                 else {
-                    //TODO: передать файлик
+                    //передать файлик базы данных целиком
+                    try {
+                        File databaseFile = new File("base-synchronization/app-data.db3");
+                        if (databaseFile.exists()) {
+                            JSONObject header = new JSONObject();
+                            header.put("type", new Long(BluetoothPacketType.BINARY_FILE.getId()));
+                            header.put("userId", (Long) (transaction.getHeader().get("userId")));
+                            header.put("size", (Long) databaseFile.length());
+                            header.put("filename", "app-data.db3");
+
+                            bt.sendData(new BluetoothFileTransaction(header, databaseFile.getAbsolutePath()));
+                        } else {
+                            log.error("Database not exist !!!");
+                        }
+                    } catch (SecurityException e) {
+                        log.warn(e);
+                    }
                 }
-            } else {
-                //TODO: перебиваем версию на актуальную и шлем все изменения от 0
             }
         } catch (SQLException e) {
             log.warn(e);
@@ -255,7 +321,7 @@ public class ReportServer {
     static void userMessageHandler() {
         try {
             String text = popUserMessage();
-            ReportServer.getWebAction(WebActionType.SEND_USER_MESSAGE).getResponse().getWriter().write(new String(text.getBytes("UTF8")));
+            ReportServer.getWebAction(WebActionType.SEND_USER_MESSAGE).getResponse().getWriter().write(new String(text.getBytes("UTF-8")));
             ReportServer.getWebAction(WebActionType.SEND_USER_MESSAGE).complete();
         } catch (NullPointerException | NoSuchElementException e) {
 

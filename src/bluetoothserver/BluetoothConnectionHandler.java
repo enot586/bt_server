@@ -17,7 +17,7 @@ import org.json.simple.JSONObject;
 class BluetoothConnectionHandler implements Runnable {
     //Размер поточного байтового буфера
     private final int MAX_BUFFER_SIZE = 100*1024;
-    private long timeoutStartTime = 0;
+    private long timeoutTime = 0;
 
     private enum ConnectionState {
         CONNECTION_STATE_WAITING,
@@ -123,8 +123,7 @@ class BluetoothConnectionHandler implements Runnable {
                             senderStream = new BufferedOutputStream(currentConnection.openOutputStream());
                         }
                     } catch (IOException e1) {
-                        log.warn(ConnectionState.CONNECTION_STATE_CREATE_CONNECTION+" FAILED\n"+
-                                    "May be bluetooth reader interrupted: "+e1);
+                        log.warn(e1);
                         synchronized (connectionState) {
                             connectionState = ConnectionState.CONNECTION_STATE_WAITING;
                         }
@@ -134,6 +133,7 @@ class BluetoothConnectionHandler implements Runnable {
                     synchronized (connectionState) {
                         connectionState = ConnectionState.CONNECTION_STATE_WORKING;
                         refreshTransactionTimeout();
+                        ReportServer.sendUserMessage("Соединение установлено");
                     }
 
                     break;
@@ -162,11 +162,11 @@ class BluetoothConnectionHandler implements Runnable {
     }
 
     private void refreshTransactionTimeout() {
-        timeoutStartTime = System.currentTimeMillis()+5000;
+        timeoutTime = System.currentTimeMillis()+5000;
     }
 
     private boolean isTransactionTimeout() {
-        return (System.currentTimeMillis() >= timeoutStartTime);
+        return (System.currentTimeMillis() >= timeoutTime);
     }
 
     private void receiveHandler(StreamConnection connection) {
@@ -174,6 +174,7 @@ class BluetoothConnectionHandler implements Runnable {
             BluetoothSimpleTransaction result = dataReceiving(connection);
             parent.pushReceivedTransaction(result);
 
+            //Если поймали транзакцию на закрытие текущей сессии
             long type = (long)result.getHeader().get("type");
             if (BluetoothPacketType.SESSION_CLOSE.getId() == type) {
                 reopenNewConnection();
@@ -225,6 +226,8 @@ class BluetoothConnectionHandler implements Runnable {
                         senderStream.flush();
                     }
                 }
+
+                fileReader.close();
                 log.info("Send fileTransaction");
                 return;
             } catch (IOException e) {
@@ -277,6 +280,12 @@ class BluetoothConnectionHandler implements Runnable {
                         if (bytesRead > 0) {
                             byte[] temp = Arrays.copyOfRange(tempBuffer, (indexLastHeaderByte + 1),
                                                                 (indexLastHeaderByte + 1) + bytesRead);
+
+                            //если принимаем бинарный файл, то присваиваем ему имя которое пришло в тразакции
+                            int type = (int)header.get("type");
+                            if (BluetoothPacketType.BINARY_FILE.getId() == type) {
+                                receivedFileName = (String) header.get("filename");
+                            }
 
                             FileOutputStream fileOutputStream = new FileOutputStream(synchDataBaseFile + "/" + receivedFileName);
                             BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
