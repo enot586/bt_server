@@ -22,15 +22,7 @@ public class ServletBtStart extends HttpServlet
             log.error(e);
         }
 
-        try {
-            ReportServer.getWebAction(WebActionType.SEND_USER_MESSAGE).getResponse().getWriter().write("Bluetooth server was started");
-            ReportServer.getWebAction(WebActionType.SEND_USER_MESSAGE).complete();
-        } catch (NullPointerException e) {
-            //по каким-то причинам ajax соединение установлено не было
-            log.warn(e);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        ReportServer.sendUserMessage("Запуск bluetooth-сервера");
 
         try {
             response.setContentType("text");

@@ -77,7 +77,7 @@
         url: '/usermessage',
         type: 'get',
         dataType: "text",
-        success: function(data, textStatus)
+        success: function(data)
         {
           addUserMessageRow(data);
           userMessageHandler();
@@ -121,31 +121,30 @@
                     <td align="left"><a href="without-javascript.html" onClick="bluetoothServerStop(); return false">Остановить</a></td>
                   </tr>
                 </table>
-
-                <BR>
               </td>
             </tr>
-
             <tr>
               <td>
-              Журнал событий:
-              <table width="100%" cellspacing="0" cellspacing="0" id="userMessageTable">
-                <!--  <tr id="debug-massage1" class="debug-message"><td align="left">23:32:10 01.02.2016</td><td align="left">Ошибка: Всё плохо !</td></tr>
-                  <tr id="debug-massage2" class="debug-message"><td align="left">23:32:10 01.02.2016</td><td align="left">Ошибка: Всё плохо !</td></tr>
-                  <tr id="debug-massage3" class="debug-message"><td align="left">23:32:10 01.02.2016</td><td align="left">Ошибка: Всё плохо !</td></tr>
-                  <tr id="debug-massage4" class="debug-message"><td align="left">23:32:10 01.02.2016</td><td align="left">Ошибка: Всё плохо !</td></tr>
-                  <tr id="debug-massage5" class="debug-message"><td align="left">23:32:10 01.02.2016</td><td align="left">Ошибка: Всё плохо !</td></tr>
-                  <tr id="debug-massage6" class="debug-message"><td align="left">23:32:10 01.02.2016</td><td align="left">Ошибка: Всё плохо !</td></tr>
-                  <tr id="debug-massage7" class="debug-message"><td align="left">23:32:10 01.02.2016</td><td align="left">Ошибка: Всё плохо !</td></tr>
-                  <tr id="debug-massage8" class="debug-message"><td align="left">23:32:10 01.02.2016</td><td align="left">Ошибка: Всё плохо !</td></tr>
-                  <tr id="debug-massage9" class="debug-message"><td align="left">23:32:10 01.02.2016</td><td align="left">Ошибка: Всё плохо !</td></tr>-->
-                <%
-                 for(int i = 0; i < 10; ++i) {
-                  out.println("<tr><td><div class=\"debug-message\">Example date"+i+"</div></td>"+
-                              "<td><div class=\"debug-message\">Example message"+i+"</div></td></tr>");
+                <div name="bluetooth-address" class="bluetooth-mac">Журнал событий:</div>
+                <table width="100%" cellspacing="0" cellspacing="0" id="userMessageTable">
+                  <%
+                  try {
+                    reportserver.ReportDatabaseDriver databaseDriver = reportserver.ReportServer.getDatabaseDriver();
+
+                    String[] messages = databaseDriver.getUserMessages();
+                    String[] dates = databaseDriver.getUserMessagesDate();
+
+                    for(int i = 0; i < 15; ++i) {
+                      out.println("<tr class=\"debug-message\">"+
+                                    "<td>"+dates[i]+"</td>"+
+                                    "<td>"+messages[i]+"</td>"+
+                                  "</tr>");
+                    }
+                  } catch (java.sql.SQLException e) {
+                    out.println("<tr class=\"debug-message\"><td colspan=\"2\"><span class=\"error\">SQL query error...</span></td></tr>");
                   }
-                %>
-              </table>
+                  %>
+                </table>
               </td>
             </tr>
           </table>

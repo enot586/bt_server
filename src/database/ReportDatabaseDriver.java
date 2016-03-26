@@ -6,9 +6,9 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.ListIterator;
-import java.util.NoSuchElementException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.Date;
 
 public class ReportDatabaseDriver {
     private String url;
@@ -274,4 +274,73 @@ public class ReportDatabaseDriver {
         return rs.getString("path_picture_route");
     }
 
+    public int getUserMessageNumber() {
+        try {
+            ResultSet rs1 = databaseStatement.executeQuery("SELECT COUNT(message_date) FROM user_messages");
+            if (rs1.next()) {
+                int rowNumber = rs1.getInt(1);
+                return rowNumber;
+            }
+        } catch (SQLException e) {
+            log.warn(e);
+            return 0;
+        }
+        return 0;
+    }
+
+    public String[] getUserMessages() {
+        try {
+            ResultSet rs = databaseStatement.executeQuery("SELECT message FROM user_messages ORDER BY message_date DESC");
+            String[] messages = new String[15];
+
+            for (int i = 0; i < 15; ++i) {
+                messages[i] = rs.getString("message");
+                rs.next();
+            }
+
+            return messages;
+        } catch (SQLException e) {
+            log.warn(e);
+        }
+        return null;
+    }
+
+    public String[] getUserMessagesDate() {
+        try {
+            ResultSet rs = databaseStatement.executeQuery("SELECT message_date FROM user_messages ORDER BY message_date DESC");
+            String[] dates = new String[15];
+
+            for (int i = 0; i < 15; ++i) {
+                dates[i] = rs.getString("message_date");
+                rs.next();
+            }
+
+            return dates;
+        } catch (SQLException e) {
+            log.warn(e);
+        }
+        return null;
+    }
+
+    public void addUserMessageToDatabase(Date currentDate, String text) {
+        try {
+            int rowNumber = getUserMessageNumber();
+
+            if (rowNumber >= 15) {
+                ResultSet rs = databaseStatement.executeQuery("SELECT _id_message, MIN(message_date) FROM user_messages");
+
+                if (rs.next()) {
+                    int currentId = (int) rs.getInt("_id_message");
+                    databaseStatement.executeUpdate("DELETE FROM user_messages WHERE _id_message = " + currentId);
+                }
+            }
+
+            String pattern = "YYYY-MM-DD HH:MM:SS";
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+            String date = simpleDateFormat.format(currentDate);
+            databaseStatement.executeUpdate("INSERT INTO user_messages (message, message_date) VALUES (\""+text+"\",\""+date+"\")");
+         } catch (SQLException e) {
+            log.error(e);
+        }
+    }
 }

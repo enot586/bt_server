@@ -19,6 +19,7 @@ public class ReportServer {
     private static BluetoothServer bluetoothServer;
     private static ReportDatabaseDriver reportDatabaseDriver;
     private static SqlCommandList sqlScript;
+    private static final LinkedList<String> userMessages = new LinkedList<String>();
     private static Map< WebActionType, AsyncContext > webActions = new HashMap< WebActionType, AsyncContext >();
     private static final Logger log = Logger.getLogger(ReportServer.class);
 
@@ -65,6 +66,8 @@ public class ReportServer {
 
         while (true) {
             bluetoothTransactionHandler(bluetoothServer);
+
+            userMessageHandler();
         }
     }
 
@@ -217,6 +220,37 @@ public class ReportServer {
 
     public static ReportDatabaseDriver getDatabaseDriver() throws SQLException {
         return reportDatabaseDriver;
+    }
+
+    public static void sendUserMessage(String text) {
+        try {
+            reportDatabaseDriver.addUserMessageToDatabase(new Date(), text);
+            synchronized (userMessages) {
+                userMessages.add(text);
+            }
+        } catch (Exception e) {
+
+        }
+    }
+
+    public synchronized static String popUserMessage() throws NoSuchElementException {
+        String text;
+        text = userMessages.peek();
+        if (text == null)  throw new NoSuchElementException();
+        userMessages.remove();
+        return text;
+    }
+
+    static void userMessageHandler() {
+        try {
+            String text = popUserMessage();
+            ReportServer.getWebAction(WebActionType.SEND_USER_MESSAGE).getResponse().getWriter().write(new String(text.getBytes("UTF8")));
+            ReportServer.getWebAction(WebActionType.SEND_USER_MESSAGE).complete();
+        } catch (NullPointerException | NoSuchElementException e) {
+
+        } catch (IOException e) {
+            log.warn(e);
+        }
     }
 
     synchronized static void putWebAction(WebActionType type, AsyncContext context) {

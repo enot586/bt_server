@@ -77,4 +77,8 @@ CREATE TABLE "history" (
                        "query" TEXT
                        );
 
-COMMIT;
+CREATE TABLE "user_messages" (
+                       "_id_message" INTEGER PRIMARY KEY AUTOINCREMENT,
+                       "message" TEXT,
+                       "message_date" TEXT
+                       );

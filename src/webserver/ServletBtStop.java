@@ -21,7 +21,7 @@ public class ServletBtStop extends HttpServlet
         } catch (Exception e) {
             log.error(e);
         }
-
+        ReportServer.sendUserMessage("Остановка bluetooth-сервера");
         try {
             response.setContentType("text");
             response.setStatus(HttpServletResponse.SC_OK);

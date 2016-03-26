@@ -13,8 +13,6 @@ public class ServletUserMessageHandler extends HttpServlet {
         AsyncContext asyncContext = request.startAsync();
         asyncContext.setTimeout(0);
 
-        ReportServer.putWebAction(WebActionType.SEND_USER_MESSAGE,
-                asyncContext);
-
+        ReportServer.putWebAction(WebActionType.SEND_USER_MESSAGE, asyncContext);
     }
 }
