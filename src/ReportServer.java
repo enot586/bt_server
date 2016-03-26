@@ -321,6 +321,7 @@ public class ReportServer {
     static void userMessageHandler() {
         try {
             String text = popUserMessage();
+            ReportServer.getWebAction(WebActionType.SEND_USER_MESSAGE).getResponse().setCharacterEncoding("UTF-8");
             ReportServer.getWebAction(WebActionType.SEND_USER_MESSAGE).getResponse().getWriter().write(new String(text.getBytes("UTF-8")));
             ReportServer.getWebAction(WebActionType.SEND_USER_MESSAGE).complete();
         } catch (NullPointerException | NoSuchElementException e) {
