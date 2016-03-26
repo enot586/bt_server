@@ -144,16 +144,20 @@ class BluetoothConnectionHandler implements Runnable {
                     sendHandler();
 
                     if (isTransactionTimeout()) {
-                        stop();
-                        synchronized (connectionState) {
-                            connectionState = ConnectionState.CONNECTION_STATE_OPEN;
-                        }
+                        reopenNewConnection();
                         log.warn("Transaction timeout");
                     }
 
                     break;
                 }
             }
+        }
+    }
+
+    private void reopenNewConnection() {
+        stop();
+        synchronized (connectionState) {
+            connectionState = ConnectionState.CONNECTION_STATE_OPEN;
         }
     }
 
@@ -169,6 +173,11 @@ class BluetoothConnectionHandler implements Runnable {
         try {
             BluetoothSimpleTransaction result = dataReceiving(connection);
             parent.pushReceivedTransaction(result);
+
+            long type = (long)result.getHeader().get("type");
+            if (BluetoothPacketType.SESSION_CLOSE.getId() == type) {
+                reopenNewConnection();
+            }
         } catch (NoSuchElementException e) {
             //Ничего критичного, ждем данные
         }catch (IOException e) {
