@@ -1,6 +1,7 @@
 package reportserver;
 
 import javax.servlet.AsyncContext;
+import javax.servlet.ServletResponse;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -100,7 +101,7 @@ public class ReportServer {
             }
 
             if (BluetoothPacketType.SESSION_CLOSE.getId() == type) {
-                sendUserMessage("Текущая сессия закончена");
+                sendUserMessage("Текущее соедение завершено. Ожидаю нового подключения.");
             }
         } catch (NoSuchElementException e) {
 
@@ -120,7 +121,7 @@ public class ReportServer {
         header.put("status",    new Long(status));
         bt.sendData(new BluetoothSimpleTransaction(header));
 
-        ReportServer.sendUserMessage("Binary final success received");
+        ReportServer.sendUserMessage("Принят файл: "+transaction.getFileName());
     }
 
     private static void bluetoothSynchTransactionHandler(BluetoothServer bt, BluetoothSimpleTransaction transaction) {
@@ -128,6 +129,8 @@ public class ReportServer {
             int clientVersion = reportDatabaseDriver.checkClientVersion(bt.getRemoteDeviceBluetoothAddress());
             int dbVersion = reportDatabaseDriver.getDatabaseVersion();
             int realClientVersion = (int)transaction.getHeader().get("version");
+
+            sendUserMessage("Принят запрос на синхронизацию.");
 
             //Если версия базы в планшете некорректная
             if  ( (realClientVersion != clientVersion)   ||
@@ -172,6 +175,7 @@ public class ReportServer {
                 header.put("size", new Long(0));
 
                 bt.sendData(new BluetoothSimpleTransaction(header));
+                sendUserMessage("База планшета актуальна.");
                 return;
             }
 
@@ -203,6 +207,7 @@ public class ReportServer {
                         }
 
                         bt.sendData(new BluetoothFileTransaction(header, temp.getAbsolutePath()));
+                        sendUserMessage("Данные для синхронизации отправлены.");
                     } catch (IOException e) {
                         log.error(e);
                     }
@@ -219,6 +224,7 @@ public class ReportServer {
                             header.put("filename", "app-data.db3");
 
                             bt.sendData(new BluetoothFileTransaction(header, databaseFile.getAbsolutePath()));
+                            sendUserMessage("Версия устарела. Отправлена актуальная база.");
                         } else {
                             log.error("Database not exist !!!");
                         }
@@ -295,12 +301,13 @@ public class ReportServer {
         return bluetoothServer.getLocalHostMacAddress();
     }
 
-    public static ReportDatabaseDriver getDatabaseDriver() throws SQLException {
+    public static ReportDatabaseDriver getDatabaseDriver() {
         return reportDatabaseDriver;
     }
 
     public static void sendUserMessage(String text) {
         try {
+            //TODO: для пользователя передавать дату с сервера !!!
             reportDatabaseDriver.addUserMessageToDatabase(new Date(), text);
             synchronized (userMessages) {
                 userMessages.add(text);
@@ -321,9 +328,11 @@ public class ReportServer {
     static void userMessageHandler() {
         try {
             String text = popUserMessage();
-            ReportServer.getWebAction(WebActionType.SEND_USER_MESSAGE).getResponse().setCharacterEncoding("UTF-8");
-            ReportServer.getWebAction(WebActionType.SEND_USER_MESSAGE).getResponse().getWriter().write(new String(text.getBytes("UTF-8")));
-            ReportServer.getWebAction(WebActionType.SEND_USER_MESSAGE).complete();
+            AsyncContext asyncRequest = ReportServer.getWebAction(WebActionType.SEND_USER_MESSAGE);
+            ServletResponse response = asyncRequest.getResponse();
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().write(new String(text.getBytes("UTF-8")));
+            asyncRequest.complete();
         } catch (NullPointerException | NoSuchElementException e) {
 
         } catch (IOException e) {

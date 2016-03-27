@@ -145,6 +145,7 @@ class BluetoothConnectionHandler implements Runnable {
 
                     if (isTransactionTimeout()) {
                         reopenNewConnection();
+                        ReportServer.sendUserMessage("Таймаут соединения. Ожидаю нового подключения.");
                         log.warn("Transaction timeout");
                     }
 

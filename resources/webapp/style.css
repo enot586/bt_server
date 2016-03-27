@@ -4,7 +4,7 @@
 }
 
 .title-user-row {
-  background-color:#cccccc; 
+  background-color:#000080;
   font-family:verdana; 
   font-size:12pt; 
   font-weight:bold;
@@ -18,7 +18,7 @@
 }
 
 .finish-row {
-  background-color:#CCFFCC;
+  background-color:#EDF7FF;
   font-family:verdana;
   font-size:10pt;
   font-weight:normal;
@@ -59,7 +59,7 @@
   font-family:verdana;
   font-size:10pt;
   font-weight:bold;
-  color:#000080;
+  color:#ffffff;
 }
 
 .debug-message {

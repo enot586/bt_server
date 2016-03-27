@@ -22,34 +22,98 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="ReportServer.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="ReportServer.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/ReportServer.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="505">
-              <caret line="326" column="67" selection-start-line="326" selection-start-column="67" selection-end-line="326" selection-end-column="67" />
+            <state relative-caret-position="-574">
+              <caret line="177" column="60" selection-start-line="177" selection-start-column="60" selection-end-line="177" selection-end-column="60" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="method#bluetoothTransactionHandler#0;class#ReportServer#0" expanded="false" />
-                <element signature="method#bluetoothBinaryFileTransactionHandler#0;class#ReportServer#0" expanded="false" />
-                <element signature="method#bluetoothSynchTransactionHandler#0;class#ReportServer#0" expanded="false" />
                 <element signature="method#bluetoothSqlQueriesTransactionHandler#0;class#ReportServer#0" expanded="false" />
                 <element signature="method#bluetoothServerStart#0;class#ReportServer#0" expanded="false" />
                 <element signature="method#bluetoothServerStop#0;class#ReportServer#0" expanded="false" />
-                <element signature="method#getDatabaseDriver#0;class#ReportServer#0" expanded="false" />
                 <element signature="method#sendUserMessage#0;class#ReportServer#0" expanded="false" />
                 <element signature="method#popUserMessage#0;class#ReportServer#0" expanded="false" />
+                <element signature="method#userMessageHandler#0;class#ReportServer#0" expanded="false" />
                 <element signature="method#getWebAction#0;class#ReportServer#0" expanded="false" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ServletResponse.class" pinned="false" current-in-tab="false">
-        <entry file="jar://$PROJECT_DIR$/jars/servlet-api-3.1.jar!/javax/servlet/ServletResponse.class">
+      <file leaf-file-name="routes-table.jsp" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/resources/webapp/routes-table.jsp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="205">
-              <caret line="21" column="21" selection-start-line="21" selection-start-column="21" selection-end-line="21" selection-end-column="21" />
+            <state relative-caret-position="96">
+              <caret line="42" column="11" selection-start-line="42" selection-start-column="11" selection-end-line="42" selection-end-column="11" />
               <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="index.jsp" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/resources/webapp/index.jsp">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="324">
+              <caret line="122" column="23" selection-start-line="122" selection-start-column="23" selection-end-line="122" selection-end-column="23" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="BluetoothConnectionHandler.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/bluetoothserver/BluetoothConnectionHandler.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="36">
+              <caret line="249" column="39" selection-start-line="249" selection-start-column="39" selection-end-line="249" selection-end-column="39" />
+              <folding>
+                <element signature="method#BluetoothConnectionHandler#0;class#BluetoothConnectionHandler#0" expanded="false" />
+                <element signature="method#stop#0;class#BluetoothConnectionHandler#0" expanded="false" />
+                <element signature="method#createConnection#0;class#BluetoothConnectionHandler#0" expanded="false" />
+                <element signature="method#reopenNewConnection#0;class#BluetoothConnectionHandler#0" expanded="false" />
+                <element signature="method#sendHandler#0;class#BluetoothConnectionHandler#0" expanded="false" />
+                <element signature="method#initReceivedFileName#0;class#BluetoothConnectionHandler#0" expanded="false" />
+                <element signature="method#ErrorCloseConnection#0;class#BluetoothConnectionHandler#0" expanded="false" />
+                <element signature="method#getRemoteDeviceBluetoothAddress#0;class#BluetoothConnectionHandler#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ReportDatabaseDriver.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/database/ReportDatabaseDriver.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="356">
+              <caret line="300" column="0" selection-start-line="300" selection-start-column="0" selection-end-line="300" selection-end-column="0" />
+              <folding>
+                <element signature="imports" expanded="true" />
+                <element signature="method#init#0;class#ReportDatabaseDriver#0" expanded="false" />
+                <element signature="e#776#832#0" expanded="false" />
+                <element signature="method#GetClientHistory#0;class#ReportDatabaseDriver#0" expanded="false" />
+                <element signature="method#checkClientVersion#0;class#ReportDatabaseDriver#0" expanded="false" />
+                <element signature="method#setClientVersion#0;class#ReportDatabaseDriver#0" expanded="false" />
+                <element signature="method#getDatabaseVersion#1;class#ReportDatabaseDriver#0" expanded="false" />
+                <element signature="method#BackupCurrentDatabase#0;class#ReportDatabaseDriver#0" expanded="false" />
+                <element signature="method#SetToHistory#0;class#ReportDatabaseDriver#0" expanded="false" />
+                <element signature="method#initDatabaseVersion#0;class#ReportDatabaseDriver#0" expanded="false" />
+                <element signature="method#incrementDatabaseVersion#0;class#ReportDatabaseDriver#0" expanded="false" />
+                <element signature="method#RunScript#0;class#ReportDatabaseDriver#0" expanded="false" />
+                <element signature="method#isUserAdmin#0;class#ReportDatabaseDriver#0" expanded="false" />
+                <element signature="method#isAcceptableTableInQuery#0;class#ReportDatabaseDriver#0" expanded="false" />
+                <element signature="method#getLatest10IdsDetour#0;class#ReportDatabaseDriver#0" expanded="false" />
+                <element signature="method#getDetourTableIds#0;class#ReportDatabaseDriver#0" expanded="false" />
+                <element signature="method#getUserNameFromDetourTable#0;class#ReportDatabaseDriver#0" expanded="false" />
+                <element signature="method#getRouteNameFromDetourTable#0;class#ReportDatabaseDriver#0" expanded="false" />
+                <element signature="method#getStartTimeFromDetourTable#0;class#ReportDatabaseDriver#0" expanded="false" />
+                <element signature="method#getEndTimeFromDetourTable#0;class#ReportDatabaseDriver#0" expanded="false" />
+                <element signature="method#getStatusFromDetourTable#0;class#ReportDatabaseDriver#0" expanded="false" />
+                <element signature="method#getRoutesTablePathRoutePicture#0;class#ReportDatabaseDriver#0" expanded="false" />
+                <element signature="method#getUserMessageNumber#0;class#ReportDatabaseDriver#0" expanded="false" />
+                <element signature="method#getUserMessages#0;class#ReportDatabaseDriver#0" expanded="false" />
+                <element signature="method#getUserMessagesDate#0;class#ReportDatabaseDriver#0" expanded="false" />
+                <element signature="method#addUserMessageToDatabase#0;class#ReportDatabaseDriver#0" expanded="false" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -107,19 +171,19 @@
         <option value="$PROJECT_DIR$/src/webserver/ServletForwarder.java" />
         <option value="$PROJECT_DIR$/src/webserver/ServletTableRefresh.java" />
         <option value="$PROJECT_DIR$/log4j.properties" />
-        <option value="$PROJECT_DIR$/resources/webapp/style.css" />
         <option value="$PROJECT_DIR$/src/WebActionType.java" />
         <option value="$PROJECT_DIR$/src/webserver/WebServer.java" />
         <option value="$PROJECT_DIR$/src/webserver/ServletBtStart.java" />
         <option value="$PROJECT_DIR$/src/webserver/ServletBtStop.java" />
         <option value="$PROJECT_DIR$/src/webserver/ServletUserMessageHandler.java" />
-        <option value="$PROJECT_DIR$/resources/webapp/index.jsp" />
         <option value="$PROJECT_DIR$/src/bluetoothserver/BluetoothPacketType.java" />
         <option value="$PROJECT_DIR$/src/bluetoothserver/BluetoothServer.java" />
         <option value="$PROJECT_DIR$/src/database/ReportDatabaseDriver.java" />
         <option value="$PROJECT_DIR$/base-synchronization/template-db.sql" />
         <option value="$PROJECT_DIR$/src/bluetoothserver/BluetoothConnectionHandler.java" />
         <option value="$PROJECT_DIR$/src/ReportServer.java" />
+        <option value="$PROJECT_DIR$/resources/webapp/style.css" />
+        <option value="$PROJECT_DIR$/resources/webapp/index.jsp" />
       </list>
     </option>
   </component>
@@ -180,6 +244,8 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scratches" />
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -276,6 +342,24 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
+              <option name="myItemId" value="resources" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="webapp" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="reportserver" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="reportserver" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
               <option name="myItemId" value="base-synchronization" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
@@ -283,8 +367,6 @@
         </subPane>
       </pane>
       <pane id="PackagesPane" />
-      <pane id="Scratches" />
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -302,6 +384,7 @@
     <property name="Downloaded.Files.Path" value="D:\projects\reportserver\jars" />
     <property name="Repository.Attach.JavaDocs" value="false" />
     <property name="Repository.Attach.Sources" value="false" />
+    <property name="TODO_SCOPE" value="Project Files" />
   </component>
   <component name="RecentsManager">
     <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
@@ -537,9 +620,9 @@
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2511062" sideWeight="0.43826407" order="9" side_tool="true" content_ui="tabs" x="1142" y="0" width="546" height="1058" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" show_stripe_button="false" weight="0.32959184" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.28761062" sideWeight="0.5617359" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3329646" sideWeight="0.5617359" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.20660147" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.16870415" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.35359117" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39853302" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -569,7 +652,7 @@
       <breakpoints-dialog>
         <breakpoints-dialog />
       </breakpoints-dialog>
-      <option name="time" value="233" />
+      <option name="time" value="234" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -578,7 +661,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/base-synchronization/44746CA50FEE-03-20-2016-19-25-30.sql" />
     <entry file="jar://C:/Program Files/Java/jdk1.8.0_25/src.zip!/java/io/WinNTFileSystem.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="9700">
@@ -727,13 +809,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/resources/webapp/style.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="390">
-          <caret line="48" column="1" selection-start-line="48" selection-start-column="1" selection-end-line="48" selection-end-column="1" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/webserver/ServletTableRefresh.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="80">
@@ -808,7 +883,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="76">
           <caret line="4" column="6" selection-start-line="4" selection-start-column="6" selection-end-line="4" selection-end-column="6" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -824,10 +898,10 @@
         <state relative-caret-position="200">
           <caret line="10" column="5" selection-start-line="10" selection-start-column="5" selection-end-line="10" selection-end-column="5" />
           <folding>
-            <element signature="e#231#232#0" expanded="true" />
-            <element signature="e#263#264#0" expanded="true" />
-            <element signature="e#292#293#0" expanded="true" />
-            <element signature="e#321#322#0" expanded="true" />
+            <element signature="e#231#232#0" expanded="false" />
+            <element signature="e#263#264#0" expanded="false" />
+            <element signature="e#292#293#0" expanded="false" />
+            <element signature="e#321#322#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -875,22 +949,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/resources/webapp/routes-table.jsp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1020">
-          <caret line="51" column="30" selection-start-line="51" selection-start-column="30" selection-end-line="51" selection-end-column="30" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/resources/webapp/index.jsp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2360">
-          <caret line="118" column="22" selection-start-line="118" selection-start-column="22" selection-end-line="118" selection-end-column="22" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://C:/Program Files/Java/jdk1.8.0_25/src.zip!/java/io/File.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="205">
@@ -907,42 +965,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/database/ReportDatabaseDriver.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="236">
-          <caret line="77" column="32" selection-start-line="77" selection-start-column="16" selection-end-line="77" selection-end-column="32" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="method#GetClientHistory#0;class#ReportDatabaseDriver#0" expanded="false" />
-            <element signature="method#getDatabaseVersion#1;class#ReportDatabaseDriver#0" expanded="false" />
-            <element signature="method#BackupCurrentDatabase#0;class#ReportDatabaseDriver#0" expanded="false" />
-            <element signature="method#SetToHistory#0;class#ReportDatabaseDriver#0" expanded="false" />
-            <element signature="method#initDatabaseVersion#0;class#ReportDatabaseDriver#0" expanded="false" />
-            <element signature="method#incrementDatabaseVersion#0;class#ReportDatabaseDriver#0" expanded="false" />
-            <element signature="method#RunScript#0;class#ReportDatabaseDriver#0" expanded="false" />
-            <element signature="method#isUserAdmin#0;class#ReportDatabaseDriver#0" expanded="false" />
-            <element signature="method#isAcceptableTableInQuery#0;class#ReportDatabaseDriver#0" expanded="false" />
-            <element signature="method#getLatest10IdsDetour#0;class#ReportDatabaseDriver#0" expanded="false" />
-            <element signature="method#getDetourTableIds#0;class#ReportDatabaseDriver#0" expanded="false" />
-            <element signature="method#getUserNameFromDetourTable#0;class#ReportDatabaseDriver#0" expanded="false" />
-            <element signature="method#getRouteNameFromDetourTable#0;class#ReportDatabaseDriver#0" expanded="false" />
-            <element signature="method#getStartTimeFromDetourTable#0;class#ReportDatabaseDriver#0" expanded="false" />
-            <element signature="method#getEndTimeFromDetourTable#0;class#ReportDatabaseDriver#0" expanded="false" />
-            <element signature="method#getStatusFromDetourTable#0;class#ReportDatabaseDriver#0" expanded="false" />
-            <element signature="method#getRoutesTablePathRoutePicture#0;class#ReportDatabaseDriver#0" expanded="false" />
-            <element signature="method#getUserMessageNumber#0;class#ReportDatabaseDriver#0" expanded="false" />
-            <element signature="method#getUserMessages#0;class#ReportDatabaseDriver#0" expanded="false" />
-            <element signature="method#getUserMessagesDate#0;class#ReportDatabaseDriver#0" expanded="false" />
-            <element signature="method#addUserMessageToDatabase#0;class#ReportDatabaseDriver#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/base-synchronization/template-db.sql">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="496">
           <caret line="85" column="25" selection-start-line="85" selection-start-column="25" selection-end-line="85" selection-end-column="25" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -970,60 +996,123 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/bluetoothserver/BluetoothConnectionHandler.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1956">
-          <caret line="248" column="101" selection-start-line="248" selection-start-column="101" selection-end-line="248" selection-end-column="101" />
-          <folding>
-            <element signature="method#BluetoothConnectionHandler#0;class#BluetoothConnectionHandler#0" expanded="false" />
-            <element signature="method#stop#0;class#BluetoothConnectionHandler#0" expanded="false" />
-            <element signature="method#createConnection#0;class#BluetoothConnectionHandler#0" expanded="false" />
-            <element signature="method#reopenNewConnection#0;class#BluetoothConnectionHandler#0" expanded="false" />
-            <element signature="method#receiveHandler#0;class#BluetoothConnectionHandler#0" expanded="false" />
-            <element signature="method#sendHandler#0;class#BluetoothConnectionHandler#0" expanded="false" />
-            <element signature="method#initReceivedFileName#0;class#BluetoothConnectionHandler#0" expanded="false" />
-            <element signature="method#dataReceiving#0;class#BluetoothConnectionHandler#0" expanded="false" />
-            <element signature="method#ErrorCloseConnection#0;class#BluetoothConnectionHandler#0" expanded="false" />
-            <element signature="method#getRemoteDeviceBluetoothAddress#0;class#BluetoothConnectionHandler#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/webserver/ServletUserMessageHandler.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="280">
           <caret line="14" column="0" selection-start-line="14" selection-start-column="0" selection-end-line="14" selection-end-column="0" />
           <folding>
-            <element signature="imports" expanded="true" />
+            <element signature="imports" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="jar://$PROJECT_DIR$/jars/servlet-api-3.1.jar!/javax/servlet/ServletResponse.class">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="205">
+        <state relative-caret-position="300">
           <caret line="21" column="21" selection-start-line="21" selection-start-column="21" selection-end-line="21" selection-end-column="21" />
           <folding />
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/resources/webapp/diagnostic-message.jsp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/bluetoothserver/BluetoothConnectionHandler.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="36">
+          <caret line="249" column="39" selection-start-line="249" selection-start-column="39" selection-end-line="249" selection-end-column="39" />
+          <folding>
+            <element signature="method#BluetoothConnectionHandler#0;class#BluetoothConnectionHandler#0" expanded="false" />
+            <element signature="method#stop#0;class#BluetoothConnectionHandler#0" expanded="false" />
+            <element signature="method#createConnection#0;class#BluetoothConnectionHandler#0" expanded="false" />
+            <element signature="method#reopenNewConnection#0;class#BluetoothConnectionHandler#0" expanded="false" />
+            <element signature="method#sendHandler#0;class#BluetoothConnectionHandler#0" expanded="false" />
+            <element signature="method#initReceivedFileName#0;class#BluetoothConnectionHandler#0" expanded="false" />
+            <element signature="method#ErrorCloseConnection#0;class#BluetoothConnectionHandler#0" expanded="false" />
+            <element signature="method#getRemoteDeviceBluetoothAddress#0;class#BluetoothConnectionHandler#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/database/ReportDatabaseDriver.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="356">
+          <caret line="300" column="0" selection-start-line="300" selection-start-column="0" selection-end-line="300" selection-end-column="0" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="method#init#0;class#ReportDatabaseDriver#0" expanded="false" />
+            <element signature="e#776#832#0" expanded="false" />
+            <element signature="method#GetClientHistory#0;class#ReportDatabaseDriver#0" expanded="false" />
+            <element signature="method#checkClientVersion#0;class#ReportDatabaseDriver#0" expanded="false" />
+            <element signature="method#setClientVersion#0;class#ReportDatabaseDriver#0" expanded="false" />
+            <element signature="method#getDatabaseVersion#1;class#ReportDatabaseDriver#0" expanded="false" />
+            <element signature="method#BackupCurrentDatabase#0;class#ReportDatabaseDriver#0" expanded="false" />
+            <element signature="method#SetToHistory#0;class#ReportDatabaseDriver#0" expanded="false" />
+            <element signature="method#initDatabaseVersion#0;class#ReportDatabaseDriver#0" expanded="false" />
+            <element signature="method#incrementDatabaseVersion#0;class#ReportDatabaseDriver#0" expanded="false" />
+            <element signature="method#RunScript#0;class#ReportDatabaseDriver#0" expanded="false" />
+            <element signature="method#isUserAdmin#0;class#ReportDatabaseDriver#0" expanded="false" />
+            <element signature="method#isAcceptableTableInQuery#0;class#ReportDatabaseDriver#0" expanded="false" />
+            <element signature="method#getLatest10IdsDetour#0;class#ReportDatabaseDriver#0" expanded="false" />
+            <element signature="method#getDetourTableIds#0;class#ReportDatabaseDriver#0" expanded="false" />
+            <element signature="method#getUserNameFromDetourTable#0;class#ReportDatabaseDriver#0" expanded="false" />
+            <element signature="method#getRouteNameFromDetourTable#0;class#ReportDatabaseDriver#0" expanded="false" />
+            <element signature="method#getStartTimeFromDetourTable#0;class#ReportDatabaseDriver#0" expanded="false" />
+            <element signature="method#getEndTimeFromDetourTable#0;class#ReportDatabaseDriver#0" expanded="false" />
+            <element signature="method#getStatusFromDetourTable#0;class#ReportDatabaseDriver#0" expanded="false" />
+            <element signature="method#getRoutesTablePathRoutePicture#0;class#ReportDatabaseDriver#0" expanded="false" />
+            <element signature="method#getUserMessageNumber#0;class#ReportDatabaseDriver#0" expanded="false" />
+            <element signature="method#getUserMessages#0;class#ReportDatabaseDriver#0" expanded="false" />
+            <element signature="method#getUserMessagesDate#0;class#ReportDatabaseDriver#0" expanded="false" />
+            <element signature="method#addUserMessageToDatabase#0;class#ReportDatabaseDriver#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/ReportServer.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="505">
-          <caret line="326" column="67" selection-start-line="326" selection-start-column="67" selection-end-line="326" selection-end-column="67" />
+        <state relative-caret-position="-574">
+          <caret line="177" column="60" selection-start-line="177" selection-start-column="60" selection-end-line="177" selection-end-column="60" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="method#bluetoothTransactionHandler#0;class#ReportServer#0" expanded="false" />
-            <element signature="method#bluetoothBinaryFileTransactionHandler#0;class#ReportServer#0" expanded="false" />
-            <element signature="method#bluetoothSynchTransactionHandler#0;class#ReportServer#0" expanded="false" />
             <element signature="method#bluetoothSqlQueriesTransactionHandler#0;class#ReportServer#0" expanded="false" />
             <element signature="method#bluetoothServerStart#0;class#ReportServer#0" expanded="false" />
             <element signature="method#bluetoothServerStop#0;class#ReportServer#0" expanded="false" />
-            <element signature="method#getDatabaseDriver#0;class#ReportServer#0" expanded="false" />
             <element signature="method#sendUserMessage#0;class#ReportServer#0" expanded="false" />
             <element signature="method#popUserMessage#0;class#ReportServer#0" expanded="false" />
+            <element signature="method#userMessageHandler#0;class#ReportServer#0" expanded="false" />
             <element signature="method#getWebAction#0;class#ReportServer#0" expanded="false" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/resources/webapp/index.jsp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="324">
+          <caret line="122" column="23" selection-start-line="122" selection-start-column="23" selection-end-line="122" selection-end-column="23" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/resources/webapp/style.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="875">
+          <caret line="63" column="0" selection-start-line="63" selection-start-column="0" selection-end-line="63" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/resources/webapp/routes-table.jsp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="96">
+          <caret line="42" column="11" selection-start-line="42" selection-start-column="11" selection-end-line="42" selection-end-column="11" />
+          <folding />
         </state>
       </provider>
     </entry>

@@ -7,97 +7,106 @@
     <title>Report server</title>
     <script src="jquery-1.12.1.js"></script>
     <script language="javascript" type="text/javascript">
-    var request = false;
-    try {
-        request = new XMLHttpRequest();
-    } catch (trymicrosoft) {
-        try {
-            request = new ActiveXObject("Msxml2.XMLHTTP");
-        } catch (othermicrosoft) {
-            try {
-                request = new ActiveXObject("Microsoft.XMLHTTP");
-            } catch (failed) {
-                request = false;
-            }
-        }
-    }
+     <%
+        //Необходимые для формирования документа объявления
+        reportserver.ReportDatabaseDriver databaseDriver = reportserver.ReportServer.getDatabaseDriver();
+     %>
 
-    if (!request)
-     alert("Error initializing XMLHttpRequest!");
-
-    function bluetoothServerStart() {
-        var url = "/btstart";
-        request.open("GET", url, true);
-        request.onreadystatechange = updateBluetoothServerStatus;
-        request.send(null);
-    }
-
-    function bluetoothServerStop() {
-        var url = "/btstop";
-        request.open("GET", url, true);
-        request.onreadystatechange = updateBluetoothServerStatus;
-        request.send(null);
-    }
-
-    function getBluetoothServerStatus() {
-        var url = "/btstatus";
-        request.open("GET", url, true);
-        request.onreadystatechange = updateBluetoothServerStatus;
-        request.send(null);
-    }
-
-    function updateBluetoothServerStatus() {
-        var response = request.responseText;
-        if (request.readyState == 4) {
-            if (request.status == 200) {
-                document.getElementById("btServerStatus").innerHTML = response;
-            } else {
-                //alert("status is " + request.status);
-            }
-        }
-    }
-
-    var userMessageNumber = 0;
-
-    // Сообщения для пользователя
-    function addUserMessageRow(text) {
-      var currentDate = new Date();
-      $('#userMessageTable').prepend("<tr><td><div class=\"debug-message\">"+currentDate.toLocaleString()+"</div></td>"+
-                                     "<td><div class=\"debug-message\">"+text+"</div></td></tr>");
-
-      ++userMessageNumber;
-
-      if (userMessageNumber > 5) {
-        $('#userMessageTable').children().find('tr').last().remove();
+      //Проверяем поддержку ajax у браузера
+      var request = false;
+      try {
+          request = new XMLHttpRequest();
+      } catch (trymicrosoft) {
+          try {
+              request = new ActiveXObject("Msxml2.XMLHTTP");
+          } catch (othermicrosoft) {
+              try {
+                  request = new ActiveXObject("Microsoft.XMLHTTP");
+              } catch (failed) {
+                  request = false;
+              }
+          }
       }
-    }
 
-    function userMessageHandler() {
-      $.ajax({
-        url: '/usermessage',
-        type: 'get',
-        dataType: "text",
-        success: function(data)
-        {
-          addUserMessageRow(data);
-          userMessageHandler();
-        }
+      if (!request)
+        alert("Error initializing XMLHttpRequest!");
+
+      /**
+      * Устанавливаем асинхронные запросы для отображения состояния сервера и
+      * обработки сообщений для пользователя
+      */
+      $(document).ready(function() {
+        getBluetoothServerStatus();
+        userMessageHandler();
       });
-    }
 
-    function onLoadRuner() {
-      getBluetoothServerStatus();
-      userMessageHandler();
-    }
+      function bluetoothServerStart() {
+          var url = "/btstart";
+          request.open("GET", url, true);
+          request.onreadystatechange = updateBluetoothServerStatus;
+          request.send(null);
+      }
 
-  </script>
+      function bluetoothServerStop() {
+          var url = "/btstop";
+          request.open("GET", url, true);
+          request.onreadystatechange = updateBluetoothServerStatus;
+          request.send(null);
+      }
+
+      function getBluetoothServerStatus() {
+          var url = "/btstatus";
+          request.open("GET", url, true);
+          request.onreadystatechange = updateBluetoothServerStatus;
+          request.send(null);
+      }
+
+      function updateBluetoothServerStatus() {
+          var response = request.responseText;
+          if (request.readyState == 4) {
+              if (request.status == 200) {
+                  document.getElementById("btServerStatus").innerHTML = response;
+              } else {
+                  //alert("status is " + request.status);
+              }
+          }
+      }
+
+      //Для обработки пользовательских сообщений
+      var userMessageNumber = <%= databaseDriver.getUserMessageNumber() %>;
+
+      function addUserMessageRow(text) {
+        var currentDate = new Date();   //TODO: для пользователя передавать дату с сервера !!!
+        $('#userMessageTable').prepend("<tr><td><div class=\"debug-message\">"+currentDate.toLocaleString()+"</div></td>"+
+                                       "<td><div class=\"debug-message\">"+text+"</div></td></tr>");
+
+        if (userMessageNumber >= 15) {
+          $('#userMessageTable').children().find('tr').last().remove();
+        } else {
+            ++userMessageNumber;
+        }
+      }
+
+      function userMessageHandler() {
+        $.ajax({
+          url: '/usermessage',
+          type: 'get',
+          dataType: "text",
+          success: function(data)
+          {
+            addUserMessageRow(data);
+            userMessageHandler();
+          }
+        });
+      }
+    </script>
   
-  <link rel="stylesheet" type="text/css" href="style.css">
-  <link rel="shortcut icon" href="img/favicon.ico" />
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="shortcut icon" href="img/favicon.ico" />
 
   </head>
 
-  <body onload="onLoadRuner()" bgcolor="#ffffff">
+  <body bgcolor="#ffffff">
    	<H1 class="main-title">Report server</H1>
 
     <table width="100%" height="100%" cellspacing="0" cellspacing="0" border="0">
@@ -113,7 +122,7 @@
                     <td align="left" colspan="2"><div name="bluetooth-address" class="bluetooth-mac" id="btMacAddress">Bluetooth mac: <%= reportserver.ReportServer.getBluetoothMacAddress() %></div></td>
                   </tr>
                   <tr>
-                    <td align="left" width="50%"><div class="bluetooth-mac">Состояние процесса синхронизации:</div></td>
+                    <td align="left" width="50%"><div class="bluetooth-mac">Состояние bluetooth:</div></td>
                     <td align="left" bgcolor="#cccccc"><div name="text1" class="btserver-status" id="btServerStatus">Чтение состояния...</div></td>
                   </tr>
                   <tr>
@@ -128,9 +137,6 @@
                 <div name="bluetooth-address" class="bluetooth-mac">Журнал событий:</div>
                 <table width="100%" cellspacing="0" cellspacing="0" id="userMessageTable">
                   <%
-                  try {
-                    reportserver.ReportDatabaseDriver databaseDriver = reportserver.ReportServer.getDatabaseDriver();
-
                     String[] messages = databaseDriver.getUserMessages();
                     String[] dates = databaseDriver.getUserMessagesDate();
 
@@ -140,9 +146,6 @@
                                     "<td>"+messages[i]+"</td>"+
                                   "</tr>");
                     }
-                  } catch (java.sql.SQLException e) {
-                    out.println("<tr class=\"debug-message\"><td colspan=\"2\"><span class=\"error\">SQL query error...</span></td></tr>");
-                  }
                   %>
                 </table>
               </td>
