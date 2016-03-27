@@ -53,8 +53,8 @@ public class ReportDatabaseDriver {
         }
     }
 
-    ArrayList<String> GetClientHistory(int version) throws SQLException {
-        ResultSet rs = databaseStatement.executeQuery("SELECT query FROM history WHERE id_version = " + version);
+    ArrayList<String> getClientHistory(int version) throws SQLException {
+        ResultSet rs = databaseStatement.executeQuery("SELECT query FROM history WHERE id_version="+version);
         ArrayList<String> resultList = new ArrayList<String>();
 
         while (rs.next()) {
@@ -76,7 +76,7 @@ public class ReportDatabaseDriver {
     }
 
     public void setClientVersion(String mac_address, int id_version) throws SQLException {
-        ResultSet rs = databaseStatement.executeQuery("SELECT id_version FROM clients_version WHERE mac = \""+mac_address+"\"");
+        ResultSet rs = databaseStatement.executeQuery("SELECT id_version FROM clients_version WHERE mac=\""+mac_address+"\"");
 
         if (!rs.next()) {
             databaseStatement.executeUpdate("INSERT INTO clients_version (id_version, mac) VALUES ("+id_version+", \""+mac_address+"\")");
@@ -91,7 +91,7 @@ public class ReportDatabaseDriver {
     }
 
     public Integer getDatabaseVersion(String mac_address) throws SQLException {
-        ResultSet rs = databaseStatement.executeQuery("SELECT id_version FROM clients_version WHERE mac = \""+mac_address+"\"");
+        ResultSet rs = databaseStatement.executeQuery("SELECT id_version FROM clients_version WHERE mac=\""+mac_address+"\"");
         if (!rs.next()) {
             return null;
         }
@@ -103,7 +103,7 @@ public class ReportDatabaseDriver {
         return dbState;
     }
 
-    void BackupCurrentDatabase(String uniqPart) {
+    void backupCurrentDatabase(String uniqPart) {
         synchronized (dbState) {
             dbState = DatabaseState.BACKUP;
         }
@@ -122,7 +122,7 @@ public class ReportDatabaseDriver {
             Files.copy(Paths.get(sourceFile.getAbsolutePath()),
                         new FileOutputStream(targetFile));
 
-            dbConnection = DriverManager.getConnection("jdbc:sqlite:"+url);
+            dbConnection = DriverManager.getConnection("jdbc:log4jdbc:sqlite:"+url);
 
             if (dbConnection == null)
                 throw new SQLException();
@@ -150,9 +150,9 @@ public class ReportDatabaseDriver {
         }
     }
 
-    private void SetToHistory(String query, int databaseId) throws SQLException {
+    public void setToHistory(String query, int databaseId) throws SQLException {
         //Записать все запросы в историю для текущей версии таблицы
-        databaseStatement.executeUpdate("INSERT INTO history (id_version, query) value("+databaseId+",\""+query+"\")");
+        databaseStatement.executeUpdate("INSERT INTO history (id_version, query) VALUES("+databaseId+",\""+query+"\")");
     }
 
     public void initDatabaseVersion(String mac) throws SQLException {
@@ -165,22 +165,28 @@ public class ReportDatabaseDriver {
     }
 
     private void incrementDatabaseVersion(String mac_address) throws SQLException {
-        databaseStatement.executeUpdate("UPDATE clients_versions SET id_version="+(dataBaseSynchId+1)+" WHERE mac = "+mac_address);
+        databaseStatement.executeUpdate("UPDATE clients_version SET id_version="+(dataBaseSynchId+1)+" WHERE mac=\""+mac_address+"\"");
         ++dataBaseSynchId;
     }
 
-    void RunScript(int userId, SqlCommandList batch) {
+    void runScript(int userId, SqlCommandList batch) {
         try {
+            log.info("current user: "+userId);
             boolean isAdmin = isUserAdmin(userId);
 
             dbConnection.setAutoCommit(false);
 
             ListIterator<String> iter = (ListIterator<String>) batch.iterator();
             while (iter.hasNext()) {
-               if (isAdmin || isAcceptableTableInQuery(iter.next()))  {
-                   databaseStatement.executeUpdate(iter.next());
-                   SetToHistory(iter.next(), dataBaseSynchId+1);
-               }
+                String query = iter.next();
+                if (isAdmin || isUserAcceptableTableInQuery(query))  {
+     //               try {
+                        databaseStatement.executeUpdate(query);
+                        setToHistory(query, dataBaseSynchId+1);
+     //               } catch(SQLException e) {
+     //                   log.error("BAD QUERY: "+iter.next());
+     //               }
+                }
             }
 
             //если все этапы прошли корректно увеличиваем версию
@@ -206,19 +212,19 @@ public class ReportDatabaseDriver {
         }
     }
 
-    private boolean isUserAdmin(int userId) throws SQLException {
-        ResultSet rs = databaseStatement.executeQuery("SELECT is_admine FROM users WHERE _id_user = "+userId);
-        return rs.getBoolean("is_admine");
+    public boolean isUserAdmin(int userId) throws SQLException {
+        ResultSet rs = databaseStatement.executeQuery("SELECT is_admin FROM users WHERE _id_user="+userId);
+        return rs.getBoolean("is_admin");
     }
 
-    private boolean isAcceptableTableInQuery(String query) {
+    public boolean isUserAcceptableTableInQuery(String query) {
         String[] words = query.split(" ");
-        if ((words[0] == "INSERT") || (words[0] == "DELETE") ) {
-            return (words[2] == "\"detour\"");
+        if ((words[0].equals("INSERT")) || (words[0].equals("DELETE") )) {
+            return (words[2].equals("detour"));
         }
 
-        if (words[0] == "UPDATE") {
-            return (words[1] == "\"detour\"");
+        if (words[0].equals("UPDATE")) {
+            return (words[1].equals("detour"));
         }
 
         return false;
@@ -252,36 +258,36 @@ public class ReportDatabaseDriver {
     }
 
     public String getUserNameFromDetourTable(int idDetour) throws SQLException {
-        ResultSet rs = databaseStatement.executeQuery("SELECT id_user FROM detour WHERE _id_detour = "+idDetour);
+        ResultSet rs = databaseStatement.executeQuery("SELECT id_user FROM detour WHERE _id_detour="+idDetour);
         int userId = rs.getInt("id_user");
-        rs = databaseStatement.executeQuery("SELECT fio FROM users WHERE _id_user = "+userId);
+        rs = databaseStatement.executeQuery("SELECT fio FROM users WHERE _id_user="+userId);
         return rs.getString("fio");
     }
 
     public String getRouteNameFromDetourTable(int idDetour) throws SQLException {
-        ResultSet rs = databaseStatement.executeQuery("SELECT id_route FROM detour WHERE _id_detour = "+idDetour);
+        ResultSet rs = databaseStatement.executeQuery("SELECT id_route FROM detour WHERE _id_detour="+idDetour);
         int routeId = rs.getInt("id_route");
-        rs = databaseStatement.executeQuery("SELECT name FROM routs WHERE _id_route = "+routeId);
+        rs = databaseStatement.executeQuery("SELECT name FROM routs WHERE _id_route="+routeId);
         return rs.getString("name");
     }
 
     public String getStartTimeFromDetourTable(int idDetour) throws SQLException {
-        ResultSet rs = databaseStatement.executeQuery("SELECT time_start FROM detour WHERE _id_detour = "+idDetour);
+        ResultSet rs = databaseStatement.executeQuery("SELECT time_start FROM detour WHERE _id_detour="+idDetour);
         return rs.getString("time_start");
     }
 
     public String getEndTimeFromDetourTable(int idDetour) throws SQLException {
-        ResultSet rs = databaseStatement.executeQuery("SELECT time_stop FROM detour WHERE _id_detour = "+idDetour);
+        ResultSet rs = databaseStatement.executeQuery("SELECT time_stop FROM detour WHERE _id_detour="+idDetour);
         return rs.getString("time_stop");
     }
 
     public boolean getStatusFromDetourTable(int idDetour) throws SQLException {
-        ResultSet rs = databaseStatement.executeQuery("SELECT finished FROM detour WHERE _id_detour = "+idDetour);
+        ResultSet rs = databaseStatement.executeQuery("SELECT finished FROM detour WHERE _id_detour="+idDetour);
         return rs.getBoolean("finished");
     }
 
     public String getRoutesTablePathRoutePicture(int idRoute) throws SQLException {
-        ResultSet rs = databaseStatement.executeQuery("SELECT path_picture_route FROM routs WHERE _id_route = "+idRoute);
+        ResultSet rs = databaseStatement.executeQuery("SELECT path_picture_route FROM routs WHERE _id_route="+idRoute);
         return rs.getString("path_picture_route");
     }
 

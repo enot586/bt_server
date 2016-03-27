@@ -14,6 +14,10 @@ class SqlCommandList implements Iterable<String> {
     private LinkedList<String> listSqlQueries = new LinkedList<String>();
     private static Logger log = Logger.getLogger(SqlCommandList.class);
 
+    SqlCommandList() {
+
+    }
+
     SqlCommandList(File file) throws FileNotFoundException, SQLSyntaxErrorException {
         this.addFromFile(file);
     }
@@ -45,6 +49,10 @@ class SqlCommandList implements Iterable<String> {
              (isBadStartOrFinishSymbol(newQuery.charAt(i))); newQuery.delete(i,i), --i);
 
         return newQuery.toString();
+    }
+
+    public void addQueryToList(String query) {
+        listSqlQueries.add(query);
     }
 
     private boolean checkSqlSyntax(String query) {

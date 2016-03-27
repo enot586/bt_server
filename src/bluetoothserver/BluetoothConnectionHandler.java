@@ -33,7 +33,7 @@ class BluetoothConnectionHandler implements Runnable {
     private StreamConnection currentConnection;
     private BufferedInputStream inStream;
     private BufferedOutputStream senderStream;
-    private static Logger log = Logger.getLogger(BluetoothConnectionHandler.class);
+    private static final Logger log = Logger.getLogger(BluetoothConnectionHandler.class);
 
     BluetoothConnectionHandler(BluetoothServer parent_, String url_) throws NullPointerException {
         if ( (url_ == null) || (parent_ == null) ) {
@@ -101,6 +101,7 @@ class BluetoothConnectionHandler implements Runnable {
 
                         streamConnNotifier = (StreamConnectionNotifier)Connector.open(url);
                     } catch (IOException e) {
+                        ReportServer.sendUserMessage("Не удается получить доступ к bluetooth");
                         synchronized (connectionState) {
                             //TODO: обработать правильно
                             log.warn(e);
@@ -195,7 +196,7 @@ class BluetoothConnectionHandler implements Runnable {
             try {
                 senderStream.write(transactionForSend.getHeader().toJSONString().getBytes());
                 senderStream.flush();
-                log.info("Send header");
+                log.info("Send packet :"+transactionForSend.getHeader().toJSONString());
             } catch (IOException e) {
                 log.warn(e);
             }
@@ -266,37 +267,37 @@ class BluetoothConnectionHandler implements Runnable {
         while (!receiver.isHeaderReceived()) {
             try {
                 //read string from spp client
-                int bytesRead = inStream.read(tempBuffer, 0, tempBuffer.length);
-                int indexLastHeaderByte = receiver.receiveHeader(tempBuffer);
+                inStream.read(tempBuffer, 0, 1);
+                receiver.receiveHeader(tempBuffer, 1);
 
                 refreshTransactionTimeout();
 
                 if (receiver.isHeaderReceived()) {
                     JSONObject header = receiver.getHeader();
-                    bytesRead-= indexLastHeaderByte+1;
+
                     boolean isTransactionWithBody = header.containsKey("size");
                     transactionTotalSize = (long) header.get("size");
 
-                    if (isTransactionWithBody && (transactionTotalSize > 0)) {
-                        if (bytesRead > 0) {
-                            byte[] temp = Arrays.copyOfRange(tempBuffer, (indexLastHeaderByte + 1),
-                                                                (indexLastHeaderByte + 1) + bytesRead);
+                    log.info("receive file:");
+                    log.info(header.toString());
 
-                            //если принимаем бинарный файл, то присваиваем ему имя которое пришло в тразакции
-                            int type = (int)header.get("type");
-                            if (BluetoothPacketType.BINARY_FILE.getId() == type) {
-                                receivedFileName = (String) header.get("filename");
-                            }
-
-                            FileOutputStream fileOutputStream = new FileOutputStream(synchDataBaseFile + "/" + receivedFileName);
-                            BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
-                            bufferedOutputStream.write(temp, byteIndexInFile, bytesRead);
-                            bufferedOutputStream.flush();
-                            bufferedOutputStream.close();
-                            byteIndexInFile += bytesRead;
+                    //если принимаем бинарный файл, то присваиваем ему имя которое пришло в тразакции
+                    if (header.containsKey("filename")) {
+                        long type = (long) header.get("type");
+                        if (BluetoothPacketType.BINARY_FILE.getId() == type) {
+                            receivedFileName = (String) header.get("filename");
                         }
+                    }
+
+                    if (isTransactionWithBody) {
+                        //Перезаписываем файлик если таковой существует
+                        FileOutputStream fileOutputStream = new FileOutputStream(synchDataBaseFile + "/" + receivedFileName);
+                        fileOutputStream.flush();
+                        fileOutputStream.close();
+                        log.info(receivedFileName);
                         break;
                     } else {
+                        log.info("BluetoothSimpleTransaction");
                         return new BluetoothSimpleTransaction(header);
                     }
                 }
@@ -308,7 +309,10 @@ class BluetoothConnectionHandler implements Runnable {
 
         while (byteIndexInFile < transactionTotalSize) {
             try {
-                int bytesRead = inStream.read(tempBuffer, 0, tempBuffer.length);
+                int numberOfBytesToTheEnd = ((int)transactionTotalSize - byteIndexInFile);
+                int bytesRead = inStream.read(tempBuffer, 0,
+                                                (numberOfBytesToTheEnd > tempBuffer.length) ? tempBuffer.length : numberOfBytesToTheEnd);
+
                 refreshTransactionTimeout();
                 FileOutputStream fileOutputStream = new FileOutputStream(synchDataBaseFile + "/" + receivedFileName, true);
                 BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
@@ -323,6 +327,7 @@ class BluetoothConnectionHandler implements Runnable {
         }
 
         if (transactionTotalSize == byteIndexInFile) {
+            log.info("complete receive:"+receiver.getHeader().toJSONString());
             return new BluetoothFileTransaction(receiver.getHeader(), receivedFileName);
         }
 

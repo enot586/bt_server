@@ -185,7 +185,7 @@ public class ReportServer {
                     ArrayList<String> sourceHistory = new ArrayList<String>();
 
                     for (int currentVersion = (clientVersion + 1); currentVersion < dbVersion; ++currentVersion) {
-                        sourceHistory.addAll(reportDatabaseDriver.GetClientHistory(currentVersion));
+                        sourceHistory.addAll(reportDatabaseDriver.getClientHistory(currentVersion));
                     }
 
                     JSONObject header = new JSONObject();
@@ -264,13 +264,15 @@ public class ReportServer {
         header.put("status",    new Long(status));
         bt.sendData(new BluetoothSimpleTransaction(header));
 
-        reportDatabaseDriver.BackupCurrentDatabase(Integer.toString(reportDatabaseDriver.getDatabaseVersion()));
+        reportDatabaseDriver.backupCurrentDatabase(Integer.toString(reportDatabaseDriver.getDatabaseVersion()));
 
         long userId = (long)(transaction.getHeader().get("userId"));
-        reportDatabaseDriver.RunScript((int)userId, sqlScript);
+
+        reportDatabaseDriver.runScript((int)userId, sqlScript);
 
         try {
-            ReportServer.getWebAction(WebActionType.REFRESH_DETOUR_TABLE).complete();
+            AsyncContext asyncRefreshDetourTable = ReportServer.getWebAction(WebActionType.REFRESH_DETOUR_TABLE);
+            asyncRefreshDetourTable.complete();
         } catch (NullPointerException e) {
             //по каким-то причинам ajax соединение установлено не было
             log.warn(e);
@@ -332,6 +334,7 @@ public class ReportServer {
             ServletResponse response = asyncRequest.getResponse();
             response.setCharacterEncoding("UTF-8");
             response.getWriter().write(new String(text.getBytes("UTF-8")));
+            response.getWriter().flush();
             asyncRequest.complete();
         } catch (NullPointerException | NoSuchElementException e) {
 

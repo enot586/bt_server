@@ -39,9 +39,9 @@ class JSONReceiver {
         return jsonString.length();
     }
 
-    public int receiveHeader(byte[] packetBuffer) {
-
-        while (byteIndex < packetBuffer.length) {
+    public int receiveHeader(byte[] packetBuffer, int size) {
+        byteIndex = 0;
+        while (byteIndex < size) {
 
             switch (receivePacketFsm) {
 

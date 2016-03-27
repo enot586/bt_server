@@ -12,7 +12,6 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="bluecove-2.1.0" level="project" />
     <orderEntry type="library" name="jetty-all-server-8.1.19.v20160209" level="project" />
     <orderEntry type="library" name="servlet-api-3.1" level="project" />
     <orderEntry type="library" name="jetty-jsp-9.2.10.v20150310" level="project" />
@@ -30,5 +29,8 @@
     <orderEntry type="library" name="slf4j-log4j12-1.7.18" level="project" />
     <orderEntry type="library" name="com.googlecode.json-simple:json-simple:1.1.1" level="project" />
     <orderEntry type="library" name="log4jdbc4-1.2" level="project" />
+    <orderEntry type="library" name="net.sf.bluecove:bluecove:2.1.0" level="project" />
+    <orderEntry type="library" name="net.sf.bluecove:bluecove-gpl:2.1.0" level="project" />
+    <orderEntry type="library" name="junit:junit:4.12" level="project" />
   </component>
 </module>

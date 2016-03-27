@@ -73,3 +73,9 @@ iframe {
   border-width:0px;
 }
 
+.element-on-page {
+  font-family:verdana;
+  font-size:8pt;
+  font-weight:normal;
+}
+
