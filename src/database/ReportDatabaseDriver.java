@@ -179,13 +179,10 @@ public class ReportDatabaseDriver {
             ListIterator<String> iter = (ListIterator<String>) batch.iterator();
             while (iter.hasNext()) {
                 String query = iter.next();
+                if (query.length() == 0) continue;
                 if (isAdmin || isUserAcceptableTableInQuery(query))  {
-     //               try {
-                        databaseStatement.executeUpdate(query);
-                        setToHistory(query, dataBaseSynchId+1);
-     //               } catch(SQLException e) {
-     //                   log.error("BAD QUERY: "+iter.next());
-     //               }
+                    databaseStatement.executeUpdate(query);
+                    setToHistory(query, dataBaseSynchId+1);
                 }
             }
 
@@ -197,6 +194,7 @@ public class ReportDatabaseDriver {
             dbConnection.commit();
 
         } catch (SQLException e) {
+            ReportServer.sendUserMessage("Ошибка обработки SQL-запроса. Отмена синхронизации.");
             try {
                 dbConnection.rollback();
             } catch (SQLException e1) {
@@ -311,8 +309,7 @@ public class ReportDatabaseDriver {
             String[] messages = new String[15];
 
             for (int i = 0; i < 15; ++i) {
-                messages[i] = rs.getString("message");
-                rs.next();
+                if (rs.next()) messages[i] = rs.getString("message");
             }
 
             return messages;
@@ -328,8 +325,7 @@ public class ReportDatabaseDriver {
             String[] dates = new String[15];
 
             for (int i = 0; i < 15; ++i) {
-                dates[i] = rs.getString("message_date");
-                rs.next();
+                if (rs.next()) dates[i] = rs.getString("message_date");
             }
 
             return dates;
@@ -348,15 +344,15 @@ public class ReportDatabaseDriver {
 
                 if (rs.next()) {
                     int currentId = (int) rs.getInt("_id_message");
-                    databaseStatement.executeUpdate("DELETE FROM user_messages WHERE _id_message = " + currentId);
+                    databaseStatement.executeUpdate("DELETE FROM user_messages WHERE _id_message=" + currentId);
                 }
             }
 
-            String pattern = "YYYY-MM-DD HH:MM:SS";
+            String pattern = "yyyy-mm-dd HH:mm:ss.SSS";
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
             String date = simpleDateFormat.format(currentDate);
-            databaseStatement.executeUpdate("INSERT INTO user_messages (message, message_date) VALUES (\""+text+"\",\""+date+"\")");
-         } catch (SQLException e) {
+            databaseStatement.executeUpdate("INSERT INTO user_messages (message, message_date) VALUES ('"+text+"','"+date+"')");
+        } catch (SQLException e) {
             log.error(e);
         }
     }

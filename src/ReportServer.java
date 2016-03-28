@@ -271,7 +271,7 @@ public class ReportServer {
         reportDatabaseDriver.runScript((int)userId, sqlScript);
 
         try {
-            AsyncContext asyncRefreshDetourTable = ReportServer.getWebAction(WebActionType.REFRESH_DETOUR_TABLE);
+            AsyncContext asyncRefreshDetourTable = ReportServer.popWebAction(WebActionType.REFRESH_DETOUR_TABLE);
             asyncRefreshDetourTable.complete();
         } catch (NullPointerException e) {
             //по каким-то причинам ajax соединение установлено не было
@@ -320,8 +320,7 @@ public class ReportServer {
     }
 
     public synchronized static String popUserMessage() throws NoSuchElementException {
-        String text;
-        text = userMessages.peek();
+        String text = userMessages.peek();
         if (text == null)  throw new NoSuchElementException();
         userMessages.remove();
         return text;
@@ -329,13 +328,15 @@ public class ReportServer {
 
     static void userMessageHandler() {
         try {
-            String text = popUserMessage();
-            AsyncContext asyncRequest = ReportServer.getWebAction(WebActionType.SEND_USER_MESSAGE);
-            ServletResponse response = asyncRequest.getResponse();
-            response.setCharacterEncoding("UTF-8");
-            response.getWriter().write(new String(text.getBytes("UTF-8")));
-            response.getWriter().flush();
-            asyncRequest.complete();
+            if (isWebActionExist(WebActionType.SEND_USER_MESSAGE)) {
+                String text = popUserMessage();
+                AsyncContext asyncRequest = ReportServer.popWebAction(WebActionType.SEND_USER_MESSAGE);
+                ServletResponse response = asyncRequest.getResponse();
+                response.setCharacterEncoding("UTF-8");
+                response.getWriter().write(new String(text.getBytes("UTF-8")));
+                response.getWriter().flush();
+                asyncRequest.complete();
+            }
         } catch (NullPointerException | NoSuchElementException e) {
 
         } catch (IOException e) {
@@ -343,12 +344,18 @@ public class ReportServer {
         }
     }
 
+    static boolean isWebActionExist(WebActionType type) {
+        return webActions.containsKey(type);
+    }
+
     synchronized static void putWebAction(WebActionType type, AsyncContext context) {
         webActions.put(type, context);
     }
 
-    synchronized public static AsyncContext getWebAction(WebActionType type) throws NullPointerException {
-        return webActions.get(type);
+    synchronized public static AsyncContext popWebAction(WebActionType type) throws NullPointerException {
+        AsyncContext action = webActions.get(type);
+        webActions.remove(type);
+        return action;
     }
 
 }
