@@ -2,27 +2,35 @@ package reportserver;
 
 import java.io.FileNotFoundException;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 import org.apache.log4j.Logger;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.jsp.JettyJspServlet;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.webapp.WebAppContext;
+import org.json.simple.JSONObject;
 import reportserver.CommonServer;
 
 import javax.servlet.AsyncContext;
+import javax.servlet.ServletResponse;
 
 
 class WebServer extends CommonServer {
 
     private Server server;
     private String siteAddress;
+    private static Map< WebActionType, AsyncContext > webActions = new HashMap< WebActionType, AsyncContext >();
+    private static final LinkedList<JSONObject> userMessages = new LinkedList<JSONObject>();
     private static Logger log = Logger.getLogger(ReportServer.class);
+    private Thread threadLocalHandler;
 
     WebServer(int port, String siteAddress_) {
         setState(ServerState.SERVER_INITIALIZING);
@@ -42,6 +50,13 @@ class WebServer extends CommonServer {
 
     public void init() throws FileNotFoundException, URISyntaxException {
         setState(ServerState.SERVER_INITIALIZING);
+
+        threadLocalHandler = new Thread(() -> {
+                                while(true) {
+                                    //Локальные обработчики
+                                    userMessageHandler();
+                                }
+                            });
 
         System.setProperty("org.apache.jasper.compiler.disablejsr199", "false");
 
@@ -106,6 +121,8 @@ class WebServer extends CommonServer {
         context.addServlet(exampleJspHolder, "/example");
 
         server.setHandler(context);
+
+        threadLocalHandler.start();
         setState(ServerState.SERVER_STOPPED);
     }
 
@@ -129,6 +146,57 @@ class WebServer extends CommonServer {
 
         }
         setState(ServerState.SERVER_ACTIVE);
+    }
+
+    static boolean isWebActionExist(WebActionType type) {
+        return webActions.containsKey(type);
+    }
+
+    public static synchronized void putWebAction(WebActionType type, AsyncContext context) {
+        webActions.put(type, context);
+    }
+
+    public static synchronized AsyncContext popWebAction(WebActionType type) throws NullPointerException {
+        AsyncContext action = webActions.get(type);
+        webActions.remove(type);
+        return action;
+    }
+
+    public static void sendUserMessage(Date date, String text) {
+        JSONObject userMessage = new JSONObject();
+        String pattern = "yyyy-MM-dd HH:mm:ss.SSS";
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+        String strDate = simpleDateFormat.format(date);
+        userMessage.put("date", strDate);
+        userMessage.put("text", text);
+        synchronized (userMessages) {
+            userMessages.add(userMessage);
+        }
+    }
+
+    public static synchronized JSONObject popUserMessage() throws NoSuchElementException {
+        JSONObject text = userMessages.peek();
+        if (text == null)  throw new NoSuchElementException();
+        userMessages.remove();
+        return text;
+    }
+
+    public void userMessageHandler() {
+        try {
+            if (isWebActionExist(WebActionType.SEND_USER_MESSAGE)) {
+                JSONObject text = popUserMessage();
+                AsyncContext asyncRequest = popWebAction(WebActionType.SEND_USER_MESSAGE);
+                ServletResponse response = asyncRequest.getResponse();
+                response.setCharacterEncoding("UTF-8");
+                response.getWriter().print(new String(text.toJSONString().getBytes("UTF-8")));
+                response.getWriter().flush();
+                asyncRequest.complete();
+            }
+        } catch (NullPointerException | NoSuchElementException e) {
+
+        } catch (IOException e) {
+            log.warn(e);
+        }
     }
 
 }

@@ -1,7 +1,6 @@
 package reportserver;
 
 import javax.servlet.AsyncContext;
-import javax.servlet.ServletResponse;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -18,10 +17,9 @@ public class ReportServer {
 
     private static WebServer webServer;
     private static BluetoothServer bluetoothServer;
-    private static ReportDatabaseDriver reportDatabaseDriver;
+    private static DatabaseDriver databaseDriver;
     private static SqlCommandList sqlScript;
-    private static final LinkedList<String> userMessages = new LinkedList<String>();
-    private static Map< WebActionType, AsyncContext > webActions = new HashMap< WebActionType, AsyncContext >();
+
     private static final Logger log = Logger.getLogger(ReportServer.class);
 
     public static void main(String[] args) throws IOException, InterruptedException {
@@ -50,13 +48,12 @@ public class ReportServer {
             return;
         }
 
-        logMessage = "Database driver\t\t";
+        logMessage = "Application database driver\t\t";
         try {
-            reportDatabaseDriver = new ReportDatabaseDriver();
-            reportDatabaseDriver.init("base-synchronization/app-data.db3");
+            databaseDriver = new DatabaseDriver();
+            databaseDriver.init("base-synchronization/app-data.db3",
+                                "base-synchronization/local-data.db3");
             log.info(logMessage+"[OK]");
-
-            reportDatabaseDriver.initDatabaseVersion(getBluetoothMacAddress());
         } catch(Exception e) {
             log.info(logMessage+"[FAIL]");
             log.error(e);
@@ -67,7 +64,6 @@ public class ReportServer {
 
         while (true) {
             bluetoothTransactionHandler(bluetoothServer);
-            userMessageHandler();
         }
     }
 
@@ -116,8 +112,8 @@ public class ReportServer {
 
         JSONObject header = new JSONObject();
         header.put("type",      new Long(BluetoothPacketType.RESPONSE.getId()));
-        header.put("userId",    (Long)(transaction.getHeader().get("userId")));
-        header.put("size",      (Long)(transaction.getHeader().get("size")));
+        header.put("userId", transaction.getHeader().get("userId"));
+        header.put("size", transaction.getHeader().get("size"));
         header.put("status",    new Long(status));
         bt.sendData(new BluetoothSimpleTransaction(header));
 
@@ -126,8 +122,8 @@ public class ReportServer {
 
     private static void bluetoothSynchTransactionHandler(BluetoothServer bt, BluetoothSimpleTransaction transaction) {
         try {
-            int clientVersion = reportDatabaseDriver.checkClientVersion(bt.getRemoteDeviceBluetoothAddress());
-            int dbVersion = reportDatabaseDriver.getDatabaseVersion();
+            int clientVersion = databaseDriver.checkClientVersion(bt.getRemoteDeviceBluetoothAddress());
+            int dbVersion = databaseDriver.getDatabaseVersion();
             int realClientVersion = (int)transaction.getHeader().get("version");
 
             sendUserMessage("Принят запрос на синхронизацию.");
@@ -139,7 +135,7 @@ public class ReportServer {
                 sendUserMessage("Некорректная версия базы на планшете. Обновление базы.");
 
                 //перебиваем версию
-                reportDatabaseDriver.setClientVersion(bt.getRemoteDeviceBluetoothAddress(), 0);
+                databaseDriver.setClientVersion(bt.getRemoteDeviceBluetoothAddress(), 0);
 
                 //передать файлик базы данных целиком
                 try {
@@ -147,8 +143,8 @@ public class ReportServer {
                     if (databaseFile.exists()) {
                         JSONObject header = new JSONObject();
                         header.put("type", new Long(BluetoothPacketType.BINARY_FILE.getId()));
-                        header.put("userId", (Long) (transaction.getHeader().get("userId")));
-                        header.put("size", (Long) databaseFile.length());
+                        header.put("userId", transaction.getHeader().get("userId"));
+                        header.put("size", databaseFile.length());
                         header.put("filename", "app-data.db3");
 
                         bt.sendData(new BluetoothFileTransaction(header, databaseFile.getAbsolutePath()));
@@ -170,7 +166,7 @@ public class ReportServer {
             if ( (dbVersion > 0) && (clientVersion == dbVersion) ) {
                 JSONObject header = new JSONObject();
                 header.put("type", new Long(BluetoothPacketType.RESPONSE.getId()));
-                header.put("userId", (Long) (transaction.getHeader().get("userId")));
+                header.put("userId", transaction.getHeader().get("userId"));
                 header.put("status", new Long(BluetoothTransactionStatus.DONE.getId()));
                 header.put("size", new Long(0));
 
@@ -185,13 +181,13 @@ public class ReportServer {
                     ArrayList<String> sourceHistory = new ArrayList<String>();
 
                     for (int currentVersion = (clientVersion + 1); currentVersion < dbVersion; ++currentVersion) {
-                        sourceHistory.addAll(reportDatabaseDriver.getClientHistory(currentVersion));
+                        sourceHistory.addAll(databaseDriver.getClientHistory(currentVersion));
                     }
 
                     JSONObject header = new JSONObject();
                     header.put("type", new Long(BluetoothPacketType.SQL_QUERIES.getId()));
-                    header.put("userId", (Long) (transaction.getHeader().get("userId")));
-                    header.put("size", (Long) (transaction.getHeader().get("size")));
+                    header.put("userId", transaction.getHeader().get("userId"));
+                    header.put("size", transaction.getHeader().get("size"));
 
                     try {
                         File temp = File.createTempFile("client_history", ".tmp");
@@ -203,7 +199,7 @@ public class ReportServer {
 
                         Iterator it = sourceHistory.iterator();
                         while (it.hasNext()) {
-                            writer.write((String) it.next() + ";");
+                            writer.write(it.next() + ";");
                         }
 
                         bt.sendData(new BluetoothFileTransaction(header, temp.getAbsolutePath()));
@@ -219,8 +215,8 @@ public class ReportServer {
                         if (databaseFile.exists()) {
                             JSONObject header = new JSONObject();
                             header.put("type", new Long(BluetoothPacketType.BINARY_FILE.getId()));
-                            header.put("userId", (Long) (transaction.getHeader().get("userId")));
-                            header.put("size", (Long) databaseFile.length());
+                            header.put("userId", transaction.getHeader().get("userId"));
+                            header.put("size", databaseFile.length());
                             header.put("filename", "app-data.db3");
 
                             bt.sendData(new BluetoothFileTransaction(header, databaseFile.getAbsolutePath()));
@@ -259,19 +255,19 @@ public class ReportServer {
 
         JSONObject header = new JSONObject();
         header.put("type",      new Long(BluetoothPacketType.RESPONSE.getId()));
-        header.put("userId",    (Long)(transaction.getHeader().get("userId")));
-        header.put("size",      (Long)(transaction.getHeader().get("size")));
+        header.put("userId", transaction.getHeader().get("userId"));
+        header.put("size", transaction.getHeader().get("size"));
         header.put("status",    new Long(status));
         bt.sendData(new BluetoothSimpleTransaction(header));
 
-        reportDatabaseDriver.backupCurrentDatabase(Integer.toString(reportDatabaseDriver.getDatabaseVersion()));
+        databaseDriver.backupCurrentDatabase(Integer.toString(databaseDriver.getDatabaseVersion()));
 
         long userId = (long)(transaction.getHeader().get("userId"));
 
-        reportDatabaseDriver.runScript((int)userId, sqlScript);
+        databaseDriver.runScript((int)userId, sqlScript);
 
         try {
-            AsyncContext asyncRefreshDetourTable = ReportServer.popWebAction(WebActionType.REFRESH_DETOUR_TABLE);
+            AsyncContext asyncRefreshDetourTable = WebServer.popWebAction(WebActionType.REFRESH_DETOUR_TABLE);
             asyncRefreshDetourTable.complete();
         } catch (NullPointerException e) {
             //по каким-то причинам ajax соединение установлено не было
@@ -303,59 +299,20 @@ public class ReportServer {
         return bluetoothServer.getLocalHostMacAddress();
     }
 
-    public static ReportDatabaseDriver getDatabaseDriver() {
-        return reportDatabaseDriver;
+    public static DatabaseDriver getDatabaseDriver() {
+        return databaseDriver;
     }
 
     public static void sendUserMessage(String text) {
         try {
-            //TODO: для пользователя передавать дату с сервера !!!
-            reportDatabaseDriver.addUserMessageToDatabase(new Date(), text);
-            synchronized (userMessages) {
-                userMessages.add(text);
-            }
+            Date currentDate = new Date();
+            //отправляем в web
+            WebServer.sendUserMessage(currentDate, text);
+            //отправляем в базу
+            databaseDriver.addUserMessageToDatabase(currentDate, text);
         } catch (Exception e) {
 
         }
-    }
-
-    public synchronized static String popUserMessage() throws NoSuchElementException {
-        String text = userMessages.peek();
-        if (text == null)  throw new NoSuchElementException();
-        userMessages.remove();
-        return text;
-    }
-
-    static void userMessageHandler() {
-        try {
-            if (isWebActionExist(WebActionType.SEND_USER_MESSAGE)) {
-                String text = popUserMessage();
-                AsyncContext asyncRequest = ReportServer.popWebAction(WebActionType.SEND_USER_MESSAGE);
-                ServletResponse response = asyncRequest.getResponse();
-                response.setCharacterEncoding("UTF-8");
-                response.getWriter().write(new String(text.getBytes("UTF-8")));
-                response.getWriter().flush();
-                asyncRequest.complete();
-            }
-        } catch (NullPointerException | NoSuchElementException e) {
-
-        } catch (IOException e) {
-            log.warn(e);
-        }
-    }
-
-    static boolean isWebActionExist(WebActionType type) {
-        return webActions.containsKey(type);
-    }
-
-    synchronized static void putWebAction(WebActionType type, AsyncContext context) {
-        webActions.put(type, context);
-    }
-
-    synchronized public static AsyncContext popWebAction(WebActionType type) throws NullPointerException {
-        AsyncContext action = webActions.get(type);
-        webActions.remove(type);
-        return action;
     }
 
 }

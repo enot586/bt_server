@@ -41,7 +41,7 @@
       </tr>
       <%
       try {
-        reportserver.ReportDatabaseDriver databaseDriver = reportserver.ReportServer.getDatabaseDriver();
+        reportserver.DatabaseDriver databaseDriver = reportserver.ReportServer.getDatabaseDriver();
 
         //Если надо отобразить всю таблицу
         //java.util.ArrayList<Integer> ids = databaseDriver.getDetourTableIds();

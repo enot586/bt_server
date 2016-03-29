@@ -11,7 +11,7 @@ import java.sql.Statement;
 
 import static org.junit.Assert.*;
 
-public class ReportDatabaseDriverTest {
+public class DatabaseDriverTest {
 
     @Before
     public void setUp() throws Exception {

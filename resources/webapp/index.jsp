@@ -9,7 +9,7 @@
     <script language="javascript" type="text/javascript">
      <%
         //Необходимые для формирования документа объявления
-        reportserver.ReportDatabaseDriver databaseDriver = reportserver.ReportServer.getDatabaseDriver();
+        reportserver.DatabaseDriver databaseDriver = reportserver.ReportServer.getDatabaseDriver();
      %>
 
       //Проверяем поддержку ajax у браузера
@@ -75,12 +75,11 @@
       //Для обработки пользовательских сообщений
       var userMessageNumber = <%= databaseDriver.getUserMessageNumber() %>;
 
-      function addUserMessageRow(text) {
-        var currentDate = new Date();   //TODO: для пользователя передавать дату с сервера !!!
-        $('#userMessageTable').prepend("<tr><td><div class=\"debug-message\">"+currentDate.toLocaleString()+"</div></td>"+
+      function addUserMessageRow(date, text) {
+        $('#userMessageTable').prepend("<tr><td><div class=\"debug-message\">"+date+"</div></td>"+
                                        "<td><div class=\"debug-message\">"+text+"</div></td></tr>");
 
-        if (userMessageNumber >= 15) {
+        if (userMessageNumber >= 30) {
           $('#userMessageTable').children().find('tr').last().remove();
         } else {
             ++userMessageNumber;
@@ -91,10 +90,9 @@
         $.ajax({
           url: '/usermessage',
           type: 'get',
-          dataType: "text",
-          success: function(data)
-          {
-            addUserMessageRow(data);
+          dataType: "json",
+          success: function(message) {
+            addUserMessageRow(message.date, message.text);
             userMessageHandler();
           }
         });
@@ -140,11 +138,13 @@
                     String[] messages = databaseDriver.getUserMessages();
                     String[] dates = databaseDriver.getUserMessagesDate();
 
-                    for(int i = 0; i < 15; ++i) {
-                      out.println("<tr class=\"debug-message\">"+
-                                    "<td>"+dates[i]+"</td>"+
-                                    "<td>"+messages[i]+"</td>"+
-                                  "</tr>");
+                    for(int i = 0; i < messages.length; ++i) {
+                      if ((dates[i] != null) && (messages[i]!= null)) {
+                        out.println("<tr class=\"debug-message\">"+
+                                      "<td>"+dates[i]+"</td>"+
+                                      "<td>"+messages[i]+"</td>"+
+                                    "</tr>");
+                      }
                     }
                   %>
                 </table>

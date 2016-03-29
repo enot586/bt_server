@@ -25,50 +25,47 @@
       <file leaf-file-name="ReportServer.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/ReportServer.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="299">
-              <caret line="271" column="0" selection-start-line="271" selection-start-column="0" selection-end-line="271" selection-end-column="0" />
+            <state relative-caret-position="491">
+              <caret line="175" column="13" selection-start-line="175" selection-start-column="13" selection-end-line="175" selection-end-column="13" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="method#bluetoothTransactionHandler#0;class#ReportServer#0" expanded="false" />
                 <element signature="method#bluetoothBinaryFileTransactionHandler#0;class#ReportServer#0" expanded="false" />
-                <element signature="method#bluetoothSynchTransactionHandler#0;class#ReportServer#0" expanded="false" />
                 <element signature="method#bluetoothServerStart#0;class#ReportServer#0" expanded="false" />
                 <element signature="method#bluetoothServerStop#0;class#ReportServer#0" expanded="false" />
                 <element signature="method#sendUserMessage#0;class#ReportServer#0" expanded="false" />
-                <element signature="method#popUserMessage#0;class#ReportServer#0" expanded="false" />
-                <element signature="method#userMessageHandler#0;class#ReportServer#0" expanded="false" />
-                <element signature="method#popWebAction#0;class#ReportServer#0" expanded="false" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ReportDatabaseDriver.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/database/ReportDatabaseDriver.java">
+      <file leaf-file-name="FileHandler.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/FileHandler.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="432">
-              <caret line="356" column="9" selection-start-line="356" selection-start-column="9" selection-end-line="356" selection-end-column="9" />
+            <state relative-caret-position="196">
+              <caret line="38" column="42" selection-start-line="38" selection-start-column="42" selection-end-line="38" selection-end-column="42" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="WebServer.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/webserver/WebServer.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="196">
+              <caret line="168" column="25" selection-start-line="168" selection-start-column="25" selection-end-line="168" selection-end-column="25" />
               <folding>
-                <element signature="method#init#0;class#ReportDatabaseDriver#0" expanded="false" />
-                <element signature="method#getClientHistory#0;class#ReportDatabaseDriver#0" expanded="false" />
-                <element signature="method#checkClientVersion#0;class#ReportDatabaseDriver#0" expanded="false" />
-                <element signature="method#setClientVersion#0;class#ReportDatabaseDriver#0" expanded="false" />
-                <element signature="method#getDatabaseVersion#1;class#ReportDatabaseDriver#0" expanded="false" />
-                <element signature="method#setToHistory#0;class#ReportDatabaseDriver#0" expanded="false" />
-                <element signature="method#initDatabaseVersion#0;class#ReportDatabaseDriver#0" expanded="false" />
-                <element signature="method#incrementDatabaseVersion#0;class#ReportDatabaseDriver#0" expanded="false" />
-                <element signature="method#isUserAdmin#0;class#ReportDatabaseDriver#0" expanded="false" />
-                <element signature="method#isUserAcceptableTableInQuery#0;class#ReportDatabaseDriver#0" expanded="false" />
-                <element signature="method#getLatest10IdsDetour#0;class#ReportDatabaseDriver#0" expanded="false" />
-                <element signature="method#getDetourTableIds#0;class#ReportDatabaseDriver#0" expanded="false" />
-                <element signature="method#getUserNameFromDetourTable#0;class#ReportDatabaseDriver#0" expanded="false" />
-                <element signature="method#getStartTimeFromDetourTable#0;class#ReportDatabaseDriver#0" expanded="false" />
-                <element signature="method#getEndTimeFromDetourTable#0;class#ReportDatabaseDriver#0" expanded="false" />
-                <element signature="method#getStatusFromDetourTable#0;class#ReportDatabaseDriver#0" expanded="false" />
-                <element signature="method#getRoutesTablePathRoutePicture#0;class#ReportDatabaseDriver#0" expanded="false" />
-                <element signature="method#getUserMessageNumber#0;class#ReportDatabaseDriver#0" expanded="false" />
-                <element signature="method#getUserMessages#0;class#ReportDatabaseDriver#0" expanded="false" />
-                <element signature="method#getUserMessagesDate#0;class#ReportDatabaseDriver#0" expanded="false" />
+                <element signature="e#792#823#0" expanded="true" />
+                <element signature="e#904#916#0" expanded="true" />
+                <element signature="method#WebServer#0;class#WebServer#0" expanded="false" />
+                <element signature="method#getWebRootResourceUri#0;class#WebServer#0" expanded="false" />
+                <element signature="method#init#0;class#WebServer#0" expanded="false" />
+                <element signature="method#stop#0;class#WebServer#0" expanded="false" />
+                <element signature="method#start#0;class#WebServer#0" expanded="false" />
+                <element signature="method#putWebAction#0;class#WebServer#0" expanded="false" />
+                <element signature="method#popWebAction#0;class#WebServer#0" expanded="false" />
+                <element signature="method#popUserMessage#0;class#WebServer#0" expanded="false" />
+                <element signature="method#userMessageHandler#0;class#WebServer#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -82,19 +79,14 @@
         <option value="HTML File" />
         <option value="Interface" />
         <option value="Enum" />
-        <option value="Class" />
         <option value="JUnit4 Test Class" />
+        <option value="Class" />
       </list>
     </option>
   </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/src/TabSynchronize.java" />
-        <option value="$PROJECT_DIR$/src/BT_Server_Socket.java" />
-        <option value="$PROJECT_DIR$/src/webapp/routes-table.jsp" />
-        <option value="$PROJECT_DIR$/src/ReportDatabaseDriver.java" />
-        <option value="$PROJECT_DIR$/webapp/routes-table.jsp" />
         <option value="$PROJECT_DIR$/src/BtStreamReader.java" />
         <option value="$PROJECT_DIR$/out/production/ReportServer/output.txt" />
         <option value="$PROJECT_DIR$/src/BluetoothServer.java" />
@@ -111,7 +103,6 @@
         <option value="$PROJECT_DIR$/src/bluetoothserver/BtConnectionHandler.java" />
         <option value="$PROJECT_DIR$/src/bluetoothserver/BluetoothTransactionStatus.java" />
         <option value="$PROJECT_DIR$/src/CommonServer.java" />
-        <option value="$PROJECT_DIR$/src/FileHandler.java" />
         <option value="$PROJECT_DIR$/src/bluetoothserver/BluetoothSimpleTransactio.java" />
         <option value="$PROJECT_DIR$/src/bluetoothserver/BluetoothTransaction.java" />
         <option value="$PROJECT_DIR$/src/bluetoothserver/BluetoothSimpleTransaction.java" />
@@ -121,17 +112,11 @@
         <option value="$PROJECT_DIR$/src/bluetoothserver/BluetoothFileTransaction.java" />
         <option value="$PROJECT_DIR$/src/webserver/ServletBtStatus.java" />
         <option value="$PROJECT_DIR$/src/webserver/ServletForwarder.java" />
-        <option value="$PROJECT_DIR$/src/webserver/ServletTableRefresh.java" />
         <option value="$PROJECT_DIR$/log4j.properties" />
         <option value="$PROJECT_DIR$/src/WebActionType.java" />
-        <option value="$PROJECT_DIR$/src/webserver/WebServer.java" />
         <option value="$PROJECT_DIR$/src/webserver/ServletBtStop.java" />
-        <option value="$PROJECT_DIR$/src/webserver/ServletUserMessageHandler.java" />
         <option value="$PROJECT_DIR$/src/bluetoothserver/BluetoothPacketType.java" />
         <option value="$PROJECT_DIR$/src/bluetoothserver/BluetoothServer.java" />
-        <option value="$PROJECT_DIR$/base-synchronization/template-db.sql" />
-        <option value="$PROJECT_DIR$/resources/webapp/index.jsp" />
-        <option value="$PROJECT_DIR$/resources/webapp/routes-table.jsp" />
         <option value="$PROJECT_DIR$/resources/webapp/style.css" />
         <option value="$PROJECT_DIR$/src/bluetoothserver/JSONReceiver.java" />
         <option value="$PROJECT_DIR$/src/SqlCommandList.java" />
@@ -139,7 +124,19 @@
         <option value="$PROJECT_DIR$/src/bluetoothserver/BluetoothConnectionHandler.java" />
         <option value="$PROJECT_DIR$/base-synchronization/test.sql" />
         <option value="$PROJECT_DIR$/src/webserver/ServletBtStart.java" />
+        <option value="$PROJECT_DIR$/src/webserver/ServletUserMessageHandler.java" />
+        <option value="$PROJECT_DIR$/src/webserver/ServletTableRefresh.java" />
         <option value="$PROJECT_DIR$/src/database/ReportDatabaseDriver.java" />
+        <option value="$PROJECT_DIR$/src/webserver/WebServer.java" />
+        <option value="$PROJECT_DIR$/base-synchronization/local-data-format.sql" />
+        <option value="$PROJECT_DIR$/src/tests/reportserver/CommonDatabaseDriverTest.java" />
+        <option value="$PROJECT_DIR$/base-synchronization/template-db.sql" />
+        <option value="$PROJECT_DIR$/src/database/LocalDatabaseDriver.java" />
+        <option value="$PROJECT_DIR$/src/database/CommonDatabaseDriver.java" />
+        <option value="$PROJECT_DIR$/resources/webapp/index.jsp" />
+        <option value="$PROJECT_DIR$/resources/webapp/routes-table.jsp" />
+        <option value="$PROJECT_DIR$/src/FileHandler.java" />
+        <option value="$PROJECT_DIR$/src/database/DatabaseDriver.java" />
         <option value="$PROJECT_DIR$/src/ReportServer.java" />
       </list>
     </option>
@@ -203,7 +200,6 @@
     <panes>
       <pane id="Scratches" />
       <pane id="PackagesPane" />
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -264,6 +260,24 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="database" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="reportserver" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="reportserver" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
               <option name="myItemId" value="resources" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
@@ -288,6 +302,7 @@
           </PATH>
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -312,6 +327,12 @@
     <key name="CreateTestDialog.RecentsKey">
       <recent name="reportserver" />
     </key>
+    <key name="CreateTestDialog.Recents.Supers">
+      <recent name="" />
+    </key>
+    <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
+      <recent name="reportserver" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="D:\projects\reportserver" />
       <recent name="D:\projects\reportserver\resources" />
@@ -319,15 +340,12 @@
       <recent name="D:\projects\reportserver\src\database" />
       <recent name="D:\projects\reportserver\src\bluetoothserver" />
     </key>
-    <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
-      <recent name="reportserver" />
-    </key>
-    <key name="CreateTestDialog.Recents.Supers">
-      <recent name="" />
-    </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="D:\projects\reportserver\resources" />
       <recent name="D:\projects\reportserver\out\artifacts\reportserver_jar" />
+    </key>
+    <key name="CreateClassDialog.RecentsKey">
+      <recent name="reportserver" />
     </key>
   </component>
   <component name="RunManager" selected="Application.ReportServer">
@@ -501,7 +519,7 @@
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
       <option name="ALTERNATIVE_JRE_PATH" />
       <option name="PACKAGE_NAME" value="reportserver" />
-      <option name="MAIN_CLASS_NAME" value="reportserver.ReportDatabaseDriverTest" />
+      <option name="MAIN_CLASS_NAME" value="reportserver.DatabaseDriverTest" />
       <option name="METHOD_NAME" value="" />
       <option name="TEST_OBJECT" value="class" />
       <option name="VM_PARAMETERS" value="-ea" />
@@ -580,7 +598,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1696" height="1036" extended-state="6" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25082874" sideWeight="0.49600798" order="6" side_tool="false" content_ui="tabs" />
@@ -589,15 +607,15 @@
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.5199115" sideWeight="0.44070905" order="9" side_tool="true" content_ui="tabs" x="1142" y="0" width="546" height="1058" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" show_stripe_button="false" weight="0.32959184" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3329646" sideWeight="0.55929095" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.26659292" sideWeight="0.55929095" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.18948655" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.16198044" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.31637168" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39792177" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24225664" sideWeight="0.6369193" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3738938" sideWeight="0.6369193" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -618,10 +636,18 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/database/DatabaseDriver.java</url>
+          <line>277</line>
+          <properties />
+          <option name="timeStamp" value="263" />
+        </line-breakpoint>
+      </breakpoints>
       <breakpoints-dialog>
         <breakpoints-dialog />
       </breakpoints-dialog>
-      <option name="time" value="250" />
+      <option name="time" value="266" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -630,69 +656,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_25/src.zip!/java/sql/Connection.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="652">
-          <caret line="221" column="9" selection-start-line="221" selection-start-column="9" selection-end-line="221" selection-end-column="9" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_25/src.zip!/java/lang/Thread.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="200">
-          <caret line="744" column="0" selection-start-line="744" selection-start-column="0" selection-end-line="744" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/webserver/ServletForwarder.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="80">
-          <caret line="9" column="7" selection-start-line="9" selection-start-column="7" selection-end-line="9" selection-end-column="7" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$PROJECT_DIR$/jars/log4jdbc4-1.2.jar!/net/sf/log4jdbc/DriverSpy.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="280">
-          <caret line="42" column="33" selection-start-line="42" selection-start-column="33" selection-end-line="42" selection-end-column="33" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/log4j.properties">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="9" column="0" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_25/src.zip!/java/util/Date.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="456">
-          <caret line="163" column="11" selection-start-line="163" selection-start-column="11" selection-end-line="163" selection-end-column="11" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_25/jre/lib/rt.jar!/sun/nio/cs/HistoricallyNamedCharset.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="100">
-          <caret line="8" column="11" selection-start-line="8" selection-start-column="11" selection-end-line="8" selection-end-column="11" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_25/src.zip!/java/lang/StringCoding.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="236">
-          <caret line="98" column="28" selection-start-line="98" selection-start-column="28" selection-end-line="98" selection-end-column="28" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_25/src.zip!/java/nio/charset/Charset.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="236">
-          <caret line="504" column="20" selection-start-line="504" selection-start-column="20" selection-end-line="504" selection-end-column="20" />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://C:/Program Files/Java/jdk1.8.0_25/src.zip!/java/lang/String.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="276">
@@ -729,14 +692,6 @@
             <element signature="e#292#293#0" expanded="false" />
             <element signature="e#321#322#0" expanded="false" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/webserver/WebServer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="617">
-          <caret line="98" column="0" selection-start-line="98" selection-start-column="0" selection-end-line="98" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -782,13 +737,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/base-synchronization/template-db.sql">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="496">
-          <caret line="85" column="25" selection-start-line="85" selection-start-column="25" selection-end-line="85" selection-end-column="25" />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://$PROJECT_DIR$/jars/servlet-api-3.1.jar!/javax/servlet/ServletResponse.class">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="300">
@@ -797,13 +745,6 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/resources/webapp/diagnostic-message.jsp" />
-    <entry file="file://$PROJECT_DIR$/resources/webapp/index.jsp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="324">
-          <caret line="122" column="23" selection-start-line="122" selection-start-column="23" selection-end-line="122" selection-end-column="23" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/resources/webapp/style.css">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="169">
@@ -831,18 +772,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="105">
           <caret line="115" column="29" selection-start-line="115" selection-start-column="29" selection-end-line="115" selection-end-column="29" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/FileHandler.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-127">
-          <caret line="11" column="4" selection-start-line="11" selection-start-column="4" selection-end-line="11" selection-end-column="4" />
-          <folding>
-            <element signature="e#271#272#0" expanded="false" />
-            <element signature="e#311#312#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -858,14 +787,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="118">
           <caret line="413" column="0" selection-start-line="413" selection-start-column="0" selection-end-line="413" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/webserver/ServletBtStop.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="200">
-          <caret line="17" column="5" selection-start-line="17" selection-start-column="5" selection-end-line="17" selection-end-column="5" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -888,7 +809,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="397">
           <caret line="262" column="28" selection-start-line="262" selection-start-column="28" selection-end-line="262" selection-end-column="28" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -896,16 +816,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="217">
           <caret line="41" column="33" selection-start-line="41" selection-start-column="33" selection-end-line="41" selection-end-column="33" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/tests/reportserver/ReportDatabaseDriverTest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="271">
-          <caret line="23" column="5" selection-start-line="23" selection-start-column="5" selection-end-line="23" selection-end-column="5" />
-          <folding>
-            <element signature="imports" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -923,14 +833,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/base-synchronization/test.sql">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="220">
-          <caret line="11" column="68" selection-start-line="11" selection-start-column="68" selection-end-line="11" selection-end-column="68" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/base-synchronization/test.sql" />
     <entry file="file://$PROJECT_DIR$/src/SqlCommandList.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="180">
@@ -965,15 +868,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="203">
           <caret line="36" column="0" selection-start-line="36" selection-start-column="0" selection-end-line="36" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/resources/webapp/routes-table.jsp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="317">
-          <caret line="58" column="61" selection-start-line="58" selection-start-column="61" selection-end-line="58" selection-end-column="61" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -985,26 +879,61 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/webserver/ServletUserMessageHandler.java">
+    <entry file="file://$PROJECT_DIR$/src/CommonServer.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="14" column="0" selection-start-line="14" selection-start-column="0" selection-end-line="14" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/webserver/ServletBtStart.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="360">
-          <caret line="25" column="0" selection-start-line="25" selection-start-column="0" selection-end-line="25" selection-end-column="0" />
+        <state relative-caret-position="40">
+          <caret line="2" column="15" selection-start-line="2" selection-start-column="15" selection-end-line="2" selection-end-column="15" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/WebActionType.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="140">
-          <caret line="7" column="0" selection-start-line="7" selection-start-column="0" selection-end-line="7" selection-end-column="0" />
+        <state relative-caret-position="60">
+          <caret line="3" column="5" selection-start-line="3" selection-start-column="5" selection-end-line="3" selection-end-column="5" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://C:/Program Files/Java/jdk1.8.0_25/src.zip!/java/lang/Runnable.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="531">
+          <caret line="67" column="25" selection-start-line="67" selection-start-column="25" selection-end-line="67" selection-end-column="25" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/webserver/ServletUserMessageHandler.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="200">
+          <caret line="15" column="17" selection-start-line="15" selection-start-column="17" selection-end-line="15" selection-end-column="17" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://C:/Program Files/Java/jdk1.8.0_25/src.zip!/java/lang/Thread.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1492">
+          <caret line="459" column="11" selection-start-line="459" selection-start-column="11" selection-end-line="459" selection-end-column="11" />
+          <folding>
+            <element signature="e#15480#15481#0" expanded="true" />
+            <element signature="e#15546#15547#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/webserver/ServletBtStop.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="320">
+          <caret line="23" column="22" selection-start-line="23" selection-start-column="22" selection-end-line="23" selection-end-column="22" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/webserver/ServletBtStart.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="320">
+          <caret line="23" column="0" selection-start-line="23" selection-start-column="0" selection-end-line="23" selection-end-column="0" />
           <folding />
         </state>
       </provider>
@@ -1017,50 +946,158 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/database/ReportDatabaseDriver.java">
+    <entry file="file://$PROJECT_DIR$/src/tests/reportserver/DatabaseDriverTest.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="432">
-          <caret line="356" column="9" selection-start-line="356" selection-start-column="9" selection-end-line="356" selection-end-column="9" />
+        <state relative-caret-position="271">
+          <caret line="23" column="5" selection-start-line="23" selection-start-column="5" selection-end-line="23" selection-end-column="5" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/base-synchronization/exp-db.sql">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/base-synchronization/app-data-format.sql">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="980">
+          <caret line="49" column="0" selection-start-line="49" selection-start-column="0" selection-end-line="49" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/log4j.properties">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/base-synchronization/local-data-format.sql">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="260">
+          <caret line="13" column="30" selection-start-line="13" selection-start-column="30" selection-end-line="13" selection-end-column="30" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/database/LocalDatabaseDriver.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="200">
+          <caret line="10" column="0" selection-start-line="10" selection-start-column="0" selection-end-line="10" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$PROJECT_DIR$/jars/json-simple-1.1.1.jar!/org/json/simple/JSONObject.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="120">
+          <caret line="17" column="13" selection-start-line="17" selection-start-column="13" selection-end-line="17" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/resources/webapp/routes-table.jsp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="476">
+          <caret line="64" column="7" selection-start-line="64" selection-start-column="7" selection-end-line="64" selection-end-column="7" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/FileHandler.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="196">
+          <caret line="38" column="42" selection-start-line="38" selection-start-column="42" selection-end-line="38" selection-end-column="42" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/webserver/WebServer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="196">
+          <caret line="168" column="25" selection-start-line="168" selection-start-column="25" selection-end-line="168" selection-end-column="25" />
           <folding>
-            <element signature="method#init#0;class#ReportDatabaseDriver#0" expanded="false" />
-            <element signature="method#getClientHistory#0;class#ReportDatabaseDriver#0" expanded="false" />
-            <element signature="method#checkClientVersion#0;class#ReportDatabaseDriver#0" expanded="false" />
-            <element signature="method#setClientVersion#0;class#ReportDatabaseDriver#0" expanded="false" />
-            <element signature="method#getDatabaseVersion#1;class#ReportDatabaseDriver#0" expanded="false" />
-            <element signature="method#setToHistory#0;class#ReportDatabaseDriver#0" expanded="false" />
-            <element signature="method#initDatabaseVersion#0;class#ReportDatabaseDriver#0" expanded="false" />
-            <element signature="method#incrementDatabaseVersion#0;class#ReportDatabaseDriver#0" expanded="false" />
-            <element signature="method#isUserAdmin#0;class#ReportDatabaseDriver#0" expanded="false" />
-            <element signature="method#isUserAcceptableTableInQuery#0;class#ReportDatabaseDriver#0" expanded="false" />
-            <element signature="method#getLatest10IdsDetour#0;class#ReportDatabaseDriver#0" expanded="false" />
-            <element signature="method#getDetourTableIds#0;class#ReportDatabaseDriver#0" expanded="false" />
-            <element signature="method#getUserNameFromDetourTable#0;class#ReportDatabaseDriver#0" expanded="false" />
-            <element signature="method#getStartTimeFromDetourTable#0;class#ReportDatabaseDriver#0" expanded="false" />
-            <element signature="method#getEndTimeFromDetourTable#0;class#ReportDatabaseDriver#0" expanded="false" />
-            <element signature="method#getStatusFromDetourTable#0;class#ReportDatabaseDriver#0" expanded="false" />
-            <element signature="method#getRoutesTablePathRoutePicture#0;class#ReportDatabaseDriver#0" expanded="false" />
-            <element signature="method#getUserMessageNumber#0;class#ReportDatabaseDriver#0" expanded="false" />
-            <element signature="method#getUserMessages#0;class#ReportDatabaseDriver#0" expanded="false" />
-            <element signature="method#getUserMessagesDate#0;class#ReportDatabaseDriver#0" expanded="false" />
+            <element signature="e#792#823#0" expanded="true" />
+            <element signature="e#904#916#0" expanded="true" />
+            <element signature="method#WebServer#0;class#WebServer#0" expanded="false" />
+            <element signature="method#getWebRootResourceUri#0;class#WebServer#0" expanded="false" />
+            <element signature="method#init#0;class#WebServer#0" expanded="false" />
+            <element signature="method#stop#0;class#WebServer#0" expanded="false" />
+            <element signature="method#start#0;class#WebServer#0" expanded="false" />
+            <element signature="method#putWebAction#0;class#WebServer#0" expanded="false" />
+            <element signature="method#popWebAction#0;class#WebServer#0" expanded="false" />
+            <element signature="method#popUserMessage#0;class#WebServer#0" expanded="false" />
+            <element signature="method#userMessageHandler#0;class#WebServer#0" expanded="false" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/resources/webapp/index.jsp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="239">
+          <caret line="138" column="61" selection-start-line="138" selection-start-column="61" selection-end-line="138" selection-end-column="61" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/database/DatabaseDriver.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="500">
+          <caret line="32" column="71" selection-start-line="32" selection-start-column="71" selection-end-line="32" selection-end-column="71" />
+          <folding>
+            <element signature="method#init#0;class#DatabaseDriver#0" expanded="false" />
+            <element signature="method#backupCurrentDatabase#0;class#DatabaseDriver#0" expanded="false" />
+            <element signature="method#runScript#0;class#DatabaseDriver#0" expanded="false" />
+            <element signature="method#isUserAdmin#0;class#DatabaseDriver#0" expanded="false" />
+            <element signature="method#isUserAcceptableTableInQuery#0;class#DatabaseDriver#0" expanded="false" />
+            <element signature="method#checkClientVersion#0;class#DatabaseDriver#0" expanded="false" />
+            <element signature="method#setClientVersion#0;class#DatabaseDriver#0" expanded="false" />
+            <element signature="method#getClientHistory#0;class#DatabaseDriver#0" expanded="false" />
+            <element signature="method#setToHistory#0;class#DatabaseDriver#0" expanded="false" />
+            <element signature="method#getDatabaseVersion#1;class#DatabaseDriver#0" expanded="false" />
+            <element signature="method#incrementDatabaseVersion#0;class#DatabaseDriver#0" expanded="false" />
+            <element signature="method#initDatabaseVersion#0;class#DatabaseDriver#0" expanded="false" />
+            <element signature="method#getUserMessageNumber#0;class#DatabaseDriver#0" expanded="false" />
+            <element signature="method#getUserMessages#0;class#DatabaseDriver#0" expanded="false" />
+            <element signature="method#getUserMessagesDate#0;class#DatabaseDriver#0" expanded="false" />
+            <element signature="method#addUserMessageToDatabase#0;class#DatabaseDriver#0" expanded="false" />
+            <element signature="method#getLatest10IdsDetour#0;class#DatabaseDriver#0" expanded="false" />
+            <element signature="method#getDetourTableIds#0;class#DatabaseDriver#0" expanded="false" />
+            <element signature="method#getUserNameFromDetourTable#0;class#DatabaseDriver#0" expanded="false" />
+            <element signature="method#getRouteNameFromDetourTable#0;class#DatabaseDriver#0" expanded="false" />
+            <element signature="method#getStartTimeFromDetourTable#0;class#DatabaseDriver#0" expanded="false" />
+            <element signature="method#getEndTimeFromDetourTable#0;class#DatabaseDriver#0" expanded="false" />
+            <element signature="method#getStatusFromDetourTable#0;class#DatabaseDriver#0" expanded="false" />
+            <element signature="method#getRoutesTablePathRoutePicture#0;class#DatabaseDriver#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$PROJECT_DIR$/jars/javax.json-api-1.0.jar!/javax/json/Json.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="649">
+          <caret line="85" column="37" selection-start-line="85" selection-start-column="37" selection-end-line="85" selection-end-column="37" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/ReportServer.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="299">
-          <caret line="271" column="0" selection-start-line="271" selection-start-column="0" selection-end-line="271" selection-end-column="0" />
+        <state relative-caret-position="491">
+          <caret line="175" column="13" selection-start-line="175" selection-start-column="13" selection-end-line="175" selection-end-column="13" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="method#bluetoothTransactionHandler#0;class#ReportServer#0" expanded="false" />
             <element signature="method#bluetoothBinaryFileTransactionHandler#0;class#ReportServer#0" expanded="false" />
-            <element signature="method#bluetoothSynchTransactionHandler#0;class#ReportServer#0" expanded="false" />
             <element signature="method#bluetoothServerStart#0;class#ReportServer#0" expanded="false" />
             <element signature="method#bluetoothServerStop#0;class#ReportServer#0" expanded="false" />
             <element signature="method#sendUserMessage#0;class#ReportServer#0" expanded="false" />
-            <element signature="method#popUserMessage#0;class#ReportServer#0" expanded="false" />
-            <element signature="method#userMessageHandler#0;class#ReportServer#0" expanded="false" />
-            <element signature="method#popWebAction#0;class#ReportServer#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -1136,7 +1173,7 @@
       </state>
       <state key="ProjectLibrariesConfigurable.UI">
         <settings>
-          <last-edited>junit:junit:4.12</last-edited>
+          <last-edited>javax.servlet.jsp-3.1</last-edited>
           <splitter-proportions>
             <option name="proportions">
               <list>
