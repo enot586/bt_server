@@ -256,8 +256,7 @@ class BluetoothConnectionHandler implements Runnable {
 
         refreshTransactionTimeout();
 
-        String synchDataBaseFile = "base-synchronization";
-        String receivedFileName = initReceivedFileName(connection, synchDataBaseFile);
+        String receivedFileName = initReceivedFileName(connection, ProjectDirectories.directoryDownloads);
         JSONReceiver receiver = new JSONReceiver();
 
         byte[] tempBuffer = new byte[MAX_BUFFER_SIZE];
@@ -291,7 +290,7 @@ class BluetoothConnectionHandler implements Runnable {
 
                     if (isTransactionWithBody) {
                         //Перезаписываем файлик если таковой существует
-                        FileOutputStream fileOutputStream = new FileOutputStream(synchDataBaseFile + "/" + receivedFileName);
+                        FileOutputStream fileOutputStream = new FileOutputStream(ProjectDirectories.directoryDownloads + "/" + receivedFileName);
                         fileOutputStream.flush();
                         fileOutputStream.close();
                         log.info(receivedFileName);
@@ -314,7 +313,7 @@ class BluetoothConnectionHandler implements Runnable {
                                                 (numberOfBytesToTheEnd > tempBuffer.length) ? tempBuffer.length : numberOfBytesToTheEnd);
 
                 refreshTransactionTimeout();
-                FileOutputStream fileOutputStream = new FileOutputStream(synchDataBaseFile + "/" + receivedFileName, true);
+                FileOutputStream fileOutputStream = new FileOutputStream(ProjectDirectories.directoryDownloads + "/" + receivedFileName, true);
                 BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
                 bufferedOutputStream.write(tempBuffer, 0, bytesRead);
                 bufferedOutputStream.flush();

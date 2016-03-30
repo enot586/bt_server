@@ -1,10 +1,12 @@
 package reportserver;
 
 import org.apache.log4j.Logger;
+import sun.java2d.pipe.SpanShapeRenderer;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -79,22 +81,25 @@ public class DatabaseDriver {
             commonDatabaseStatement.close();
             commonDatabaseConnection.close();
 
-            String synchDataBaseFile = "base-synchronization";
+            FileHandler fileHandler = new FileHandler(ProjectDirectories.directoryDatabase);
 
-            FileHandler fileHandler = new FileHandler(synchDataBaseFile);
-
-            File sourceFile = new File(synchDataBaseFile+"/"+"app-data.db3");
-            File targetFile = new File(synchDataBaseFile+"/"+fileHandler.generateName("app-data-"+uniqPart, "bak"));
+            File sourceFile = new File(commonUrl);
+            File targetFile = new File(ProjectDirectories.directoryDatabase+"/"+fileHandler.generateName("app-data-"+uniqPart, "bak"));
 
             Files.copy(Paths.get(sourceFile.getAbsolutePath()),
                         new FileOutputStream(targetFile));
+            do {
+                try {
+                    commonDatabaseConnection = DriverManager.getConnection("jdbc:log4jdbc:sqlite:" + commonUrl);
 
-            commonDatabaseConnection = DriverManager.getConnection("jdbc:log4jdbc:sqlite:"+commonUrl);
+                    if (commonDatabaseConnection == null)
+                        continue;
 
-            if (commonDatabaseConnection == null)
-                throw new SQLException();
-
-            commonDatabaseStatement = commonDatabaseConnection.createStatement();
+                    commonDatabaseStatement = commonDatabaseConnection.createStatement();
+                } catch (SQLException e) {
+                    commonDatabaseConnection.close();
+                }
+            } while (!commonDatabaseConnection.isValid(2));
 
             synchronized (dbState) {
                 dbState = DatabaseState.OPEN;
@@ -114,25 +119,30 @@ public class DatabaseDriver {
 
     void runScript(int userId, SqlCommandList batch) {
         try {
-            log.info("current user: "+userId);
-            boolean isAdmin = isUserAdmin(userId);
+            try {
+                log.info("current user: " + userId);
+                boolean isAdmin = isUserAdmin(userId);
 
-            commonDatabaseConnection.setAutoCommit(false);
-            localDatabaseConnection.setAutoCommit(false);
+                commonDatabaseConnection.setAutoCommit(false);
+                localDatabaseConnection.setAutoCommit(false);
 
-            ListIterator<String> iter = (ListIterator<String>) batch.iterator();
-            while (iter.hasNext()) {
-                String query = iter.next();
-                if (query.length() == 0) continue;
-                if (isAdmin || isUserAcceptableTableInQuery(query))  {
-                    commonDatabaseStatement.executeUpdate(query);
-                    setToHistory(query, getDatabaseVersion()+1);
+                ListIterator<String> iter = (ListIterator<String>) batch.iterator();
+                while (iter.hasNext()) {
+                    String query = iter.next();
+                    if (query.length() == 0) continue;
+                    if (isAdmin || isUserAcceptableTableInQuery(query))  {
+                        commonDatabaseStatement.executeUpdate(query);
+                        setToHistory(query, getDatabaseVersion()+1);
+                    }
                 }
-            }
 
-            //если все этапы прошли корректно увеличиваем версию
-            if (isAdmin) {
-                incrementDatabaseVersion(ReportServer.getBluetoothMacAddress());
+                //если все этапы прошли корректно увеличиваем версию
+                if (isAdmin) {
+                    incrementDatabaseVersion(ReportServer.getBluetoothMacAddress());
+                }
+            } catch (SQLException e) {
+                ReportServer.sendUserMessage("Ошибка идентификации пользователя.");
+                throw e;
             }
 
             commonDatabaseConnection.commit();
@@ -151,8 +161,43 @@ public class DatabaseDriver {
             try {
                 commonDatabaseConnection.setAutoCommit(true);
             } catch (SQLException e) {
-                log.warn(e);
+                log.error(e);
             }
+        }
+    }
+
+    public void replaceCommonBase(File newBase) throws IOException {
+        try {
+            commonDatabaseConnection.close();
+
+            try {
+                File currentBase = new File(commonUrl);
+
+                FileHandler fh = new FileHandler(ProjectDirectories.directoryDatabase);
+                currentBase.renameTo(new File(ProjectDirectories.directoryDatabase+"/"+fh.generateName("app-data","bak")));
+
+                Files.copy( newBase.toPath(), currentBase.toPath(),
+                            StandardCopyOption.REPLACE_EXISTING );
+            } catch (IOException e) {
+                log.warn(e);
+                throw e;
+            }
+
+            do {
+                try {
+                    commonDatabaseConnection = DriverManager.getConnection("jdbc:log4jdbc:sqlite:" + commonUrl);
+
+                    if (commonDatabaseConnection == null)
+                        continue;
+
+                    commonDatabaseStatement = commonDatabaseConnection.createStatement();
+                } catch (SQLException e) {
+                    commonDatabaseConnection.close();
+                }
+            } while (!commonDatabaseConnection.isValid(2));
+
+        } catch (SQLException e) {
+           log.warn(e);
         }
     }
 
@@ -175,10 +220,10 @@ public class DatabaseDriver {
     }
 
     public int checkClientVersion(String mac_address) throws SQLException {
-        ResultSet rs = localDatabaseStatement.executeQuery("SELECT id_version FROM clients_version WHERE mac = \""+mac_address+"\"");
+        ResultSet rs = localDatabaseStatement.executeQuery("SELECT id_version FROM clients_version WHERE mac='"+mac_address+"'");
 
         if (!rs.next()) {
-            localDatabaseStatement.executeUpdate("INSERT INTO clients_version (id_version, mac) VALUES (0, \""+mac_address+"\")");
+            localDatabaseStatement.executeUpdate("INSERT INTO clients_version (id_version, mac) VALUES (0, '"+mac_address+"')");
             return 0;
         } else {
             return (int)rs.getInt("id_version");
@@ -186,12 +231,12 @@ public class DatabaseDriver {
     }
 
     public void setClientVersion(String mac_address, int id_version) throws SQLException {
-        ResultSet rs = localDatabaseStatement.executeQuery("SELECT id_version FROM clients_version WHERE mac=\""+mac_address+"\"");
+        ResultSet rs = localDatabaseStatement.executeQuery("SELECT id_version FROM clients_version WHERE mac='"+mac_address+"'");
 
         if (!rs.next()) {
-            localDatabaseStatement.executeUpdate("INSERT INTO clients_version (id_version, mac) VALUES ("+id_version+", \""+mac_address+"\")");
+            localDatabaseStatement.executeUpdate("INSERT INTO clients_version (id_version, mac) VALUES ("+id_version+", '"+mac_address+"')");
         } else {
-            localDatabaseStatement.executeUpdate("UPDATE clients_version id_version="+id_version+" WHERE mac=\""+mac_address+"\"");
+            localDatabaseStatement.executeUpdate("UPDATE clients_version id_version="+id_version+" WHERE mac='"+mac_address+"'");
         }
 
     }
@@ -217,7 +262,7 @@ public class DatabaseDriver {
     }
 
     public Integer getDatabaseVersion(String mac_address) throws SQLException {
-        ResultSet rs = localDatabaseStatement.executeQuery("SELECT id_version FROM clients_version WHERE mac=\""+mac_address+"\"");
+        ResultSet rs = localDatabaseStatement.executeQuery("SELECT id_version FROM clients_version WHERE mac='"+mac_address+"'");
         if (!rs.next()) {
             return null;
         }

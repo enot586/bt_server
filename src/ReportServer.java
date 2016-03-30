@@ -51,8 +51,8 @@ public class ReportServer {
         logMessage = "Application database driver\t\t";
         try {
             databaseDriver = new DatabaseDriver();
-            databaseDriver.init("base-synchronization/app-data.db3",
-                                "base-synchronization/local-data.db3");
+            databaseDriver.init(ProjectDirectories.commonDatabaseRelativePath,
+                                ProjectDirectories.localDatabaseRelativePath);
             log.info(logMessage+"[OK]");
         } catch(Exception e) {
             log.info(logMessage+"[FAIL]");
@@ -96,17 +96,47 @@ public class ReportServer {
                 return;
             }
 
+            if (BluetoothPacketType.REPLACE_DATABASE.getId() == type) {
+                try {
+                    bluetoothReplaceDatabaseTransactionHandler(bt, (BluetoothFileTransaction) newReceivedTransaction);
+                } catch(ClassCastException e){
+                    log.warn(e);
+                }
+                return;
+            }
+
             if (BluetoothPacketType.SESSION_CLOSE.getId() == type) {
                 sendUserMessage("Текущее соедение завершено. Ожидаю нового подключения.");
             }
+
         } catch (NoSuchElementException e) {
 
         }
     }
 
+    private static void bluetoothReplaceDatabaseTransactionHandler(BluetoothServer bt, BluetoothFileTransaction transaction) {
+        int status = BluetoothTransactionStatus.DONE.getId();
+
+        JSONObject header = new JSONObject();
+        header.put("type", new Long(BluetoothPacketType.RESPONSE.getId()));
+        header.put("userId", transaction.getHeader().get("userId"));
+        header.put("size", transaction.getHeader().get("size"));
+        header.put("status", new Long(status));
+        bt.sendData(new BluetoothSimpleTransaction(header));
+
+        try {
+            File dataBase = new File(ProjectDirectories.directoryDownloads + "/" + transaction.getFileName());
+            databaseDriver.replaceCommonBase(dataBase);
+            ReportServer.sendUserMessage("Установлена новая база");
+        } catch (IOException e) {
+            ReportServer.sendUserMessage("Ошибка установки базы. Новая база не применена.");
+            log.error(e);
+        }
+    }
+
     private static void bluetoothBinaryFileTransactionHandler(BluetoothServer bt, BluetoothFileTransaction transaction) {
-        String synchDataBaseFile = "base-synchronization";
-        File scriptFile = new File(synchDataBaseFile + "/" + transaction.getFileName());
+
+        File scriptFile = new File(ProjectDirectories.directoryDownloads + "/" + transaction.getFileName());
 
         int status = BluetoothTransactionStatus.DONE.getId();
 
@@ -139,7 +169,7 @@ public class ReportServer {
 
                 //передать файлик базы данных целиком
                 try {
-                    File databaseFile = new File("base-synchronization/app-data.db3");
+                    File databaseFile = new File(ProjectDirectories.directoryDatabase+"/app-data.db3");
                     if (databaseFile.exists()) {
                         JSONObject header = new JSONObject();
                         header.put("type", new Long(BluetoothPacketType.BINARY_FILE.getId()));
@@ -211,7 +241,7 @@ public class ReportServer {
                 else {
                     //передать файлик базы данных целиком
                     try {
-                        File databaseFile = new File("base-synchronization/app-data.db3");
+                        File databaseFile = new File(ProjectDirectories.directoryDatabase+"/app-data.db3");
                         if (databaseFile.exists()) {
                             JSONObject header = new JSONObject();
                             header.put("type", new Long(BluetoothPacketType.BINARY_FILE.getId()));
@@ -237,8 +267,7 @@ public class ReportServer {
     }
 
     private static void bluetoothSqlQueriesTransactionHandler(BluetoothServer bt, BluetoothFileTransaction transaction) {
-        String synchDataBaseFile = "base-synchronization";
-        File scriptFile = new File(synchDataBaseFile + "/" + transaction.getFileName());
+        File scriptFile = new File(ProjectDirectories.directoryDownloads + "/" + transaction.getFileName());
         int status = 0;
 
         try {
