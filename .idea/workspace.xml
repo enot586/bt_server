@@ -28,71 +28,31 @@
       <file leaf-file-name="ReportServer.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/ReportServer.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="419">
-              <caret line="98" column="42" selection-start-line="98" selection-start-column="42" selection-end-line="98" selection-end-column="42" />
+            <state relative-caret-position="-689">
+              <caret line="153" column="24" selection-start-line="153" selection-start-column="24" selection-end-line="153" selection-end-column="24" />
               <folding>
                 <element signature="imports" expanded="true" />
+                <element signature="method#bluetoothReplaceDatabaseTransactionHandler#0;class#ReportServer#0" expanded="false" />
                 <element signature="method#bluetoothBinaryFileTransactionHandler#0;class#ReportServer#0" expanded="false" />
-                <element signature="method#bluetoothSynchTransactionHandler#0;class#ReportServer#0" expanded="false" />
-                <element signature="method#bluetoothSqlQueriesTransactionHandler#0;class#ReportServer#0" expanded="false" />
                 <element signature="method#bluetoothServerStart#0;class#ReportServer#0" expanded="false" />
                 <element signature="method#bluetoothServerStop#0;class#ReportServer#0" expanded="false" />
-                <element signature="method#sendUserMessage#0;class#ReportServer#0" expanded="false" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="BluetoothPacketType.java" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/bluetoothserver/BluetoothPacketType.java">
+      <file leaf-file-name="WebServer.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/webserver/WebServer.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="275">
-              <caret line="34" column="8" selection-start-line="34" selection-start-column="4" selection-end-line="34" selection-end-column="23" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ProjectDirectories.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/ProjectDirectories.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="160">
-              <caret line="8" column="59" selection-start-line="8" selection-start-column="59" selection-end-line="8" selection-end-column="59" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="DatabaseDriver.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/database/DatabaseDriver.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="836">
-              <caret line="74" column="48" selection-start-line="74" selection-start-column="48" selection-end-line="74" selection-end-column="48" />
+            <state relative-caret-position="1375">
+              <caret line="176" column="40" selection-start-line="176" selection-start-column="40" selection-end-line="176" selection-end-column="40" />
               <folding>
-                <element signature="method#backupCurrentDatabase#0;class#DatabaseDriver#0" expanded="false" />
-                <element signature="method#runScript#0;class#DatabaseDriver#0" expanded="false" />
-                <element signature="method#replaceCommonBase#0;class#DatabaseDriver#0" expanded="false" />
-                <element signature="method#isUserAdmin#0;class#DatabaseDriver#0" expanded="false" />
-                <element signature="method#isUserAcceptableTableInQuery#0;class#DatabaseDriver#0" expanded="false" />
-                <element signature="method#checkClientVersion#0;class#DatabaseDriver#0" expanded="false" />
-                <element signature="method#setClientVersion#0;class#DatabaseDriver#0" expanded="false" />
-                <element signature="method#getClientHistory#0;class#DatabaseDriver#0" expanded="false" />
-                <element signature="method#setToHistory#0;class#DatabaseDriver#0" expanded="false" />
-                <element signature="method#getDatabaseVersion#1;class#DatabaseDriver#0" expanded="false" />
-                <element signature="method#incrementDatabaseVersion#0;class#DatabaseDriver#0" expanded="false" />
-                <element signature="method#initDatabaseVersion#0;class#DatabaseDriver#0" expanded="false" />
-                <element signature="method#getUserMessageNumber#0;class#DatabaseDriver#0" expanded="false" />
-                <element signature="method#getUserMessages#0;class#DatabaseDriver#0" expanded="false" />
-                <element signature="method#getUserMessagesDate#0;class#DatabaseDriver#0" expanded="false" />
-                <element signature="method#addUserMessageToDatabase#0;class#DatabaseDriver#0" expanded="false" />
-                <element signature="method#getLatest10IdsDetour#0;class#DatabaseDriver#0" expanded="false" />
-                <element signature="method#getDetourTableIds#0;class#DatabaseDriver#0" expanded="false" />
-                <element signature="method#getUserNameFromDetourTable#0;class#DatabaseDriver#0" expanded="false" />
-                <element signature="method#getRouteNameFromDetourTable#0;class#DatabaseDriver#0" expanded="false" />
-                <element signature="method#getStartTimeFromDetourTable#0;class#DatabaseDriver#0" expanded="false" />
-                <element signature="method#getEndTimeFromDetourTable#0;class#DatabaseDriver#0" expanded="false" />
-                <element signature="method#getStatusFromDetourTable#0;class#DatabaseDriver#0" expanded="false" />
-                <element signature="method#getRoutesTablePathRoutePicture#0;class#DatabaseDriver#0" expanded="false" />
+                <element signature="method#WebServer#0;class#WebServer#0" expanded="false" />
+                <element signature="method#getWebRootResourceUri#0;class#WebServer#0" expanded="false" />
+                <element signature="method#stop#0;class#WebServer#0" expanded="false" />
+                <element signature="method#start#0;class#WebServer#0" expanded="false" />
+                <element signature="method#putWebAction#0;class#WebServer#0" expanded="false" />
+                <element signature="method#popWebAction#0;class#WebServer#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -150,7 +110,6 @@
         <option value="$PROJECT_DIR$/src/webserver/ServletUserMessageHandler.java" />
         <option value="$PROJECT_DIR$/src/webserver/ServletTableRefresh.java" />
         <option value="$PROJECT_DIR$/src/database/ReportDatabaseDriver.java" />
-        <option value="$PROJECT_DIR$/src/webserver/WebServer.java" />
         <option value="$PROJECT_DIR$/base-synchronization/local-data-format.sql" />
         <option value="$PROJECT_DIR$/src/tests/reportserver/CommonDatabaseDriverTest.java" />
         <option value="$PROJECT_DIR$/base-synchronization/template-db.sql" />
@@ -162,8 +121,9 @@
         <option value="$PROJECT_DIR$/src/bluetoothserver/BluetoothPacketType.java" />
         <option value="$PROJECT_DIR$/log4j.properties" />
         <option value="$PROJECT_DIR$/src/bluetoothserver/BluetoothConnectionHandler.java" />
-        <option value="$PROJECT_DIR$/src/ProjectDirectories.java" />
         <option value="$PROJECT_DIR$/src/database/DatabaseDriver.java" />
+        <option value="$PROJECT_DIR$/src/ProjectDirectories.java" />
+        <option value="$PROJECT_DIR$/src/webserver/WebServer.java" />
         <option value="$PROJECT_DIR$/src/ReportServer.java" />
       </list>
     </option>
@@ -783,6 +743,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="443">
           <caret line="211" column="6" selection-start-line="211" selection-start-column="6" selection-end-line="211" selection-end-column="6" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -812,6 +773,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="200">
           <caret line="15" column="17" selection-start-line="15" selection-start-column="17" selection-end-line="15" selection-end-column="17" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -834,18 +796,11 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/webserver/ServletBtStart.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="320">
-          <caret line="23" column="0" selection-start-line="23" selection-start-column="0" selection-end-line="23" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/webserver/ServletTableRefresh.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="260">
           <caret line="18" column="5" selection-start-line="18" selection-start-column="5" selection-end-line="18" selection-end-column="5" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -878,26 +833,6 @@
         <state relative-caret-position="476">
           <caret line="64" column="7" selection-start-line="64" selection-start-column="7" selection-end-line="64" selection-end-column="7" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/webserver/WebServer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="680">
-          <caret line="168" column="25" selection-start-line="168" selection-start-column="25" selection-end-line="168" selection-end-column="25" />
-          <folding>
-            <element signature="e#792#823#0" expanded="false" />
-            <element signature="e#904#916#0" expanded="false" />
-            <element signature="method#WebServer#0;class#WebServer#0" expanded="false" />
-            <element signature="method#getWebRootResourceUri#0;class#WebServer#0" expanded="false" />
-            <element signature="method#init#0;class#WebServer#0" expanded="false" />
-            <element signature="method#stop#0;class#WebServer#0" expanded="false" />
-            <element signature="method#start#0;class#WebServer#0" expanded="false" />
-            <element signature="method#putWebAction#0;class#WebServer#0" expanded="false" />
-            <element signature="method#popWebAction#0;class#WebServer#0" expanded="false" />
-            <element signature="method#popUserMessage#0;class#WebServer#0" expanded="false" />
-            <element signature="method#userMessageHandler#0;class#WebServer#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1015,6 +950,14 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/ProjectDirectories.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="240">
+          <caret line="12" column="0" selection-start-line="12" selection-start-column="0" selection-end-line="12" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/database/DatabaseDriver.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="836">
@@ -1048,35 +991,48 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/ProjectDirectories.java">
+    <entry file="file://$PROJECT_DIR$/src/webserver/ServletBtStart.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="160">
-          <caret line="8" column="59" selection-start-line="8" selection-start-column="59" selection-end-line="8" selection-end-column="59" />
+        <state relative-caret-position="320">
+          <caret line="23" column="0" selection-start-line="23" selection-start-column="0" selection-end-line="23" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/bluetoothserver/BluetoothPacketType.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="375">
+          <caret line="39" column="19" selection-start-line="39" selection-start-column="19" selection-end-line="39" selection-end-column="19" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/ReportServer.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="419">
-          <caret line="98" column="42" selection-start-line="98" selection-start-column="42" selection-end-line="98" selection-end-column="42" />
+        <state relative-caret-position="-689">
+          <caret line="153" column="24" selection-start-line="153" selection-start-column="24" selection-end-line="153" selection-end-column="24" />
           <folding>
             <element signature="imports" expanded="true" />
+            <element signature="method#bluetoothReplaceDatabaseTransactionHandler#0;class#ReportServer#0" expanded="false" />
             <element signature="method#bluetoothBinaryFileTransactionHandler#0;class#ReportServer#0" expanded="false" />
-            <element signature="method#bluetoothSynchTransactionHandler#0;class#ReportServer#0" expanded="false" />
-            <element signature="method#bluetoothSqlQueriesTransactionHandler#0;class#ReportServer#0" expanded="false" />
             <element signature="method#bluetoothServerStart#0;class#ReportServer#0" expanded="false" />
             <element signature="method#bluetoothServerStop#0;class#ReportServer#0" expanded="false" />
-            <element signature="method#sendUserMessage#0;class#ReportServer#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/bluetoothserver/BluetoothPacketType.java">
+    <entry file="file://$PROJECT_DIR$/src/webserver/WebServer.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="275">
-          <caret line="34" column="8" selection-start-line="34" selection-start-column="4" selection-end-line="34" selection-end-column="23" />
-          <folding />
+        <state relative-caret-position="1375">
+          <caret line="176" column="40" selection-start-line="176" selection-start-column="40" selection-end-line="176" selection-end-column="40" />
+          <folding>
+            <element signature="method#WebServer#0;class#WebServer#0" expanded="false" />
+            <element signature="method#getWebRootResourceUri#0;class#WebServer#0" expanded="false" />
+            <element signature="method#stop#0;class#WebServer#0" expanded="false" />
+            <element signature="method#start#0;class#WebServer#0" expanded="false" />
+            <element signature="method#putWebAction#0;class#WebServer#0" expanded="false" />
+            <element signature="method#popWebAction#0;class#WebServer#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>

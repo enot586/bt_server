@@ -1,6 +1,7 @@
 package reportserver;
 
 import javax.servlet.AsyncContext;
+import javax.servlet.ServletResponse;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -335,8 +336,8 @@ public class ReportServer {
     public static void sendUserMessage(String text) {
         try {
             Date currentDate = new Date();
-            //отправляем в web
-            WebServer.sendUserMessage(currentDate, text);
+            //Выбираем нужный web-сервер и отправляем ему текст
+            webServer.sendUserMessage(currentDate, text);
             //отправляем в базу
             databaseDriver.addUserMessageToDatabase(currentDate, text);
         } catch (Exception e) {

@@ -28,7 +28,7 @@ class WebServer extends CommonServer {
     private Server server;
     private String siteAddress;
     private static Map< WebActionType, AsyncContext > webActions = new HashMap< WebActionType, AsyncContext >();
-    private static final LinkedList<JSONObject> userMessages = new LinkedList<JSONObject>();
+    private final LinkedList<JSONObject> userMessages = new LinkedList<JSONObject>();
     private static Logger log = Logger.getLogger(ReportServer.class);
     private Thread threadLocalHandler;
 
@@ -162,7 +162,7 @@ class WebServer extends CommonServer {
         return action;
     }
 
-    public static void sendUserMessage(Date date, String text) {
+    public void sendUserMessage(Date date, String text) {
         JSONObject userMessage = new JSONObject();
         String pattern = "yyyy-MM-dd HH:mm:ss.SSS";
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
@@ -174,7 +174,7 @@ class WebServer extends CommonServer {
         }
     }
 
-    public static synchronized JSONObject popUserMessage() throws NoSuchElementException {
+    public synchronized JSONObject popUserMessage() throws NoSuchElementException {
         JSONObject text = userMessages.peek();
         if (text == null)  throw new NoSuchElementException();
         userMessages.remove();
