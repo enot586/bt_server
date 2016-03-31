@@ -10,7 +10,7 @@
       <sourceFolder url="file://$MODULE_DIR$/src/database" isTestSource="false" packagePrefix="reportserver" />
       <sourceFolder url="file://$MODULE_DIR$/resources" type="java-resource" />
     </content>
-    <orderEntry type="inheritedJdk" />
+    <orderEntry type="jdk" jdkName="1.8" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="jetty-all-server-8.1.19.v20160209" level="project" />
     <orderEntry type="library" name="servlet-api-3.1" level="project" />

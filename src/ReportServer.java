@@ -1,7 +1,6 @@
 package reportserver;
 
 import javax.servlet.AsyncContext;
-import javax.servlet.ServletResponse;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -16,6 +15,10 @@ import org.json.simple.JSONObject;
 
 public class ReportServer {
 
+    private static final int versionMajor = 1;
+    private static final int versionMinor = 0;
+    private static final int versionBuild = 1;
+
     private static WebServer webServer;
     private static BluetoothServer bluetoothServer;
     private static DatabaseDriver databaseDriver;
@@ -23,15 +26,36 @@ public class ReportServer {
 
     private static final Logger log = Logger.getLogger(ReportServer.class);
 
+    public static void printConsoleHelp()
+    {
+        //String ver = ReportServer.class.getPackage().getImplementationVersion();
+        System.out.println("reportserver v"+versionMajor+"."+versionMinor+"build"+versionBuild+"\n"+
+                           "Copyright (C) 2016 M&D, Inc.");
+
+        //usage format:
+        //Usage: reportserver [-aDde] [-f | -g] [-n number] [-b b_arg | -c c_arg] req1 req2 [opt1 [opt2]]
+        System.out.println("Usage: reportserver port");
+        System.out.println("\tport: web-server port number");
+    }
+
     public static void main(String[] args) throws IOException, InterruptedException {
 
-        PropertyConfigurator.configure("log4j.properties");
-
+        //PropertyConfigurator.configure("log4j.properties");
         log.info("Application status:\t\t[INIT]");
 
         String logMessage = "Web server init\t\t";
+
         try {
-            webServer = new WebServer(8080, "webapp");
+
+            try {
+                int port = Integer.parseInt(args[0]);
+                webServer = new WebServer(port, "webapp");
+            } catch(Exception e) {
+                System.out.println("Error: incorrect port number.");
+                printConsoleHelp();
+                return;
+            }
+
             webServer.init();
             log.info(logMessage+"[OK]");
 
