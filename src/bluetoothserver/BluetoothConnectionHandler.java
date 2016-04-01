@@ -274,27 +274,28 @@ class BluetoothConnectionHandler implements Runnable {
                 if (receiver.isHeaderReceived()) {
                     JSONObject header = receiver.getHeader();
 
-                    boolean isTransactionWithBody = header.containsKey("size");
-                    transactionTotalSize = (long) header.get("size");
-
                     log.info("receive file:");
                     log.info(header.toString());
 
-                    //если принимаем бинарный файл, то присваиваем ему имя которое пришло в тразакции
-                    if (header.containsKey("filename")) {
-                        long type = (long) header.get("type");
-                        if (BluetoothPacketType.BINARY_FILE.getId() == type) {
-                            receivedFileName = (String) header.get("filename");
-                        }
-                    }
-
+                    boolean isTransactionWithBody = header.containsKey("size");
                     if (isTransactionWithBody) {
+                        transactionTotalSize = (long) header.get("size");
+
+                        //если принимаем бинарный файл, то присваиваем ему имя которое пришло в тразакции
+                        if (header.containsKey("filename")) {
+                            long type = (long) header.get("type");
+                            if (BluetoothPacketType.BINARY_FILE.getId() == type) {
+                                receivedFileName = (String) header.get("filename");
+                            }
+                        }
+
                         //Перезаписываем файлик если таковой существует
                         FileOutputStream fileOutputStream = new FileOutputStream(ProjectDirectories.directoryDownloads + "/" + receivedFileName);
                         fileOutputStream.flush();
                         fileOutputStream.close();
                         log.info(receivedFileName);
                         break;
+
                     } else {
                         log.info("BluetoothSimpleTransaction");
                         return new BluetoothSimpleTransaction(header);
@@ -309,16 +310,18 @@ class BluetoothConnectionHandler implements Runnable {
         while (byteIndexInFile < transactionTotalSize) {
             try {
                 int numberOfBytesToTheEnd = ((int)transactionTotalSize - byteIndexInFile);
-                int bytesRead = inStream.read(tempBuffer, 0,
-                                                (numberOfBytesToTheEnd > tempBuffer.length) ? tempBuffer.length : numberOfBytesToTheEnd);
 
-                refreshTransactionTimeout();
-                FileOutputStream fileOutputStream = new FileOutputStream(ProjectDirectories.directoryDownloads + "/" + receivedFileName, true);
-                BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
-                bufferedOutputStream.write(tempBuffer, 0, bytesRead);
-                bufferedOutputStream.flush();
-                bufferedOutputStream.close();
-                byteIndexInFile += bytesRead;
+                if (inStream.available() > 0)  {
+                    int bytesRead = inStream.read(tempBuffer, 0,
+                                                 (numberOfBytesToTheEnd > tempBuffer.length) ? tempBuffer.length : numberOfBytesToTheEnd);
+                    refreshTransactionTimeout();
+                    FileOutputStream fileOutputStream = new FileOutputStream(ProjectDirectories.directoryDownloads + "/" + receivedFileName, true);
+                    BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
+                    bufferedOutputStream.write(tempBuffer, 0, bytesRead);
+                    bufferedOutputStream.flush();
+                    bufferedOutputStream.close();
+                    byteIndexInFile += bytesRead;
+                }
             } catch (IOException e) {
                 log.error(e);
                 throw e;
