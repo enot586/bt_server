@@ -22,6 +22,8 @@ import reportserver.CommonServer;
 import javax.servlet.AsyncContext;
 import javax.servlet.ServletResponse;
 
+import static java.lang.Thread.sleep;
+
 
 class WebServer extends CommonServer {
 
@@ -55,6 +57,11 @@ class WebServer extends CommonServer {
                                 while(true) {
                                     //Локальные обработчики
                                     userMessageHandler();
+                                    try {
+                                        sleep(500);
+                                    } catch (InterruptedException e) {
+                                        e.printStackTrace();
+                                    }
                                 }
                             });
 

@@ -13,6 +13,8 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.json.simple.JSONObject;
 
+import static java.lang.Thread.sleep;
+
 public class ReportServer {
 
     private static final int versionMajor = 1;
@@ -89,6 +91,7 @@ public class ReportServer {
 
         while (true) {
             bluetoothTransactionHandler(bluetoothServer);
+            sleep(500);
         }
     }
 
