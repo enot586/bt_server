@@ -134,6 +134,7 @@ public class ReportServer {
             }
 
             if (BluetoothPacketType.SESSION_CLOSE.getId() == type) {
+                bt.reopenNewConnection();
                 sendUserMessage("Текущее соедение завершено. Ожидаю нового подключения.");
             }
 

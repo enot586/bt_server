@@ -6,7 +6,7 @@
     <meta name="keywords" content="">
     <title>Report server</title>
     <link rel="stylesheet" type="text/css" href="style.css">
-    <script src="jquery-1.12.1.js"></script>
+    <script src="jquery-1.12.2.min.js"></script>
     <script>
 
     $(document).ready(function() {

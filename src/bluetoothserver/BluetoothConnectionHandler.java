@@ -118,20 +118,9 @@ class BluetoothConnectionHandler implements Runnable {
                         StreamConnection newStreamConnection = createConnection(url);
                         synchronized (connectionState) {
                             currentConnection = newStreamConnection;
-                            //inStream = new BufferedInputStream(currentConnection.openInputStream());
-                            //senderStream = new BufferedOutputStream(currentConnection.openOutputStream());
                         }
                     } catch (IOException e1) {
                         log.warn(e1);
-//                        try {
-//                            inStream.close();
-//                        } catch (IOException e) {
-//                        }
-//                        try {
-//                            senderStream.close();
-//                        } catch (IOException e) {
-//                        }
-
                         synchronized (connectionState) {
                             connectionState = ConnectionState.CONNECTION_STATE_WAITING;
                         }
@@ -163,7 +152,7 @@ class BluetoothConnectionHandler implements Runnable {
         }
     }
 
-    private void reopenNewConnection() {
+    public void reopenNewConnection() {
         stop();
         synchronized (connectionState) {
             connectionState = ConnectionState.CONNECTION_STATE_OPEN;
@@ -182,12 +171,6 @@ class BluetoothConnectionHandler implements Runnable {
         try {
             BluetoothSimpleTransaction result = dataReceiving(connection);
             parent.pushReceivedTransaction(result);
-
-            //Если поймали транзакцию на закрытие текущей сессии
-            long type = (long)result.getHeader().get("type");
-            if (BluetoothPacketType.SESSION_CLOSE.getId() == type) {
-                reopenNewConnection();
-            }
         } catch (NoSuchElementException e) {
             //Ничего критичного, ждем данные
         }

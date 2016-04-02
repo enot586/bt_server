@@ -54,6 +54,11 @@ class BluetoothServer extends CommonServer {
         setState(ServerState.SERVER_STOPPED);
     }
 
+    public void reopenNewConnection() {
+        //todo: подумать как обслуживать несколько подключений(несколько BluetoothConnectionHandler)
+        connectionHandler.reopenNewConnection();
+    }
+
     synchronized public void stop() throws IOException {
         if (!isReadyToWork()) return;
         setState(ServerState.SERVER_STOPPED);

@@ -5,7 +5,7 @@
     <meta name="description" content="">
     <meta name="keywords" content="">
     <title>Report server</title>
-    <script src="jquery-1.12.1.js"></script>
+    <script src="jquery-1.12.2.min.js"></script>
     <script language="javascript" type="text/javascript">
      <%
         //Необходимые для формирования документа объявления
