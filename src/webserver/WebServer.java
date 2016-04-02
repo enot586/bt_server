@@ -8,7 +8,6 @@ import java.net.URISyntaxException;
 
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 import org.apache.log4j.Logger;
@@ -17,27 +16,32 @@ import org.eclipse.jetty.jsp.JettyJspServlet;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.json.simple.JSONObject;
-import reportserver.CommonServer;
 
+import javax.bluetooth.BluetoothStateException;
 import javax.servlet.AsyncContext;
+import javax.servlet.ServletException;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import static java.lang.Thread.sleep;
 
 
-class WebServer extends CommonServer {
+public class WebServer extends CommonServer {
 
     private Server server;
     private String siteAddress;
     private static Map< WebActionType, AsyncContext > webActions = new HashMap< WebActionType, AsyncContext >();
-    private final LinkedList<JSONObject> userMessages = new LinkedList<JSONObject>();
+    private CommonUserInterface ui;
     private static Logger log = Logger.getLogger(ReportServer.class);
     private Thread threadLocalHandler;
 
-    WebServer(int port, String siteAddress_) {
+    WebServer(int port, String siteAddress_, CommonUserInterface messageForUser_) {
         setState(ServerState.SERVER_INITIALIZING);
         server = new Server(port);
         siteAddress = siteAddress_;
+        ui = messageForUser_;
     }
 
     private URI getWebRootResourceUri() throws FileNotFoundException, URISyntaxException {
@@ -88,7 +92,7 @@ class WebServer extends CommonServer {
         context.setParentLoaderPriority(true);
 
         // Add Default Servlet (must be named "default")
-        ServletHolder holderDefault = new ServletHolder("default", ServletForwarder.class);
+        ServletHolder holderDefault = new ServletHolder("default", WebServer.ServletForwarder.class);
 
         try {
             URI baseUri = getWebRootResourceUri();
@@ -114,13 +118,12 @@ class WebServer extends CommonServer {
         context.addServlet(holderJsp, "*.jsp");
 
         // Add Application Servlets
-        context.addServlet(ServletForwarder.class, "/date");
-        context.addServlet(ServletBtStatus.class, "/btstatus");
-        context.addServlet(ServletBtStart.class, "/btstart");
-        context.addServlet(ServletBtStop.class, "/btstop");
+        context.addServlet(new ServletHolder( new WebServer.ServletBtStatus()), "/btstatus");
+        context.addServlet(new ServletHolder( new WebServer.ServletBtStart()), "/btstart");
+        context.addServlet(new ServletHolder( new WebServer.ServletBtStop()), "/btstop");
 
-        context.addServlet(ServletTableRefresh.class, "/tablerefresh");
-        context.addServlet(ServletUserMessageHandler.class, "/usermessage");
+        context.addServlet(new ServletHolder( new WebServer.ServletTableRefresh()), "/tablerefresh");
+        context.addServlet(new ServletHolder( new WebServer.ServletUserMessageHandler()), "/usermessage");
 
         ServletHolder exampleJspHolder = new ServletHolder();
         exampleJspHolder.setForcedPath("/example.jsp");
@@ -169,29 +172,10 @@ class WebServer extends CommonServer {
         return action;
     }
 
-    public void sendUserMessage(Date date, String text) {
-        JSONObject userMessage = new JSONObject();
-        String pattern = "yyyy-MM-dd HH:mm:ss.SSS";
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
-        String strDate = simpleDateFormat.format(date);
-        userMessage.put("date", strDate);
-        userMessage.put("text", text);
-        synchronized (userMessages) {
-            userMessages.add(userMessage);
-        }
-    }
-
-    public synchronized JSONObject popUserMessage() throws NoSuchElementException {
-        JSONObject text = userMessages.peek();
-        if (text == null)  throw new NoSuchElementException();
-        userMessages.remove();
-        return text;
-    }
-
     public void userMessageHandler() {
         try {
             if (isWebActionExist(WebActionType.SEND_USER_MESSAGE)) {
-                JSONObject text = popUserMessage();
+                JSONObject text = ui.popUserMessage();
                 AsyncContext asyncRequest = popWebAction(WebActionType.SEND_USER_MESSAGE);
                 ServletResponse response = asyncRequest.getResponse();
                 response.setCharacterEncoding("UTF-8");
@@ -206,6 +190,109 @@ class WebServer extends CommonServer {
         }
     }
 
+    /**
+     *  Пользовательские сервлеты
+     *  @{
+     */
+
+    public class ServletBtStart extends HttpServlet
+    {
+        private Logger log = Logger.getLogger(reportserver.WebServer.ServletBtStart.class);
+
+        @Override
+        protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+        {
+            try {
+                ReportServer.bluetoothServerStart();
+            } catch (Exception e) {
+                log.error(e);
+            }
+
+            ui.sendUserMessage("Запуск bluetooth-сервера");
+
+            try {
+                response.setContentType("text");
+                response.setStatus(HttpServletResponse.SC_OK);
+                response.getWriter().println(ReportServer.getStateBluetoothServer().toString());
+            } catch (BluetoothStateException e) {
+                log.error(e);
+            }
+        }
+    }
+
+    public class ServletBtStop extends HttpServlet
+    {
+        private Logger log = Logger.getLogger(reportserver.WebServer.ServletBtStop.class);
+
+        @Override
+        protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+        {
+            try {
+                ReportServer.bluetoothServerStop();
+            } catch (Exception e) {
+                log.error(e);
+            }
+            ui.sendUserMessage("Остановка bluetooth-сервера");
+            try {
+                response.setContentType("text");
+                response.setStatus(HttpServletResponse.SC_OK);
+                response.getWriter().println(ReportServer.getStateBluetoothServer().toString());
+            } catch (BluetoothStateException e) {
+                log.error(e);
+            }
+        }
+    }
+
+    public class ServletBtStatus extends HttpServlet
+    {
+        private Logger log = Logger.getLogger(reportserver.WebServer.ServletBtStatus.class);
+        @Override
+        protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+        {
+            try {
+                response.setContentType("text");
+                response.setStatus(HttpServletResponse.SC_OK);
+                response.getWriter().println(ReportServer.getStateBluetoothServer().toString());
+            } catch (BluetoothStateException e) {
+                log.error(e);
+            }
+        }
+    }
+
+    public class ServletForwarder extends HttpServlet
+    {
+        @Override
+        protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+        {
+            request.getRequestDispatcher("/index.jsp").forward(request,response);
+        }
+    }
+
+    public class ServletTableRefresh extends HttpServlet {
+        @Override
+        protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+            AsyncContext asyncContext = request.startAsync();
+            asyncContext.setTimeout(0);
+
+            WebServer.putWebAction(WebActionType.REFRESH_DETOUR_TABLE,
+                    asyncContext);
+
+        }
+    }
+
+    public class ServletUserMessageHandler extends HttpServlet {
+        @Override
+        protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+            AsyncContext asyncContext = request.startAsync();
+            asyncContext.setTimeout(0);
+
+            WebServer.putWebAction(WebActionType.SEND_USER_MESSAGE, asyncContext);
+        }
+    }
+
+    /**
+    *   @}
+    */
 }
 
 

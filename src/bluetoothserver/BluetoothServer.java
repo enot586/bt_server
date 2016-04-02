@@ -16,15 +16,16 @@ class BluetoothServer extends CommonServer {
     private String name;
     private String url;
     private Thread serverThread;
-
-    //TODO: рагнизовать список, для поддержки нескольких соединений
+    private CommonUserInterface ui;
+    //TODO: орагнизовать список, для поддержки нескольких соединений
     private BluetoothConnectionHandler connectionHandler;
 
     private final LinkedList<BluetoothSimpleTransaction> receivedTransactionsQueue = new LinkedList<BluetoothSimpleTransaction>();
     private final LinkedList<BluetoothSimpleTransaction> sendTransactionsQueue = new LinkedList<BluetoothSimpleTransaction>();
     private static final Logger log = Logger.getLogger(BluetoothServer.class);
 
-    BluetoothServer() {
+    BluetoothServer(CommonUserInterface ui_) {
+        ui = ui_;
         setState(ServerState.SERVER_INITIALIZING);
     }
 
@@ -33,7 +34,7 @@ class BluetoothServer extends CommonServer {
     }
 
     private void createConnectionHandlerThread() throws Exception {
-        connectionHandler = new BluetoothConnectionHandler(this, url);
+        connectionHandler = new BluetoothConnectionHandler(this, url, ui);
         connectionHandler.start();
 
         serverThread = new Thread(connectionHandler);

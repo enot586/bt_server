@@ -18,7 +18,7 @@ class BluetoothConnectionHandler implements Runnable {
     //Размер поточного байтового буфера
     private final int MAX_BUFFER_SIZE = 100*1024;
     private long timeoutTime = 0;
-
+    private CommonUserInterface ui;
     private enum ConnectionState {
         CONNECTION_STATE_WAITING,
         CONNECTION_STATE_OPEN,
@@ -33,13 +33,14 @@ class BluetoothConnectionHandler implements Runnable {
     private StreamConnection currentConnection;
     private static final Logger log = Logger.getLogger(BluetoothConnectionHandler.class);
 
-    BluetoothConnectionHandler(BluetoothServer parent_, String url_) throws NullPointerException {
+    BluetoothConnectionHandler(BluetoothServer parent_, String url_, CommonUserInterface ui_) throws NullPointerException {
         if ( (url_ == null) || (parent_ == null) ) {
             NullPointerException criticalExepction = new NullPointerException();
             log.error(criticalExepction);
             throw criticalExepction;
         }
 
+        ui = ui_;
         url = url_;
         parent = parent_;
         connectionState = ConnectionState.CONNECTION_STATE_WAITING;
@@ -99,9 +100,8 @@ class BluetoothConnectionHandler implements Runnable {
 
                         streamConnNotifier = (StreamConnectionNotifier)Connector.open(url);
                     } catch (IOException e) {
-                        ReportServer.sendUserMessage("Не удается получить доступ к bluetooth");
+                        ui.sendUserMessage("Не удается получить доступ к bluetooth");
                         synchronized (connectionState) {
-                            //TODO: обработать правильно
                             log.warn(e);
                             connectionState = ConnectionState.CONNECTION_STATE_WAITING;
                         }
@@ -130,7 +130,7 @@ class BluetoothConnectionHandler implements Runnable {
                     synchronized (connectionState) {
                         connectionState = ConnectionState.CONNECTION_STATE_WORKING;
                         refreshTransactionTimeout();
-                        ReportServer.sendUserMessage("Соединение установлено");
+                        ui.sendUserMessage("Соединение установлено");
                     }
 
                     break;
@@ -142,7 +142,7 @@ class BluetoothConnectionHandler implements Runnable {
 
                     if (isTransactionTimeout()) {
                         reopenNewConnection();
-                        ReportServer.sendUserMessage("Таймаут соединения. Ожидаю нового подключения.");
+                        ui.sendUserMessage("Таймаут соединения. Ожидаю нового подключения.");
                         log.warn("Transaction timeout");
                     }
 

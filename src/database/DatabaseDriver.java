@@ -117,51 +117,47 @@ public class DatabaseDriver {
         }
     }
 
-    void runScript(int userId, SqlCommandList batch) {
+    void runScript(boolean isAdmin, SqlCommandList batch) throws SQLException {
         try {
-            try {
-                log.info("current user: " + userId);
-                boolean isAdmin = isUserAdmin(userId);
+            commonDatabaseConnection.setAutoCommit(false);
+            localDatabaseConnection.setAutoCommit(false);
 
-                commonDatabaseConnection.setAutoCommit(false);
-                localDatabaseConnection.setAutoCommit(false);
-
-                ListIterator<String> iter = (ListIterator<String>) batch.iterator();
-                while (iter.hasNext()) {
-                    String query = iter.next();
-                    if (query.length() == 0) continue;
-                    if (isAdmin || isUserAcceptableTableInQuery(query))  {
-                        commonDatabaseStatement.executeUpdate(query);
-                        setToHistory(query, getDatabaseVersion()+1);
-                    }
+            ListIterator<String> iter = (ListIterator<String>) batch.iterator();
+            while (iter.hasNext()) {
+                String query = iter.next();
+                if (query.length() == 0) continue;
+                if (isAdmin || isUserAcceptableTableInQuery(query))  {
+                    commonDatabaseStatement.executeUpdate(query);
+                    setToHistory(query, getDatabaseVersion()+1);
                 }
+            }
 
-                //если все этапы прошли корректно увеличиваем версию
-                if (isAdmin) {
-                    incrementDatabaseVersion(ReportServer.getBluetoothMacAddress());
-                }
-            } catch (SQLException e) {
-                ReportServer.sendUserMessage("Ошибка идентификации пользователя.");
-                throw e;
+            //если все этапы прошли корректно увеличиваем версию
+            if (isAdmin) {
+                incrementDatabaseVersion(ReportServer.getBluetoothMacAddress());
             }
 
             commonDatabaseConnection.commit();
             localDatabaseConnection.commit();
 
         } catch (SQLException e) {
-            ReportServer.sendUserMessage("Ошибка обработки SQL-запроса. Отмена синхронизации.");
+            log.warn(e);
             try {
                 commonDatabaseConnection.rollback();
                 localDatabaseConnection.rollback();
             } catch (SQLException e1) {
                 log.warn(e1);
             }
+
+            throw e;
         }
         finally {
             try {
                 commonDatabaseConnection.setAutoCommit(true);
-            } catch (SQLException e) {
-                log.error(e);
+                localDatabaseConnection.setAutoCommit(true);
+            } catch (SQLException e2) {
+                log.error(e2);
+                throw e2;
             }
         }
     }

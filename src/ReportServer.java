@@ -10,7 +10,6 @@ import java.sql.SQLSyntaxErrorException;
 import java.util.*;
 
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
 import org.json.simple.JSONObject;
 
 import static java.lang.Thread.sleep;
@@ -19,12 +18,16 @@ public class ReportServer {
 
     private static final int versionMajor = 1;
     private static final int versionMinor = 0;
-    private static final int versionBuild = 1;
+    private static final int versionBuild = 2;
 
     private static WebServer webServer;
     private static BluetoothServer bluetoothServer;
     private static DatabaseDriver databaseDriver;
+    private static FeedbackUsersMessage userFeedback;
+
     private static SqlCommandList sqlScript;
+
+    private static CommonUserInterface userInterface;
 
     private static final Logger log = Logger.getLogger(ReportServer.class);
 
@@ -45,13 +48,26 @@ public class ReportServer {
         //PropertyConfigurator.configure("log4j.properties");
         log.info("Application status:\t\t[INIT]");
 
-        String logMessage = "Web server init\t\t";
+        String logMessage = "Application database driver\t\t";
 
         try {
+            databaseDriver = new DatabaseDriver();
+            databaseDriver.init(ProjectDirectories.commonDatabaseRelativePath,
+                    ProjectDirectories.localDatabaseRelativePath);
+            log.info(logMessage+"[OK]");
+        } catch(Exception e) {
+            log.info(logMessage+"[FAIL]");
+            log.error(e);
+            return;
+        }
 
+        logMessage = "Web server init\t\t";
+
+        try {
             try {
                 int port = Integer.parseInt(args[0]);
-                webServer = new WebServer(port, "webapp");
+                userFeedback = new FeedbackUsersMessage(databaseDriver);
+                webServer = new WebServer(port, "webapp", userFeedback);
             } catch(Exception e) {
                 System.out.println("Error: incorrect port number.");
                 printConsoleHelp();
@@ -62,24 +78,12 @@ public class ReportServer {
             log.info(logMessage+"[OK]");
 
             logMessage = "Bluetooth driver init\t\t";
-            bluetoothServer = new BluetoothServer();
+            bluetoothServer = new BluetoothServer(userFeedback);
             bluetoothServer.init();
             log.info(logMessage+"[OK]");
 
             logMessage = "Web server start\t\t";
             webServer.start();
-            log.info(logMessage+"[OK]");
-        } catch(Exception e) {
-            log.info(logMessage+"[FAIL]");
-            log.error(e);
-            return;
-        }
-
-        logMessage = "Application database driver\t\t";
-        try {
-            databaseDriver = new DatabaseDriver();
-            databaseDriver.init(ProjectDirectories.commonDatabaseRelativePath,
-                                ProjectDirectories.localDatabaseRelativePath);
             log.info(logMessage+"[OK]");
         } catch(Exception e) {
             log.info(logMessage+"[FAIL]");
@@ -135,7 +139,7 @@ public class ReportServer {
 
             if (BluetoothPacketType.SESSION_CLOSE.getId() == type) {
                 bt.reopenNewConnection();
-                sendUserMessage("Текущее соедение завершено. Ожидаю нового подключения.");
+                userFeedback.sendUserMessage("Текущее соедение завершено. Ожидаю нового подключения.");
             }
 
         } catch (NoSuchElementException e) {
@@ -156,9 +160,9 @@ public class ReportServer {
         try {
             File dataBase = new File(ProjectDirectories.directoryDownloads + "/" + transaction.getFileName());
             databaseDriver.replaceCommonBase(dataBase);
-            ReportServer.sendUserMessage("Установлена новая база");
+            userFeedback.sendUserMessage("Установлена новая база");
         } catch (IOException e) {
-            ReportServer.sendUserMessage("Ошибка установки базы. Новая база не применена.");
+            userFeedback.sendUserMessage("Ошибка установки базы. Новая база не применена.");
             log.error(e);
         }
     }
@@ -176,7 +180,7 @@ public class ReportServer {
         header.put("status",    new Long(status));
         bt.sendData(new BluetoothSimpleTransaction(header));
 
-        ReportServer.sendUserMessage("Принят файл: "+transaction.getFileName());
+        userFeedback.sendUserMessage("Принят файл: "+transaction.getFileName());
     }
 
     private static void bluetoothSynchTransactionHandler(BluetoothServer bt, BluetoothSimpleTransaction transaction) {
@@ -185,13 +189,13 @@ public class ReportServer {
             int dbVersion = databaseDriver.getDatabaseVersion();
             int realClientVersion = (int)transaction.getHeader().get("version");
 
-            sendUserMessage("Принят запрос на синхронизацию.");
+            userFeedback.sendUserMessage("Принят запрос на синхронизацию.");
 
             //Если версия базы в планшете некорректная
             if  ( (realClientVersion != clientVersion)   ||
                   (realClientVersion > dbVersion)        ||
                   (clientVersion > dbVersion) ) {
-                sendUserMessage("Некорректная версия базы на планшете. Обновление базы.");
+                userFeedback.sendUserMessage("Некорректная версия базы на планшете. Обновление базы.");
 
                 //перебиваем версию
                 databaseDriver.setClientVersion(bt.getRemoteDeviceBluetoothAddress(), 0);
@@ -230,7 +234,7 @@ public class ReportServer {
                 header.put("size", new Long(0));
 
                 bt.sendData(new BluetoothSimpleTransaction(header));
-                sendUserMessage("База планшета актуальна.");
+                userFeedback.sendUserMessage("База планшета актуальна.");
                 return;
             }
 
@@ -262,7 +266,7 @@ public class ReportServer {
                         }
 
                         bt.sendData(new BluetoothFileTransaction(header, temp.getAbsolutePath()));
-                        sendUserMessage("Данные для синхронизации отправлены.");
+                        userFeedback.sendUserMessage("Данные для синхронизации отправлены.");
                     } catch (IOException e) {
                         log.error(e);
                     }
@@ -279,7 +283,7 @@ public class ReportServer {
                             header.put("filename", "app-data.db3");
 
                             bt.sendData(new BluetoothFileTransaction(header, databaseFile.getAbsolutePath()));
-                            sendUserMessage("Версия устарела. Отправлена актуальная база.");
+                            userFeedback.sendUserMessage("Версия устарела. Отправлена актуальная база.");
                         } else {
                             log.error("Database not exist !!!");
                         }
@@ -318,11 +322,24 @@ public class ReportServer {
         header.put("status",    new Long(status));
         bt.sendData(new BluetoothSimpleTransaction(header));
 
-        databaseDriver.backupCurrentDatabase(Integer.toString(databaseDriver.getDatabaseVersion()));
+        if (transaction.getHeader().containsKey("userId")) {
+            long userId = (long) (transaction.getHeader().get("userId"));
 
-        long userId = (long)(transaction.getHeader().get("userId"));
+            boolean isAdmin = false;
 
-        databaseDriver.runScript((int)userId, sqlScript);
+            try {
+                isAdmin = databaseDriver.isUserAdmin((int) userId);
+            } catch (SQLException e) {
+                userFeedback.sendUserMessage("Ошибка идентификации пользователя. Пользователь не найден.");
+            }
+
+            try {
+                databaseDriver.backupCurrentDatabase(Integer.toString(databaseDriver.getDatabaseVersion()));
+                databaseDriver.runScript(isAdmin, sqlScript);
+            } catch (SQLException e) {
+                userFeedback.sendUserMessage("Ошибка обработки SQL-запроса. Cинхронизация отменена.");
+            }
+        }
 
         try {
             AsyncContext asyncRefreshDetourTable = WebServer.popWebAction(WebActionType.REFRESH_DETOUR_TABLE);
@@ -359,18 +376,6 @@ public class ReportServer {
 
     public static DatabaseDriver getDatabaseDriver() {
         return databaseDriver;
-    }
-
-    public static void sendUserMessage(String text) {
-        try {
-            Date currentDate = new Date();
-            //Выбираем нужный web-сервер и отправляем ему текст
-            webServer.sendUserMessage(currentDate, text);
-            //отправляем в базу
-            databaseDriver.addUserMessageToDatabase(currentDate, text);
-        } catch (Exception e) {
-
-        }
     }
 
 }
