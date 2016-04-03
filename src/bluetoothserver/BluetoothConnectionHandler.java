@@ -212,6 +212,7 @@ class BluetoothConnectionHandler implements Runnable {
                 log.info("Send packet :" + transactionForSend.getHeader().toJSONString());
             } catch (IOException e) {
                 log.warn(e);
+                return;
             }
 
             //Проверяем тип транзакции и отправляем соответствующий типу блок даных
@@ -223,6 +224,7 @@ class BluetoothConnectionHandler implements Runnable {
                 return;
             } catch (IOException e1) {
                 log.warn(e1);
+                return;
             } catch (ClassCastException e2) {
 
             }
@@ -243,6 +245,7 @@ class BluetoothConnectionHandler implements Runnable {
                     }
                 } catch (FileNotFoundException e) {
                     log.warn(e);
+                    return;
                 }
                 log.info("Send fileTransaction");
                 return;

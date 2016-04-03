@@ -1,0 +1,16 @@
+<component name="ArtifactManager">
+  <artifact build-on-make="true" name="release">
+    <output-path>$PROJECT_DIR$/out/artifacts/release</output-path>
+    <root id="root">
+      <element id="artifact" artifact-name="reportserver:jar" />
+      <element id="file-copy" path="$PROJECT_DIR$/windows-run.bat" />
+      <element id="directory" name="base-synchronization">
+        <element id="dir-copy" path="$PROJECT_DIR$/base-synchronization" />
+      </element>
+      <element id="directory" name="downloads">
+        <element id="dir-copy" path="$PROJECT_DIR$/downloads" />
+      </element>
+      <element id="file-copy" path="$PROJECT_DIR$/linux-run.sh" />
+    </root>
+  </artifact>
+</component>
