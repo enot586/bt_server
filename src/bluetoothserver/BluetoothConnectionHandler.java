@@ -58,27 +58,27 @@ class BluetoothConnectionHandler implements Runnable {
 
         try {
             inStream.close();
-        } catch (IOException e) {
+        } catch (NullPointerException | IOException e) {
 
         }
 
         try {
             outStream.close();
-        }catch (IOException e) {
+        }catch (NullPointerException | IOException e) {
 
         }
 
         try {
             if (currentConnection != null)
                 currentConnection.close();
-        } catch (IOException e) {
+        } catch (NullPointerException | IOException e) {
 
         }
 
         try {
             if (clientSession != null)
                 clientSession.close();
-        } catch (IOException e) {
+        } catch (NullPointerException | IOException e) {
             log.warn("Can't close clientSession:"+e);
         }
 
