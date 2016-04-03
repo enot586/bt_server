@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import java.sql.SQLSyntaxErrorException;
 import java.util.*;
 
+import com.intel.bluetooth.BlueCoveImpl;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
@@ -140,6 +141,7 @@ public class ReportServer {
             if (BluetoothPacketType.SESSION_CLOSE.getId() == type) {
                 bt.reopenNewConnection();
                 userFeedback.sendUserMessage("Текущее соедение завершено. Ожидаю нового подключения.");
+                return;
             }
 
         } catch (NoSuchElementException e) {
@@ -300,9 +302,9 @@ public class ReportServer {
     }
 
     private static void bluetoothSqlQueriesTransactionHandler(BluetoothServer bt, BluetoothFileTransaction transaction) {
-        File scriptFile = new File(ProjectDirectories.directoryDownloads + "/" + transaction.getFileName());
+ //      File scriptFile = new File(ProjectDirectories.directoryDownloads + "/" + transaction.getFileName());
         int status = 0;
-
+ /*
         try {
             sqlScript = new SqlCommandList(scriptFile);
             status = BluetoothTransactionStatus.DONE.getId();
@@ -314,14 +316,14 @@ public class ReportServer {
             status = BluetoothTransactionStatus.ERROR.getId();
             return;
         }
-
+*/
         JSONObject header = new JSONObject();
         header.put("type",      new Long(BluetoothPacketType.RESPONSE.getId()));
         header.put("userId", transaction.getHeader().get("userId"));
         header.put("size", transaction.getHeader().get("size"));
         header.put("status",    new Long(status));
         bt.sendData(new BluetoothSimpleTransaction(header));
-
+/*
         if (transaction.getHeader().containsKey("userId")) {
             long userId = (long) (transaction.getHeader().get("userId"));
 
@@ -347,7 +349,7 @@ public class ReportServer {
         } catch (NullPointerException e) {
             //по каким-то причинам ajax соединение установлено не было
             log.warn(e);
-        }
+        }*/
     }
 
     static CommonServer.ServerState getStateBluetoothServer() {
