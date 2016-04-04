@@ -280,11 +280,15 @@ class BluetoothConnectionHandler implements Runnable {
 
             while (!receiver.isHeaderReceived()) {
                 try {
-                    //read string from spp client
-                    receiverStream.read(tempBuffer, 0, 1);
-                    receiver.receiveHeader(tempBuffer, 1);
+                    if (isTransactionTimeout()) {
+                        break;
+                    }
 
-                    refreshTransactionTimeout();
+                    if (receiverStream.available() > 0) {
+                        //read string from spp client
+                        receiverStream.read(tempBuffer, 0, 1);
+                        receiver.receiveHeader(tempBuffer, 1);
+                    }
 
                     if (receiver.isHeaderReceived()) {
                         JSONObject header = receiver.getHeader();
@@ -326,6 +330,10 @@ class BluetoothConnectionHandler implements Runnable {
 
             while (byteIndexInFile < transactionTotalSize) {
                 try {
+                    if (isTransactionTimeout()) {
+                        break;
+                    }
+
                     int numberOfBytesToTheEnd = ((int) transactionTotalSize - byteIndexInFile);
 
                     if (receiverStream.available() > 0) {

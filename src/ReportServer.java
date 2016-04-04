@@ -9,7 +9,6 @@ import java.sql.SQLException;
 import java.sql.SQLSyntaxErrorException;
 import java.util.*;
 
-import com.intel.bluetooth.BlueCoveImpl;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
