@@ -193,41 +193,41 @@ public class ReportServer {
             userFeedback.sendUserMessage("Принят запрос на синхронизацию.");
 
             //Если версия базы в планшете некорректная
-            if  ( (realClientVersion != clientVersion)   ||
-                  (realClientVersion > dbVersion)        ||
-                  (clientVersion > dbVersion) ) {
-                userFeedback.sendUserMessage("Некорректная версия базы на планшете. Обновление базы.");
-
-                //перебиваем версию
-                databaseDriver.setClientVersion(bt.getRemoteDeviceBluetoothAddress(), 0);
-
-                //передать файлик базы данных целиком
-                try {
-                    File databaseFile = new File(ProjectDirectories.directoryDatabase+"/app-data.db3");
-                    if (databaseFile.exists()) {
-                        JSONObject header = new JSONObject();
-                        header.put("type", new Long(BluetoothPacketType.BINARY_FILE.getId()));
-                        header.put("userId", transaction.getHeader().get("userId"));
-                        header.put("size", databaseFile.length());
-                        header.put("filename", "app-data.db3");
-
-                        bt.sendData(new BluetoothFileTransaction(header, databaseFile.getAbsolutePath()));
-                    } else {
-                        log.error("Database not exist !!!");
-                    }
-                } catch (SecurityException e) {
-                    log.warn(e);
-                }
-
-                //FIXME: как-то скинуть версию базы для планшета?
-
-                return;
-            }
+//            if  ( (realClientVersion != clientVersion)   ||
+//                  (realClientVersion > dbVersion)        ||
+//                  (clientVersion > dbVersion) ) {
+//                userFeedback.sendUserMessage("Некорректная версия базы на планшете. Обновление базы.");
+//
+//                //перебиваем версию
+//                databaseDriver.setClientVersion(bt.getRemoteDeviceBluetoothAddress(), 0);
+//
+//                //передать файлик базы данных целиком
+//                try {
+//                    File databaseFile = new File(ProjectDirectories.directoryDatabase+"/app-data.db3");
+//                    if (databaseFile.exists()) {
+//                        JSONObject header = new JSONObject();
+//                        header.put("type", new Long(BluetoothPacketType.BINARY_FILE.getId()));
+//                        header.put("userId", transaction.getHeader().get("userId"));
+//                        header.put("size", databaseFile.length());
+//                        header.put("filename", "app-data.db3");
+//
+//                        bt.sendData(new BluetoothFileTransaction(header, databaseFile.getAbsolutePath()));
+//                    } else {
+//                        log.error("Database not exist !!!");
+//                    }
+//                } catch (SecurityException e) {
+//                    log.warn(e);
+//                }
+//
+//                //FIXME: как-то скинуть версию базы для планшета?
+//
+//                return;
+//            }
 
             //FIXME: (clientVersion == dbVersion == 0) непонятно что делать
 
             //версия актуальна, синхронизировать нечего
-            if ( (dbVersion > 0) && (clientVersion == dbVersion) ) {
+            //if ( (dbVersion > 0) && (clientVersion == dbVersion) ) {
                 JSONObject header = new JSONObject();
                 header.put("type", new Long(BluetoothPacketType.RESPONSE.getId()));
                 header.put("userId", transaction.getHeader().get("userId"));
@@ -237,62 +237,62 @@ public class ReportServer {
                 bt.sendData(new BluetoothSimpleTransaction(header));
                 userFeedback.sendUserMessage("База планшета актуальна.");
                 return;
-            }
+           // }
 
             //Передаем всю положенную клиенту историю
-            if ( clientVersion < dbVersion ) {
-                if (dbVersion - clientVersion < 10) {
-                    ArrayList<String> sourceHistory = new ArrayList<String>();
-
-                    for (int currentVersion = (clientVersion + 1); currentVersion < dbVersion; ++currentVersion) {
-                        sourceHistory.addAll(databaseDriver.getClientHistory(currentVersion));
-                    }
-
-                    JSONObject header = new JSONObject();
-                    header.put("type", new Long(BluetoothPacketType.SQL_QUERIES.getId()));
-                    header.put("userId", transaction.getHeader().get("userId"));
-                    header.put("size", transaction.getHeader().get("size"));
-
-                    try {
-                        File temp = File.createTempFile("client_history", ".tmp");
-                        temp.deleteOnExit();
-
-                        FileWriter writer = new FileWriter(temp);
-
-                        writer.write(header.toJSONString());
-
-                        Iterator it = sourceHistory.iterator();
-                        while (it.hasNext()) {
-                            writer.write(it.next() + ";");
-                        }
-
-                        bt.sendData(new BluetoothFileTransaction(header, temp.getAbsolutePath()));
-                        userFeedback.sendUserMessage("Данные для синхронизации отправлены.");
-                    } catch (IOException e) {
-                        log.error(e);
-                    }
-                }
-                else {
-                    //передать файлик базы данных целиком
-                    try {
-                        File databaseFile = new File(ProjectDirectories.directoryDatabase+"/app-data.db3");
-                        if (databaseFile.exists()) {
-                            JSONObject header = new JSONObject();
-                            header.put("type", new Long(BluetoothPacketType.BINARY_FILE.getId()));
-                            header.put("userId", transaction.getHeader().get("userId"));
-                            header.put("size", databaseFile.length());
-                            header.put("filename", "app-data.db3");
-
-                            bt.sendData(new BluetoothFileTransaction(header, databaseFile.getAbsolutePath()));
-                            userFeedback.sendUserMessage("Версия устарела. Отправлена актуальная база.");
-                        } else {
-                            log.error("Database not exist !!!");
-                        }
-                    } catch (SecurityException e) {
-                        log.warn(e);
-                    }
-                }
-            }
+//            if ( clientVersion < dbVersion ) {
+//                if (dbVersion - clientVersion < 10) {
+//                    ArrayList<String> sourceHistory = new ArrayList<String>();
+//
+//                    for (int currentVersion = (clientVersion + 1); currentVersion < dbVersion; ++currentVersion) {
+//                        sourceHistory.addAll(databaseDriver.getClientHistory(currentVersion));
+//                    }
+//
+//                    JSONObject header = new JSONObject();
+//                    header.put("type", new Long(BluetoothPacketType.SQL_QUERIES.getId()));
+//                    header.put("userId", transaction.getHeader().get("userId"));
+//                    header.put("size", transaction.getHeader().get("size"));
+//
+//                    try {
+//                        File temp = File.createTempFile("client_history", ".tmp");
+//                        temp.deleteOnExit();
+//
+//                        FileWriter writer = new FileWriter(temp);
+//
+//                        writer.write(header.toJSONString());
+//
+//                        Iterator it = sourceHistory.iterator();
+//                        while (it.hasNext()) {
+//                            writer.write(it.next() + ";");
+//                        }
+//
+//                        bt.sendData(new BluetoothFileTransaction(header, temp.getAbsolutePath()));
+//                        userFeedback.sendUserMessage("Данные для синхронизации отправлены.");
+//                    } catch (IOException e) {
+//                        log.error(e);
+//                    }
+//                }
+//                else {
+//                    //передать файлик базы данных целиком
+//                    try {
+//                        File databaseFile = new File(ProjectDirectories.directoryDatabase+"/app-data.db3");
+//                        if (databaseFile.exists()) {
+//                            JSONObject header = new JSONObject();
+//                            header.put("type", new Long(BluetoothPacketType.BINARY_FILE.getId()));
+//                            header.put("userId", transaction.getHeader().get("userId"));
+//                            header.put("size", databaseFile.length());
+//                            header.put("filename", "app-data.db3");
+//
+//                            bt.sendData(new BluetoothFileTransaction(header, databaseFile.getAbsolutePath()));
+//                            userFeedback.sendUserMessage("Версия устарела. Отправлена актуальная база.");
+//                        } else {
+//                            log.error("Database not exist !!!");
+//                        }
+//                    } catch (SecurityException e) {
+//                        log.warn(e);
+//                    }
+//                }
+//            }
         } catch (SQLException e) {
             log.warn(e);
         } catch (IOException e) {

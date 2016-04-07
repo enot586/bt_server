@@ -20,7 +20,6 @@ class BluetoothConnectionHandler implements Runnable {
     private CommonUserInterface ui;
 
     private enum ConnectionState {
-        CONNECTION_STATE_WAITING,
         CONNECTION_STATE_OPEN,
         CONNECTION_STATE_CREATE_CONNECTION,
         CONNECTION_STATE_WORKING,
@@ -48,41 +47,34 @@ class BluetoothConnectionHandler implements Runnable {
         ui = ui_;
         url = url_;
         parent = parent_;
-        connectionState = ConnectionState.CONNECTION_STATE_WAITING;
+        connectionState = ConnectionState.CONNECTION_STATE_OPEN;
     }
 
     void stop() {
-        synchronized (connectionState) {
-            connectionState = ConnectionState.CONNECTION_STATE_WAITING;
-        }
-
         try {
             inStream.close();
         } catch (NullPointerException | IOException e) {
-
         }
 
         try {
             outStream.close();
         }catch (NullPointerException | IOException e) {
-
         }
 
         try {
-            if (currentConnection != null)
-                currentConnection.close();
+            currentConnection.close();
         } catch (NullPointerException | IOException e) {
-
         }
 
         try {
-            if (clientSession != null)
-                clientSession.close();
+            clientSession.close();
         } catch (NullPointerException | IOException e) {
             log.warn("Can't close clientSession:"+e);
         }
 
-
+        synchronized (connectionState) {
+            connectionState = ConnectionState.CONNECTION_STATE_OPEN;
+        }
     }
 
     synchronized void start() {
@@ -110,29 +102,21 @@ class BluetoothConnectionHandler implements Runnable {
             }
 
             switch (connectionState) {
-                case CONNECTION_STATE_WAITING: {
-                    break;
-                }
-
                 case CONNECTION_STATE_OPEN: {
                     try {
                         LocalDevice local = LocalDevice.getLocalDevice();
-                        if (local.getDiscoverable() != 0) {
+                        if (local.getDiscoverable() != DiscoveryAgent.GIAC) {
                             local.setDiscoverable(DiscoveryAgent.GIAC);
                         }
 
-                        clientSession = (StreamConnectionNotifier)Connector.open(url);
-                    } catch (IOException e) {
-                        ui.sendUserMessage("Не удается получить доступ к bluetooth");
+                        clientSession = (StreamConnectionNotifier)Connector.open(url, Connector.READ_WRITE);
+
                         synchronized (connectionState) {
-                            log.warn(e);
-                            connectionState = ConnectionState.CONNECTION_STATE_WAITING;
+                            connectionState = ConnectionState.CONNECTION_STATE_CREATE_CONNECTION;
                         }
-                        break;
+                    } catch (NullPointerException | IOException e) {
                     }
-                    synchronized (connectionState) {
-                        connectionState = ConnectionState.CONNECTION_STATE_CREATE_CONNECTION;
-                    }
+
                     break;
                 }
 
@@ -143,21 +127,17 @@ class BluetoothConnectionHandler implements Runnable {
                             currentConnection = newStreamConnection;
                             inStream = new BufferedInputStream(currentConnection.openInputStream());
                             outStream = new BufferedOutputStream(currentConnection.openOutputStream());
+
+                            synchronized (connectionState) {
+                                connectionState = ConnectionState.CONNECTION_STATE_WORKING;
+                                refreshTransactionTimeout();
+                                ui.sendUserMessage("Соединение установлено");
+                            }
                         }
                     } catch (IOException e1) {
                         log.warn(e1);
-                        synchronized (connectionState) {
-                            connectionState = ConnectionState.CONNECTION_STATE_WAITING;
-                        }
-                        break;
+                        reopenNewConnection();
                     }
-
-                    synchronized (connectionState) {
-                        connectionState = ConnectionState.CONNECTION_STATE_WORKING;
-                        refreshTransactionTimeout();
-                        ui.sendUserMessage("Соединение установлено");
-                    }
-
                     break;
                 }
 
@@ -179,9 +159,6 @@ class BluetoothConnectionHandler implements Runnable {
 
     public void reopenNewConnection() {
         stop();
-        synchronized (connectionState) {
-            connectionState = ConnectionState.CONNECTION_STATE_OPEN;
-        }
     }
 
     private void refreshTransactionTimeout() {
@@ -208,7 +185,9 @@ class BluetoothConnectionHandler implements Runnable {
             //Отправляем заголовок
             try {
                 senderStream.write(transactionForSend.getHeader().toJSONString().getBytes());
+                log.info(transactionForSend.getHeader());
                 senderStream.flush();
+
                 log.info("Send packet :" + transactionForSend.getHeader().toJSONString());
             } catch (IOException e) {
                 log.warn(e);

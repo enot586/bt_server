@@ -48,8 +48,8 @@ class BluetoothServer extends CommonServer {
     void init() throws IOException, Exception {
         setState(ServerState.SERVER_INITIALIZING);
         uuid = new UUID("1101", true);
-        name = "Echo Server";
-        url = "btspp://localhost:" + uuid + ";name=" + name+ ";authenticate=false;encrypt=false;";
+        name = "ReportServer";
+        url = "btspp://localhost:" + uuid + ";name=" + name + ";authenticate=false;encrypt=false;";
         log.info("Bluetooth server init");
         log.info("uuid: " + uuid);
         setState(ServerState.SERVER_STOPPED);

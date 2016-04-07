@@ -36,7 +36,7 @@ public class FeedbackUsersMessage implements CommonUserInterface {
             //Выбираем нужный web-сервер и отправляем ему текст
             addUserMessage(date, text);
             //отправляем в базу
-            dbd.addUserMessageToDatabase(date, text);
+//            dbd.addUserMessageToDatabase(date, text);
         } catch (Exception e) {
 
         }
