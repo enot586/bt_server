@@ -91,25 +91,10 @@ public class WebServer extends CommonServer {
         context.setClassLoader( new URLClassLoader(new URL[0], this.getClass().getClassLoader() ) );
         context.setParentLoaderPriority(true);
 
-        // Add Default Servlet (must be named "default")
-        ServletHolder holderDefault = new ServletHolder("default", WebServer.ServletForwarder.class);
-
-        try {
-            URI baseUri = getWebRootResourceUri();
-            holderDefault.setInitParameter("resourceBase", baseUri.toASCIIString());
-        } catch  (URISyntaxException e) {
-            log.error(e);
-            return;
-        }
-
-        holderDefault.setInitParameter("dirAllowed", "true");
-
-        context.addServlet(holderDefault, "/");
-
         //Create JSP Servlet (must be named "jsp")
         ServletHolder holderJsp = new ServletHolder("jsp", JettyJspServlet.class);
         holderJsp.setInitOrder(0);
-        holderJsp.setInitParameter("logVerbosityLevel", "DEBUG");
+        holderJsp.setInitParameter("logVerbosityLevel", "WARN");
         holderJsp.setInitParameter("fork", "false");
         holderJsp.setInitParameter("xpoweredBy", "false");
         holderJsp.setInitParameter("compilerTargetVM", "1.7");
@@ -124,11 +109,6 @@ public class WebServer extends CommonServer {
 
         context.addServlet(new ServletHolder( new WebServer.ServletTableRefresh()), "/tablerefresh");
         context.addServlet(new ServletHolder( new WebServer.ServletUserMessageHandler()), "/usermessage");
-
-        ServletHolder exampleJspHolder = new ServletHolder();
-        exampleJspHolder.setForcedPath("/example.jsp");
-        exampleJspHolder.setName("example.jsp");
-        context.addServlet(exampleJspHolder, "/example");
 
         server.setHandler(context);
 
@@ -259,16 +239,7 @@ public class WebServer extends CommonServer {
         }
     }
 
-    public class ServletForwarder extends HttpServlet
-    {
-        @Override
-        protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
-        {
-            request.getRequestDispatcher("/index.jsp").forward(request,response);
-        }
-    }
-
-    public class ServletTableRefresh extends HttpServlet {
+     public class ServletTableRefresh extends HttpServlet {
         @Override
         protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
             AsyncContext asyncContext = request.startAsync();

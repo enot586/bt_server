@@ -50,7 +50,7 @@ class BluetoothConnectionHandler implements Runnable {
         connectionState = ConnectionState.CONNECTION_STATE_OPEN;
     }
 
-    void stop() {
+    synchronized void stop() {
         try {
             inStream.close();
         } catch (NullPointerException | IOException e) {
@@ -72,9 +72,7 @@ class BluetoothConnectionHandler implements Runnable {
             log.warn("Can't close clientSession:"+e);
         }
 
-        synchronized (connectionState) {
-            connectionState = ConnectionState.CONNECTION_STATE_OPEN;
-        }
+        connectionState = ConnectionState.CONNECTION_STATE_OPEN;
     }
 
     synchronized void start() {
@@ -169,7 +167,7 @@ class BluetoothConnectionHandler implements Runnable {
         return (System.currentTimeMillis() >= timeoutTime);
     }
 
-    private void receiveHandler(BufferedInputStream receiverStream) {
+    synchronized private void receiveHandler(BufferedInputStream receiverStream) {
         try {
             BluetoothSimpleTransaction result = dataReceiving(receiverStream);
             parent.pushReceivedTransaction(result);
@@ -178,14 +176,13 @@ class BluetoothConnectionHandler implements Runnable {
         }
     }
 
-    private void sendHandler(BufferedOutputStream senderStream) {
+    synchronized private void sendHandler(BufferedOutputStream senderStream) {
         try {
             BluetoothSimpleTransaction transactionForSend = parent.popSendTransaction();
 
             //Отправляем заголовок
             try {
                 senderStream.write(transactionForSend.getHeader().toJSONString().getBytes());
-                log.info(transactionForSend.getHeader());
                 senderStream.flush();
 
                 log.info("Send packet :" + transactionForSend.getHeader().toJSONString());
