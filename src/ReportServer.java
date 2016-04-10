@@ -1,5 +1,6 @@
 package reportserver;
 
+import javax.bluetooth.LocalDevice;
 import javax.servlet.AsyncContext;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -81,6 +82,8 @@ public class ReportServer {
             bluetoothServer = new BluetoothServer(userFeedback);
             bluetoothServer.init();
             log.info(logMessage+"[OK]");
+
+            databaseDriver.initDatabaseVersion(bluetoothServer.getLocalHostMacAddress());
 
             logMessage = "Web server start\t\t";
             webServer.start();
@@ -188,10 +191,11 @@ public class ReportServer {
         try {
             int clientVersion = databaseDriver.checkClientVersion(bt.getRemoteDeviceBluetoothAddress());
             int dbVersion = databaseDriver.getDatabaseVersion();
-            int realClientVersion = (int)transaction.getHeader().get("version");
+            long realClientVersion = (long)transaction.getHeader().get("version");
 
             userFeedback.sendUserMessage("Принят запрос на синхронизацию.");
 
+            //todo: Обдумываем, возможна новая команда синхронизации для пользовательского планшета
             //Если версия базы в планшете некорректная
 //            if  ( (realClientVersion != clientVersion)   ||
 //                  (realClientVersion > dbVersion)        ||
@@ -226,32 +230,25 @@ public class ReportServer {
 
             //FIXME: (clientVersion == dbVersion == 0) непонятно что делать
 
+            //Более-менее проверено
             //версия актуальна, синхронизировать нечего
             //if ( (dbVersion > 0) && (clientVersion == dbVersion) ) {
-                JSONObject header = new JSONObject();
-                header.put("type", new Long(BluetoothPacketType.RESPONSE.getId()));
-                header.put("userId", transaction.getHeader().get("userId"));
-                header.put("status", new Long(BluetoothTransactionStatus.DONE.getId()));
-                header.put("size", new Long(0));
-
-                bt.sendData(new BluetoothSimpleTransaction(header));
-                userFeedback.sendUserMessage("База планшета актуальна.");
-                return;
+//                JSONObject header = new JSONObject();
+//                header.put("type", new Long(BluetoothPacketType.SESSION_CLOSE.getId()));
+//                bt.sendData(new BluetoothSimpleTransaction(header));
+//                userFeedback.sendUserMessage("База планшета актуальна.");
+//                return;
            // }
 
+            //Более-менее проверено
             //Передаем всю положенную клиенту историю
 //            if ( clientVersion < dbVersion ) {
 //                if (dbVersion - clientVersion < 10) {
 //                    ArrayList<String> sourceHistory = new ArrayList<String>();
 //
-//                    for (int currentVersion = (clientVersion + 1); currentVersion < dbVersion; ++currentVersion) {
+//                    for (int currentVersion = (clientVersion + 1); currentVersion <= dbVersion; ++currentVersion) {
 //                        sourceHistory.addAll(databaseDriver.getClientHistory(currentVersion));
 //                    }
-//
-//                    JSONObject header = new JSONObject();
-//                    header.put("type", new Long(BluetoothPacketType.SQL_QUERIES.getId()));
-//                    header.put("userId", transaction.getHeader().get("userId"));
-//                    header.put("size", transaction.getHeader().get("size"));
 //
 //                    try {
 //                        File temp = File.createTempFile("client_history", ".tmp");
@@ -259,12 +256,20 @@ public class ReportServer {
 //
 //                        FileWriter writer = new FileWriter(temp);
 //
-//                        writer.write(header.toJSONString());
-//
 //                        Iterator it = sourceHistory.iterator();
 //                        while (it.hasNext()) {
 //                            writer.write(it.next() + ";");
 //                        }
+//
+//                        writer.flush();
+//                        writer.close();
+//
+//                        JSONObject header = new JSONObject();
+//                        header.put("type", new Long(BluetoothPacketType.SQL_QUERIES.getId()));
+//                        header.put("userId", transaction.getHeader().get("userId"));
+//                        header.put("size", temp.length());
+//
+//                        log.info(temp.getAbsolutePath());
 //
 //                        bt.sendData(new BluetoothFileTransaction(header, temp.getAbsolutePath()));
 //                        userFeedback.sendUserMessage("Данные для синхронизации отправлены.");
@@ -273,15 +278,16 @@ public class ReportServer {
 //                    }
 //                }
 //                else {
-//                    //передать файлик базы данных целиком
+                    //более-менее испытано
+                    //передать файлик базы данных целиком
 //                    try {
 //                        File databaseFile = new File(ProjectDirectories.directoryDatabase+"/app-data.db3");
 //                        if (databaseFile.exists()) {
 //                            JSONObject header = new JSONObject();
-//                            header.put("type", new Long(BluetoothPacketType.BINARY_FILE.getId()));
+//                            header.put("type", new Long(BluetoothPacketType.REPLACE_DATABASE.getId()));
 //                            header.put("userId", transaction.getHeader().get("userId"));
 //                            header.put("size", databaseFile.length());
-//                            header.put("filename", "app-data.db3");
+//                            header.put("version", new Long(0));
 //
 //                            bt.sendData(new BluetoothFileTransaction(header, databaseFile.getAbsolutePath()));
 //                            userFeedback.sendUserMessage("Версия устарела. Отправлена актуальная база.");

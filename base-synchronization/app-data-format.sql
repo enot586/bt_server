@@ -28,9 +28,13 @@ CREATE TABLE "visits" (
 
 CREATE TABLE "shedule" (
                         "_id_shedule" INTEGER PRIMARY KEY AUTOINCREMENT,
-                        "day_of_week" TEXT,
-                        "description" TEXT,
-                        "date" TEXT
+                        "id_position_shedule" INTEGER,
+                        "day_of_week" INTEGER,
+                        "week_of_year" INTEGER,
+                        "id_route_shedule" INTEGER,
+                        "id_shift_shedule" INTEGER,
+                        "number_routs_shedule" INTEGER,
+                        "actual_shedule" INTEGER
                        );
 
 CREATE TABLE "positions" (

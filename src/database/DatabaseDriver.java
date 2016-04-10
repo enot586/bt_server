@@ -242,7 +242,7 @@ public class DatabaseDriver {
         ArrayList<String> resultList = new ArrayList<String>();
 
         while (rs.next()) {
-            resultList.add(rs.getString("id_version"));
+            resultList.add(rs.getString("query"));
         }
 
         return resultList;

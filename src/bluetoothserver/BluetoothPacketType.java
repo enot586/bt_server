@@ -33,7 +33,7 @@ enum BluetoothPacketType {
                             //JSON-Заголовок: {"type":int}
 
     REPLACE_DATABASE(5);    //Замена файла базы данных на сервере
-                            //JSON-Заголовок: {"type":int, "userId":int, "size":int}
+                            //JSON-Заголовок: {"type":int, "userId":int, "size":int, "version":int}
                             //Тело пакета содержит бинарный кусок файла размером size
                             //В ответ посылается RESPONSE.
 

@@ -239,7 +239,7 @@ class BluetoothConnectionHandler implements Runnable {
         return fileNameHandler.generateName(uniqPart, "tmp");
     }
 
-    private BluetoothSimpleTransaction dataReceiving(BufferedInputStream receiverStream) {
+    private BluetoothSimpleTransaction dataReceiving(BufferedInputStream receiverStream) throws NoSuchElementException {
         try {
             if (receiverStream.available() == 0) {
                 throw new NoSuchElementException();
