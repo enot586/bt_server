@@ -16,8 +16,10 @@ import org.json.simple.JSONObject;
 class BluetoothConnectionHandler implements Runnable {
     //Размер поточного байтового буфера
     private final int MAX_BUFFER_SIZE = 100*1024;
-    private long timeoutTime = 0;
+    private TransactionTimer transactionTimer = new TransactionTimer(5000);
     private CommonUserInterface ui;
+
+    private int connectionId = 0;
 
     private enum ConnectionState {
         CONNECTION_STATE_OPEN,
@@ -25,15 +27,15 @@ class BluetoothConnectionHandler implements Runnable {
         CONNECTION_STATE_WORKING,
     }
 
+    private ConnectionState connectionState;
+
     private BluetoothServer parent;
     private String url;
-    private ConnectionState connectionState;
     private StreamConnectionNotifier clientSession;
     private StreamConnection currentConnection;
 
-    BufferedInputStream inStream;
-    BufferedOutputStream outStream;
-
+    private BufferedInputStream inStream;
+    private BufferedOutputStream outStream;
 
     private static final Logger log = Logger.getLogger(BluetoothConnectionHandler.class);
 
@@ -51,6 +53,8 @@ class BluetoothConnectionHandler implements Runnable {
     }
 
     synchronized void stop() {
+        transactionTimer.stop();
+
         try {
             inStream.close();
         } catch (NullPointerException | IOException e) {
@@ -126,11 +130,11 @@ class BluetoothConnectionHandler implements Runnable {
                             inStream = new BufferedInputStream(currentConnection.openInputStream());
                             outStream = new BufferedOutputStream(currentConnection.openOutputStream());
 
-                            synchronized (connectionState) {
-                                connectionState = ConnectionState.CONNECTION_STATE_WORKING;
-                                refreshTransactionTimeout();
-                                ui.sendUserMessage("Соединение установлено");
-                            }
+                            connectionState = ConnectionState.CONNECTION_STATE_WORKING;
+                            transactionTimer.refreshTransactionTimeout();
+                            transactionTimer.start();
+                            ++connectionId;
+                            ui.sendUserMessage("Соединение установлено");
                         }
                     } catch (IOException e1) {
                         log.warn(e1);
@@ -143,10 +147,10 @@ class BluetoothConnectionHandler implements Runnable {
                     receiveHandler(inStream);
                     sendHandler(outStream);
 
-                    if (isTransactionTimeout()) {
+                    if (transactionTimer.isTransactionTimeout()) {
                         reopenNewConnection();
                         ui.sendUserMessage("Таймаут соединения. Ожидаю нового подключения.");
-                        log.warn("Transaction timeout");
+                        log.warn("Transaction transactionTimer");
                     }
 
                     break;
@@ -155,16 +159,8 @@ class BluetoothConnectionHandler implements Runnable {
         }
     }
 
-    public void reopenNewConnection() {
+    void reopenNewConnection() {
         stop();
-    }
-
-    private void refreshTransactionTimeout() {
-        timeoutTime = System.currentTimeMillis()+5000;
-    }
-
-    private boolean isTransactionTimeout() {
-        return (System.currentTimeMillis() >= timeoutTime);
     }
 
     synchronized private void receiveHandler(BufferedInputStream receiverStream) {
@@ -178,59 +174,63 @@ class BluetoothConnectionHandler implements Runnable {
 
     synchronized private void sendHandler(BufferedOutputStream senderStream) {
         try {
-            BluetoothSimpleTransaction transactionForSend = parent.popSendTransaction();
-
-            //Отправляем заголовок
+            BluetoothSimpleTransaction transactionForSend = parent.getFirstSendTransaction();
             try {
-                senderStream.write(transactionForSend.getHeader().toJSONString().getBytes());
-                senderStream.flush();
-
-                log.info("Send packet :" + transactionForSend.getHeader().toJSONString());
+                sendTransaction(senderStream, transactionForSend);
+                //Если отправка произошла без исключений удаляем первую транзакцию из списка
+                parent.removeFirstSendTransaction();
             } catch (IOException e) {
-                log.warn(e);
-                return;
+                log.error(e);
             }
+        } catch (NoSuchElementException e) {
+        }
+    }
 
-            //Проверяем тип транзакции и отправляем соответствующий типу блок даных
-            try {
-                BluetoothByteTransaction byteTransaction = (BluetoothByteTransaction) transactionForSend;
-                senderStream.write(byteTransaction.getBody());
-                senderStream.flush();
-                log.info("Send byteTransaction");
-                return;
-            } catch (IOException e1) {
-                log.warn(e1);
-                return;
-            } catch (ClassCastException e2) {
+    synchronized private void sendTransaction(BufferedOutputStream senderStream, BluetoothSimpleTransaction t) throws IOException {
+        //Отправляем заголовок
+        try {
+            senderStream.write(t.getHeader().toJSONString().getBytes());
+            senderStream.flush();
 
-            }
+            log.info("Send packet :" + t.getHeader().toJSONString());
+        } catch (IOException e) {
+            log.warn(e);
+            throw e;
+        }
 
-            try {
-                BluetoothFileTransaction fileTransaction = (BluetoothFileTransaction) transactionForSend;
-                try (InputStream inputstream = new FileInputStream(fileTransaction.getFileName())) {
-                    try (BufferedInputStream fileReader = new BufferedInputStream(inputstream)) {
-                        byte[] buffer = new byte[1024 * 1024];
-                        int numberOfBytes = 0;
-                        while (numberOfBytes != (-1)) {
-                            numberOfBytes = fileReader.read(buffer);
-                            if (numberOfBytes > 0) {
-                                senderStream.write(buffer, 0, numberOfBytes);
-                                senderStream.flush();
-                            }
+        //Проверяем тип транзакции и отправляем соответствующий типу блок даных
+        try {
+            BluetoothByteTransaction byteTransaction = (BluetoothByteTransaction) t;
+            senderStream.write(byteTransaction.getBody());
+            senderStream.flush();
+            log.info("Send byteTransaction");
+            return;
+        } catch (IOException e) {
+            log.warn(e);
+            throw e;
+        } catch (ClassCastException e1) {
+        }
+
+        try {
+            BluetoothFileTransaction fileTransaction = (BluetoothFileTransaction) t;
+            try (InputStream inputstream = new FileInputStream(fileTransaction.getFileName())) {
+                try (BufferedInputStream fileReader = new BufferedInputStream(inputstream)) {
+                    byte[] buffer = new byte[1024 * 1024];
+                    int numberOfBytes = 0;
+                    while (numberOfBytes != (-1)) {
+                        numberOfBytes = fileReader.read(buffer);
+                        if (numberOfBytes > 0) {
+                            senderStream.write(buffer, 0, numberOfBytes);
+                            senderStream.flush();
                         }
                     }
-                } catch (FileNotFoundException e) {
-                    log.warn(e);
-                    return;
                 }
-                log.info("Send fileTransaction");
-                return;
-            } catch (ClassCastException e2) {
-
+            } catch (FileNotFoundException e) {
+                log.warn(e);
+                throw e;
             }
-
-        } catch (IOException | NoSuchElementException e) {
-
+            log.info("Send fileTransaction");
+        } catch (ClassCastException e2) {
         }
     }
 
@@ -245,7 +245,7 @@ class BluetoothConnectionHandler implements Runnable {
                 throw new NoSuchElementException();
             }
 
-            refreshTransactionTimeout();
+            transactionTimer.refreshTransactionTimeout();
 
             JSONReceiver receiver = new JSONReceiver();
 
@@ -256,7 +256,7 @@ class BluetoothConnectionHandler implements Runnable {
 
             while (!receiver.isHeaderReceived()) {
                 try {
-                    if (isTransactionTimeout()) {
+                    if (transactionTimer.isTransactionTimeout()) {
                         break;
                     }
 
@@ -306,7 +306,7 @@ class BluetoothConnectionHandler implements Runnable {
 
             while (byteIndexInFile < transactionTotalSize) {
                 try {
-                    if (isTransactionTimeout()) {
+                    if (transactionTimer.isTransactionTimeout()) {
                         break;
                     }
 
@@ -315,7 +315,8 @@ class BluetoothConnectionHandler implements Runnable {
                     if (receiverStream.available() > 0) {
                         int bytesRead = receiverStream.read(tempBuffer, 0,
                                 (numberOfBytesToTheEnd > tempBuffer.length) ? tempBuffer.length : numberOfBytesToTheEnd);
-                        refreshTransactionTimeout();
+
+                        transactionTimer.refreshTransactionTimeout();
 
                         try (FileOutputStream fileOutputStream =
                                      new FileOutputStream(ProjectDirectories.directoryDownloads + "/" + receivedFileName, true)) {
@@ -349,5 +350,9 @@ class BluetoothConnectionHandler implements Runnable {
 
     String getRemoteDeviceBluetoothAddress() throws IOException {
             return RemoteDevice.getRemoteDevice(currentConnection).getBluetoothAddress();
+    }
+
+    public int getConnectionId() {
+        return connectionId;
     }
 }

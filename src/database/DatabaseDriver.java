@@ -248,6 +248,17 @@ public class DatabaseDriver {
         return resultList;
     }
 
+    ArrayList<String> getClientPicturesHistory(int version) throws SQLException {
+        ResultSet rs = localDatabaseStatement.executeQuery("SELECT filename FROM pictures_history WHERE id_version="+version);
+        ArrayList<String> resultList = new ArrayList<String>();
+
+        while (rs.next()) {
+            resultList.add(rs.getString("filename"));
+        }
+
+        return resultList;
+    }
+
     public int getDatabaseVersion() {
         return dataBaseSynchId;
     }

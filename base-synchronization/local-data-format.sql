@@ -16,3 +16,9 @@ CREATE TABLE "user_messages" (
                        "message" TEXT,
                        "message_date" TEXT
                        );
+
+CREATE TABLE "pictures_history" (
+                      "_id_pict_history" INTEGER PRIMARY KEY AUTOINCREMENT,
+                      "id_version" INTEGER,
+                      "filename" TEXT
+                      );
