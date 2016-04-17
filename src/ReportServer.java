@@ -187,6 +187,14 @@ public class ReportServer {
             userFeedback.sendUserMessage("Ошибка установки базы. Новая база не применена.");
             log.error(e);
         }
+
+        try {
+            databaseDriver.removeLocalHistory();
+            databaseDriver.initDatabaseVersion(bt.getLocalHostMacAddress());
+        } catch (SQLException e) {
+            userFeedback.sendUserMessage("Ошибка очистки истории базы данных.");
+            log.error(e);
+        }
     }
 
     private static void bluetoothBinaryFileTransactionHandler(BluetoothServer bt, BluetoothFileTransaction transaction) {
@@ -210,7 +218,8 @@ public class ReportServer {
 
         try {
             databaseDriver.addFileToHistory(scriptFile.toPath(), isNeedToIncrementDbVersion);
-        } catch (SQLException e) {
+            databaseDriver.setClientVersion(bt.getRemoteDeviceBluetoothAddress(), databaseDriver.getDatabaseVersion());
+        } catch (IOException|SQLException e) {
             log.error(e);
             userFeedback.sendUserMessage("Ошибка при обращении к базе даных.");
         }
@@ -326,12 +335,12 @@ public class ReportServer {
                 databaseDriver.backupCurrentDatabase(Integer.toString(databaseDriver.getDatabaseVersion()));
 
                 //сверяем connectionId и если не совпадает увеличиваем версию,
-                //если connectionId одинаковый, считаем все изменения проходят в рамках текщей версии
+                //если connectionId одинаковый, считаем все изменения проходят в рамках текущей версии
                 boolean isNeedToIncrementDbVersion = (currentConnectionId != bt.getConnectionId());
-                databaseDriver.runScript(isAdmin, sqlScript, isNeedToIncrementDbVersion);
+                databaseDriver.runScript(isAdmin, bt.getRemoteDeviceBluetoothAddress(), sqlScript, isNeedToIncrementDbVersion);
 
                 currentConnectionId = bt.getConnectionId();
-            } catch (SQLException e) {
+            } catch (IOException|SQLException e) {
                 userFeedback.sendUserMessage("Ошибка обработки SQL-запроса. Cинхронизация отменена.");
             }
         }

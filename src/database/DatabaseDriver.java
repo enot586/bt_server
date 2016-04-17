@@ -111,7 +111,7 @@ public class DatabaseDriver {
         }
     }
 
-    void runScript(boolean isAdmin, SqlCommandList batch, boolean isNeedToIncrementVersion) throws SQLException {
+    void runScript(boolean isAdmin, String clientAddress, SqlCommandList batch, boolean isNeedToIncrementVersion) throws SQLException {
         try {
             commonDatabaseConnection.setAutoCommit(false);
             localDatabaseConnection.setAutoCommit(false);
@@ -136,6 +136,8 @@ public class DatabaseDriver {
             if (/*isAdmin && */isNeedToIncrementVersion) {
                 incrementDatabaseVersion(ReportServer.getBluetoothMacAddress());
             }
+
+            setClientVersion(clientAddress, getDatabaseVersion());
 
             commonDatabaseConnection.commit();
             localDatabaseConnection.commit();
@@ -286,7 +288,7 @@ public class DatabaseDriver {
         dataBaseSynchId = getDatabaseVersion(mac);
 
         if (null == dataBaseSynchId) {
-            localDatabaseStatement.executeUpdate("INSERT INTO clients_version (id_version, mac) VALUES("+0+",\""+mac+"\")");
+            localDatabaseStatement.executeUpdate("INSERT INTO clients_version (id_version, mac) VALUES("+0+",'"+mac+"')");
             dataBaseSynchId = 0;
         }
     }
@@ -456,5 +458,10 @@ public class DatabaseDriver {
         }
     }
 
+    public void removeLocalHistory() throws SQLException {
+        localDatabaseStatement.executeUpdate("TRUNCATE history");
+        localDatabaseStatement.executeUpdate("TRUNCATE pictures_history");
+        localDatabaseStatement.executeUpdate("TRUNCATE clients_version");
+    }
 
 }
