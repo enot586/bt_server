@@ -9,7 +9,7 @@ enum BluetoothPacketType {
      *          {"type":int, "userId":int, "size":int, "param1":value, ... "paramN":value}, byte0, byte1, ... byteN
      */
     SQL_QUERIES(0),         //SQL-скрипт
-                            //JSON-Заголовок: {"type":int, "userId":int, "size":int}
+                            //JSON-Заголовок: {"type":int, "userId":int, "size":int, "version":int}
                             //Тело пакета содержит последовательность строковых запросов UPDATE-INSERT-DELETE разделенных ";"
                             //общим размером size(без учета размера заголовка).
                             //В ответ посылается RESPONSE.

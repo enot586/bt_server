@@ -53,7 +53,7 @@ public class ReportServer {
         try {
             databaseDriver = new DatabaseDriver();
             databaseDriver.init(ProjectDirectories.commonDatabaseRelativePath,
-                    ProjectDirectories.localDatabaseRelativePath);
+                                ProjectDirectories.localDatabaseRelativePath);
             log.info(logMessage+"[OK]");
         } catch(Exception e) {
             log.info(logMessage+"[FAIL]");
@@ -101,9 +101,15 @@ public class ReportServer {
         }
     }
 
-    private static void bluetoothTransactionHandler(BluetoothServer bt) throws FileNotFoundException {
+    private static void bluetoothTransactionHandler(BluetoothServer bt) {
         try {
             BluetoothSimpleTransaction newReceivedTransaction = bt.getFirstReceivedTransaction();
+
+            if (!newReceivedTransaction.getHeader().containsKey("type")) {
+                userFeedback.sendUserMessage("Ошибка: некорректный формат пакета.");
+                return;
+            }
+
             long type = (long) newReceivedTransaction.getHeader().get("type");
 
             do {
@@ -197,11 +203,32 @@ public class ReportServer {
         bt.sendData(new BluetoothSimpleTransaction(header));
 
         userFeedback.sendUserMessage("Принят файл: "+transaction.getFileName());
+
+        //сверяем connectionId и если не совпадает увеличиваем версию,
+        //если connectionId одинаковый, считаем все изменения проходят в рамках текущей версии
+        boolean isNeedToIncrementDbVersion = (currentConnectionId != bt.getConnectionId());
+
+        try {
+            databaseDriver.addFileToHistory(scriptFile.toPath(), isNeedToIncrementDbVersion);
+        } catch (SQLException e) {
+            log.error(e);
+            userFeedback.sendUserMessage("Ошибка при обращении к базе даных.");
+        }
+
+        currentConnectionId = bt.getConnectionId();
     }
 
     private static void bluetoothSynchTransactionHandler(BluetoothServer bt, BluetoothSimpleTransaction transaction) {
         try {
-            int clientVersion = databaseDriver.checkClientVersion(bt.getRemoteDeviceBluetoothAddress());
+            int clientVersion = 0;
+            try {
+                clientVersion = databaseDriver.checkClientVersion(bt.getRemoteDeviceBluetoothAddress());
+            } catch(SQLException e) {
+                log.error(e);
+                userFeedback.sendUserMessage("Ошибка: не могу установить версию базы клиента");
+                throw e;
+            }
+
             int dbVersion = databaseDriver.getDatabaseVersion();
             long realClientVersion = 0;
 
@@ -209,13 +236,15 @@ public class ReportServer {
                 realClientVersion = (long) transaction.getHeader().get("version");
             }
             else {
+                log.info("Incorrect SYNCH_REQUEST format");
+                userFeedback.sendUserMessage("Ошибка: Некорректный формат запроса SYNCH_REQUEST");
                 return;
             }
 
             userFeedback.sendUserMessage("Принят запрос на синхронизацию.");
 
             //версия актуальна, синхронизировать нечего
-            if ( (clientVersion == dbVersion) ) {
+            if (clientVersion == dbVersion) {
                 //Делать ничего не нужно, просто отправляем SESSION_CLOSE
                 JSONObject header = new JSONObject();
                 header.put("type", BluetoothPacketType.SESSION_CLOSE.getId());
@@ -241,7 +270,7 @@ public class ReportServer {
                                                                                 dbVersion, groupTransaction);
 
                         groupTransaction = addPicturesToGroupTransaction((int)transaction.getHeader().get("userId"),
-                                clientVersion, dbVersion, groupTransaction);
+                                                                            clientVersion, dbVersion, groupTransaction);
 
                         groupTransaction = addCloseSessionToGroupTransaction(groupTransaction);
 
@@ -252,7 +281,6 @@ public class ReportServer {
                 } else {
                     //Если версия базы в планшете некорректная
                     userFeedback.sendUserMessage("Ошибка: конфликт версий. Обратитесь к администратору.");
-                    //todo: возможна новая команда синхронизации для пользовательского планшета
                 }
             }
         } catch (SQLException|IOException e) {
@@ -296,7 +324,13 @@ public class ReportServer {
 
             try {
                 databaseDriver.backupCurrentDatabase(Integer.toString(databaseDriver.getDatabaseVersion()));
-                databaseDriver.runScript(isAdmin, sqlScript);
+
+                //сверяем connectionId и если не совпадает увеличиваем версию,
+                //если connectionId одинаковый, считаем все изменения проходят в рамках текщей версии
+                boolean isNeedToIncrementDbVersion = (currentConnectionId != bt.getConnectionId());
+                databaseDriver.runScript(isAdmin, sqlScript, isNeedToIncrementDbVersion);
+
+                currentConnectionId = bt.getConnectionId();
             } catch (SQLException e) {
                 userFeedback.sendUserMessage("Ошибка обработки SQL-запроса. Cинхронизация отменена.");
             }
@@ -363,6 +397,9 @@ public class ReportServer {
             return groupTransaction_;
         }
 
+        if (sourceHistory.isEmpty())
+            return groupTransaction_;
+
         //Отправляем историю базы
         try {
             File temp = File.createTempFile("client_history", ".tmp");
@@ -370,12 +407,10 @@ public class ReportServer {
 
             try (FileOutputStream os = new FileOutputStream(temp)) {
                 try (BufferedOutputStream writer = new BufferedOutputStream(os)) {
-
                     Iterator it = sourceHistory.iterator();
                     while (it.hasNext()) {
                         writer.write(new String(it.next() + ";").getBytes("UTF-8"));
                     }
-
                     writer.flush();
                     writer.close();
                 }
@@ -385,7 +420,7 @@ public class ReportServer {
             header.put("type", new Long(BluetoothPacketType.SQL_QUERIES.getId()));
             header.put("userId", new Long(userId));
             header.put("size", temp.length());
-
+            header.put("version", dbVersion_);
             log.info(temp.getAbsolutePath());
 
             groupTransaction_.add(new BluetoothFileTransaction(header, temp.getAbsolutePath()));
@@ -405,11 +440,14 @@ public class ReportServer {
         try {
             for (int currentVersion = (clientVersion_ + 1); currentVersion <= dbVersion_; ++currentVersion) {
                  picturesHistory.addAll(databaseDriver.getClientPicturesHistory(currentVersion));
-        }
+            }
         } catch (SQLException e) {
             log.error(e);
             return groupTransaction_;
         }
+
+        if (picturesHistory.isEmpty())
+            return groupTransaction_;
 
         //Ставим в очередь передачу файликов
         if (!picturesHistory.isEmpty()) {

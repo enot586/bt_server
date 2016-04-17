@@ -5,6 +5,7 @@ import sun.java2d.pipe.SpanShapeRenderer;
 
 import java.io.*;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.sql.*;
@@ -24,7 +25,7 @@ public class DatabaseDriver {
 
     private static final Logger log = Logger.getLogger(DatabaseDriver.class);
 
-    public enum DatabaseState {
+    private enum DatabaseState {
         CLOSE,
         OPEN,
         BACKUP
@@ -61,9 +62,7 @@ public class DatabaseDriver {
             synchronized (dbState) {
                 dbState = DatabaseState.OPEN;
             }
-        } catch (ClassNotFoundException e) {
-            log.error(e);
-        } catch (SQLException e) {
+        } catch (SQLException|ClassNotFoundException e) {
             log.error(e);
         }
     }
@@ -104,12 +103,7 @@ public class DatabaseDriver {
             synchronized (dbState) {
                 dbState = DatabaseState.OPEN;
             }
-        } catch (SQLException | FileNotFoundException e) {
-            log.error(e);
-            synchronized (dbState) {
-                dbState = DatabaseState.CLOSE;
-            }
-        }  catch (IOException e) {
+        } catch (IOException | SQLException e) {
             log.error(e);
             synchronized (dbState) {
                 dbState = DatabaseState.CLOSE;
@@ -117,7 +111,7 @@ public class DatabaseDriver {
         }
     }
 
-    void runScript(boolean isAdmin, SqlCommandList batch) throws SQLException {
+    void runScript(boolean isAdmin, SqlCommandList batch, boolean isNeedToIncrementVersion) throws SQLException {
         try {
             commonDatabaseConnection.setAutoCommit(false);
             localDatabaseConnection.setAutoCommit(false);
@@ -128,12 +122,18 @@ public class DatabaseDriver {
                 if (query.length() == 0) continue;
                 if (isAdmin || isUserAcceptableTableInQuery(query))  {
                     commonDatabaseStatement.executeUpdate(query);
-                    setToHistory(query, getDatabaseVersion()+1);
+                    if (isNeedToIncrementVersion) {
+                        setToHistory(query, getDatabaseVersion() + 1);
+                    }
+                    else
+                    {
+                        setToHistory(query, getDatabaseVersion());
+                    }
                 }
             }
 
-            //если все этапы прошли корректно увеличиваем версию
-            if (isAdmin) {
+            //если все этапы прошли корректно увеличиваем версию в базе
+            if (/*isAdmin && */isNeedToIncrementVersion) {
                 incrementDatabaseVersion(ReportServer.getBluetoothMacAddress());
             }
 
@@ -157,7 +157,6 @@ public class DatabaseDriver {
                 localDatabaseConnection.setAutoCommit(true);
             } catch (SQLException e2) {
                 log.error(e2);
-                throw e2;
             }
         }
     }
@@ -204,15 +203,11 @@ public class DatabaseDriver {
 
     public boolean isUserAcceptableTableInQuery(String query) {
         String[] words = query.split(" ");
-        if ((words[0].equals("INSERT")) || (words[0].equals("DELETE") )) {
+        if ((words[0].equals("INSERT")) || (words[0].equals("DELETE"))) {
             return (words[2].equals("detour"));
         }
 
-        if (words[0].equals("UPDATE")) {
-            return (words[1].equals("detour"));
-        }
-
-        return false;
+        return words[0].equals("UPDATE") && (words[1].equals("detour"));
     }
 
     public int checkClientVersion(String mac_address) throws SQLException {
@@ -265,7 +260,12 @@ public class DatabaseDriver {
 
     public void setToHistory(String query, int databaseId) throws SQLException {
         //Записать все запросы в историю для текущей версии таблицы
-        localDatabaseStatement.executeUpdate("INSERT INTO history (id_version, query) VALUES("+databaseId+",\""+query+"\")");
+        localDatabaseStatement.executeUpdate("INSERT INTO history (id_version, query) VALUES("+databaseId+",'"+query+"')");
+    }
+
+    public void setFileToHistory(Path file, int databaseId) throws SQLException {
+        //Записать все запросы в историю для текущей версии таблицы
+        localDatabaseStatement.executeUpdate("INSERT INTO pictures_history (id_version, filename) VALUES("+databaseId+",'"+file.getFileName().toString()+"')");
     }
 
     public Integer getDatabaseVersion(String mac_address) throws SQLException {
@@ -274,7 +274,7 @@ public class DatabaseDriver {
             return null;
         }
 
-        return new Integer(rs.getInt("id_version"));
+        return rs.getInt("id_version");
     }
 
     public void incrementDatabaseVersion(String mac_address) throws SQLException {
@@ -287,7 +287,7 @@ public class DatabaseDriver {
 
         if (null == dataBaseSynchId) {
             localDatabaseStatement.executeUpdate("INSERT INTO clients_version (id_version, mac) VALUES("+0+",\""+mac+"\")");
-            dataBaseSynchId = new Integer(0);
+            dataBaseSynchId = 0;
         }
     }
 
@@ -295,8 +295,7 @@ public class DatabaseDriver {
         try {
             ResultSet rs1 = localDatabaseStatement.executeQuery("SELECT COUNT(message_date) FROM user_messages");
             if (rs1.next()) {
-                int rowNumber = rs1.getInt(1);
-                return rowNumber;
+                return rs1.getInt(1);
             }
         } catch (SQLException e) {
             log.warn(e);
@@ -419,4 +418,43 @@ public class DatabaseDriver {
         ResultSet rs = commonDatabaseStatement.executeQuery("SELECT path_picture_route FROM routs WHERE _id_route="+idRoute);
         return rs.getString("path_picture_route");
     }
+
+    public void addFileToHistory(Path file, boolean isNeedToIncrementVersion) throws SQLException {
+        try {
+            commonDatabaseConnection.setAutoCommit(false);
+            localDatabaseConnection.setAutoCommit(false);
+
+            //если все этапы прошли корректно увеличиваем версию
+            if (isNeedToIncrementVersion) {
+                setFileToHistory(file, getDatabaseVersion()+1);
+                incrementDatabaseVersion(ReportServer.getBluetoothMacAddress());
+            }
+            else
+            {
+                setFileToHistory(file, getDatabaseVersion());
+            }
+
+            commonDatabaseConnection.commit();
+            localDatabaseConnection.commit();
+        } catch (SQLException e) {
+            log.warn(e);
+            try {
+                commonDatabaseConnection.rollback();
+                localDatabaseConnection.rollback();
+            } catch (SQLException e1) {
+                log.warn(e1);
+            }
+            throw e;
+        }
+        finally {
+            try {
+                commonDatabaseConnection.setAutoCommit(true);
+                localDatabaseConnection.setAutoCommit(true);
+            } catch (SQLException e2) {
+                log.error(e2);
+            }
+        }
+    }
+
+
 }
