@@ -261,7 +261,6 @@ class BluetoothConnectionHandler implements Runnable {
                     }
 
                     if (receiverStream.available() > 0) {
-                        //read string from spp client
                         receiverStream.read(tempBuffer, 0, 1);
                         receiver.receiveHeader(tempBuffer, 1);
                     }
@@ -272,17 +271,16 @@ class BluetoothConnectionHandler implements Runnable {
                         log.info("receive file:");
                         log.info(header.toString());
 
-                        boolean isTransactionWithBody = header.containsKey("size");
+                        boolean isTransactionWithBody = ((long)header.get("type")!= BluetoothPacketType.RESPONSE.getId()) &&
+                                                        header.containsKey("size");
+
                         if (isTransactionWithBody) {
                             transactionTotalSize = (long) header.get("size");
 
                             //если принимаем бинарный файл, то присваиваем ему имя которое пришло в тразакции
                             if (header.containsKey("filename")) {
-                                //long type = (long) header.get("type");
-                                //if (BluetoothPacketType.BINARY_FILE.getId() == type) {
                                 String headerFileName = (String) header.get("filename");
                                 if (null != headerFileName) receivedFileName = headerFileName;
-                                //}
                             }
 
                             //Перезаписываем файлик если таковой существует

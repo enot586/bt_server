@@ -108,7 +108,7 @@ class BluetoothServer extends CommonServer {
         return result;
     }
 
-    String getRemoteDeviceBluetoothAddress() throws IOException {
+    public String getRemoteDeviceBluetoothAddress() throws IOException {
         return connectionHandler.getRemoteDeviceBluetoothAddress();
     }
 

@@ -133,7 +133,7 @@ public class DatabaseDriver {
             }
 
             //если все этапы прошли корректно увеличиваем версию в базе
-            if (/*isAdmin && */isNeedToIncrementVersion) {
+            if (isNeedToIncrementVersion) {
                 incrementDatabaseVersion(ReportServer.getBluetoothMacAddress());
             }
 
@@ -205,11 +205,11 @@ public class DatabaseDriver {
 
     public boolean isUserAcceptableTableInQuery(String query) {
         String[] words = query.split(" ");
-        if ((words[0].equals("INSERT")) || (words[0].equals("DELETE"))) {
-            return (words[2].equals("detour"));
+        if (words[0].equals("INSERT") || words[0].equals("DELETE")) {
+            return (words[2].equals("detour")) || (words[2].equals("visits"));
         }
 
-        return words[0].equals("UPDATE") && (words[1].equals("detour"));
+        return words[0].equals("UPDATE") && (words[2].equals("detour") || words[2].equals("visits"));
     }
 
     public int checkClientVersion(String mac_address) throws SQLException {
@@ -229,7 +229,7 @@ public class DatabaseDriver {
         if (!rs.next()) {
             localDatabaseStatement.executeUpdate("INSERT INTO clients_version (id_version, mac) VALUES ("+id_version+", '"+mac_address+"')");
         } else {
-            localDatabaseStatement.executeUpdate("UPDATE clients_version id_version="+id_version+" WHERE mac='"+mac_address+"'");
+            localDatabaseStatement.executeUpdate("UPDATE clients_version SET id_version="+id_version+" WHERE mac='"+mac_address+"'");
         }
 
     }
@@ -288,7 +288,7 @@ public class DatabaseDriver {
         dataBaseSynchId = getDatabaseVersion(mac);
 
         if (null == dataBaseSynchId) {
-            localDatabaseStatement.executeUpdate("INSERT INTO clients_version (id_version, mac) VALUES("+0+",'"+mac+"')");
+            localDatabaseStatement.executeUpdate("INSERT INTO clients_version (id_version, mac) VALUES("+1+",'"+mac+"')");
             dataBaseSynchId = 0;
         }
     }
@@ -459,9 +459,23 @@ public class DatabaseDriver {
     }
 
     public void removeLocalHistory() throws SQLException {
-        localDatabaseStatement.executeUpdate("TRUNCATE history");
-        localDatabaseStatement.executeUpdate("TRUNCATE pictures_history");
-        localDatabaseStatement.executeUpdate("TRUNCATE clients_version");
+        localDatabaseStatement.executeUpdate("DELETE FROM history");
+        localDatabaseStatement.executeUpdate("DELETE FROM pictures_history");
+        localDatabaseStatement.executeUpdate("DELETE FROM clients_version");
     }
 
+    public ArrayList<String> getPictures() {
+        ArrayList<String> result = new ArrayList<String>();
+        try {
+            ResultSet rs = commonDatabaseStatement.executeQuery("SELECT picture_path FROM pictures");
+
+            while (rs.next()) {
+                result.add(rs.getString("picture_path"));
+            }
+        } catch (SQLException e) {
+           log.error(e);
+        }
+
+        return result;
+    }
 }
