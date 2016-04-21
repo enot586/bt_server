@@ -33,6 +33,19 @@ class BluetoothServer extends CommonServer {
         return sendTransactionsQueue.offer(t);
     }
 
+    synchronized boolean sendData(GroupTransaction t) {
+        try {
+            BluetoothSimpleTransaction first = t.getFirst();
+            if (sendTransactionsQueue.offer(first)) {
+                t.initSendingProcess();
+                t.remove();
+                return true;
+            }
+        } catch (NoSuchElementException e) {
+        }
+        return false;
+    }
+
     private void createConnectionHandlerThread() throws Exception {
         connectionHandler = new BluetoothConnectionHandler(this, url, ui);
         connectionHandler.start();

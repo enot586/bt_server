@@ -104,12 +104,14 @@ public class ReportServer {
 
     private static void bluetoothTransactionHandler(BluetoothServer bt) {
 
-        if (groupTransaction != null) {
+        try {
             if (!groupTransaction.isComplete()) {
                 groupTransaction.handler();
             } else {
                 groupTransaction = null;
             }
+        } catch (NullPointerException e) {
+            //групповая транзакция не создавалась, игнорируем
         }
 
         try {
@@ -120,11 +122,15 @@ public class ReportServer {
                 return;
             }
 
-            long type = (long) newReceivedTransaction.getHeader().get("type");
+            int type = ((Long)newReceivedTransaction.getHeader().get("type")).intValue();
 
             do {
                 if (BluetoothPacketType.RESPONSE.getId() == type) {
-                    if (groupTransaction != null) groupTransaction.responseHandler();
+                    try {
+                        groupTransaction.responseHandler(bt);
+                    } catch (NullPointerException e) {
+                        //групповая транзакция не создавалсь, игнорируем
+                    }
                     break;
                 }
 
@@ -160,6 +166,11 @@ public class ReportServer {
                     break;
                 }
 
+                if (BluetoothPacketType.END_TRANSACTION.getId() == type) {
+                    userFeedback.sendUserMessage("Окончание текущей транзакции");
+                    break;
+                }
+
                 if (BluetoothPacketType.SESSION_CLOSE.getId() == type) {
                     bt.reopenNewConnection();
                     userFeedback.sendUserMessage("Текущее соедение завершено. Ожидаю нового подключения.");
@@ -169,9 +180,7 @@ public class ReportServer {
 
             //Если обработка произошла без исключений удаляем первую транзакцию из списка
             bt.removeFirstReceivedTransaction();
-
         } catch (NoSuchElementException e) {
-
         }
     }
 
@@ -235,6 +244,13 @@ public class ReportServer {
     }
 
     private static void bluetoothSynchTransactionHandler(BluetoothServer bt, BluetoothSimpleTransaction transaction) {
+        if (!transaction.getHeader().containsKey("userId")) {
+            userFeedback.sendUserMessage("Ошибка: Некорректный формат SYNCH_REQUEST.");
+            return;
+        }
+
+        int userId = ((Long) transaction.getHeader().get("userId")).intValue();
+
         try {
             int clientVersion = 0;
             try {
@@ -251,20 +267,17 @@ public class ReportServer {
 
             if (clientVersion == 0) {
                 //первое обращение клиента к серверу. Необходима полная синхронизация
-                groupTransaction = new GroupTransaction(bt);
+                groupTransaction = new GroupTransaction();
 
                 try {
-                    groupTransaction.add(addReplaceDatabaseToGroupTransaction((long) transaction.getHeader().get("userId"),
-                                                                                dbVersion));
+                    groupTransaction.add(addReplaceDatabaseToGroupTransaction(userId, dbVersion));
                 } catch(FileNotFoundException e) {
                     log.error("Database not exist !!!");
                 }
 
                 //необходимо передавать все картинки из таблицы pictures
-                groupTransaction.addAll(addPicturesFromTableToGroupTransaction((long)transaction.getHeader().get("userId")));
-
+                groupTransaction.addAll(addPicturesFromTableToGroupTransaction(userId));
                 groupTransaction.add(addEndTransactionToGroupTransaction());
-
                 groupTransaction.setCallbacks(
                     new GroupTransactionCallback() {
                         @Override
@@ -287,30 +300,33 @@ public class ReportServer {
                     }
                 );
 
-                groupTransaction.send();
-                userFeedback.sendUserMessage("Версия устарела. Отправлена актуальная база.");
+                if (bt.sendData(groupTransaction)) {
+                    userFeedback.sendUserMessage("Версия устарела. Отправлена актуальная база.");
+                } else {
+                    userFeedback.sendUserMessage("Ошибка: Не могу отправить данные.");
+                }
             } else {
                 if (clientVersion == dbVersion) {
                     //версия актуальна, синхронизировать нечего
                     //Делать ничего не нужно, просто отправляем SESSION_CLOSE
                     JSONObject header = new JSONObject();
                     header.put("type", BluetoothPacketType.END_TRANSACTION.getId());
-                    bt.sendData(new BluetoothSimpleTransaction(header));
-                    userFeedback.sendUserMessage("База планшета актуальна.");
+                    if(bt.sendData(new BluetoothSimpleTransaction(header))) {
+                        userFeedback.sendUserMessage("База планшета актуальна.");
+                    } else {
+                        userFeedback.sendUserMessage("Ошибка: Не могу отправить данные.");
+                    }
                 } else if (clientVersion < dbVersion) {
                     //Передаем всю положенную клиенту историю
-                    groupTransaction = new GroupTransaction(bt);
-
-                    groupTransaction.addAll(addSqlHistoryToGroupTransaction((long) transaction.getHeader().get("userId"),
-                            clientVersion, dbVersion));
-
-                    groupTransaction.addAll(addPicturesToGroupTransaction((long) transaction.getHeader().get("userId"),
-                            clientVersion, dbVersion));
-
+                    groupTransaction = new GroupTransaction();
+                    groupTransaction.addAll(addSqlHistoryToGroupTransaction(userId, clientVersion, dbVersion));
+                    groupTransaction.addAll(addPicturesToGroupTransaction(userId, clientVersion, dbVersion));
                     groupTransaction.add(addEndTransactionToGroupTransaction());
 
-                    if (groupTransaction.send()) {
+                    if (bt.sendData(groupTransaction)) {
                         userFeedback.sendUserMessage("Данные для синхронизации отправлены.");
+                    } else {
+                        userFeedback.sendUserMessage("Ошибка: Не могу отправить данные.");
                     }
                 } else if (clientVersion > dbVersion) {
                     //Если версия базы в планшете некорректная
@@ -323,6 +339,13 @@ public class ReportServer {
     }
 
     private static void bluetoothSqlQueriesTransactionHandler(BluetoothServer bt, BluetoothFileTransaction transaction) {
+        if (!transaction.getHeader().containsKey("userId")) {
+            userFeedback.sendUserMessage("Ошибка: Некорректный формат SQL_QUERIES.");
+            return;
+        }
+
+        int userId = ((Long)transaction.getHeader().get("userId")).intValue();
+
         File scriptFile = new File(ProjectDirectories.directoryDownloads + "/" + transaction.getFileName());
         int status = 0;
 
@@ -339,35 +362,31 @@ public class ReportServer {
         }
 
         JSONObject header = new JSONObject();
-        header.put("type", new Long(BluetoothPacketType.RESPONSE.getId()));
-        header.put("userId", transaction.getHeader().get("userId"));
+        header.put("type", BluetoothPacketType.RESPONSE.getId());
+        header.put("userId", userId);
         header.put("size", transaction.getHeader().get("size"));
-        header.put("status", new Long(status));
+        header.put("status", status);
         bt.sendData(new BluetoothSimpleTransaction(header));
 
-        if (transaction.getHeader().containsKey("userId")) {
-            long userId = (long) (transaction.getHeader().get("userId"));
+        boolean isAdmin = false;
 
-            boolean isAdmin = false;
+        try {
+            isAdmin = databaseDriver.isUserAdmin(userId);
+        } catch (SQLException e) {
+            userFeedback.sendUserMessage("Ошибка идентификации пользователя. Пользователь не найден.");
+        }
 
-            try {
-                isAdmin = databaseDriver.isUserAdmin((int) userId);
-            } catch (SQLException e) {
-                userFeedback.sendUserMessage("Ошибка идентификации пользователя. Пользователь не найден.");
-            }
+        try {
+            databaseDriver.backupCurrentDatabase(Integer.toString(databaseDriver.getDatabaseVersion()));
 
-            try {
-                databaseDriver.backupCurrentDatabase(Integer.toString(databaseDriver.getDatabaseVersion()));
+            //сверяем connectionId и если не совпадает увеличиваем версию,
+            //если connectionId одинаковый, считаем все изменения проходят в рамках текущей версии
+            boolean isNeedToIncrementDbVersion = (currentConnectionId != bt.getConnectionId());
+            databaseDriver.runScript(isAdmin, bt.getRemoteDeviceBluetoothAddress(), sqlScript, isNeedToIncrementDbVersion);
 
-                //сверяем connectionId и если не совпадает увеличиваем версию,
-                //если connectionId одинаковый, считаем все изменения проходят в рамках текущей версии
-                boolean isNeedToIncrementDbVersion = (currentConnectionId != bt.getConnectionId());
-                databaseDriver.runScript(isAdmin, bt.getRemoteDeviceBluetoothAddress(), sqlScript, isNeedToIncrementDbVersion);
-
-                currentConnectionId = bt.getConnectionId();
-            } catch (IOException|SQLException e) {
-                userFeedback.sendUserMessage("Ошибка обработки SQL-запроса. Cинхронизация отменена.");
-            }
+            currentConnectionId = bt.getConnectionId();
+        } catch (IOException|SQLException e) {
+            userFeedback.sendUserMessage("Ошибка обработки SQL-запроса. Cинхронизация отменена.");
         }
 
         try {
@@ -494,8 +513,6 @@ public class ReportServer {
     return result;
 }
 
-
-
     private static BluetoothFileTransaction addReplaceDatabaseToGroupTransaction(long userId, int dbVersion_) throws FileNotFoundException {
         //передать файлик базы данных целиком
         File databaseFile = new File(ProjectDirectories.commonDatabaseRelativePath);
@@ -518,7 +535,7 @@ public class ReportServer {
         return new BluetoothSimpleTransaction(sessionCloseHeader);
     }
 
-    private static LinkedList<BluetoothSimpleTransaction> addPicturesFromTableToGroupTransaction(long userId) {
+    private static LinkedList<BluetoothSimpleTransaction> addPicturesFromTableToGroupTransaction(int userId) {
         LinkedList<BluetoothSimpleTransaction> result = new LinkedList<BluetoothSimpleTransaction>();
         ArrayList<String> pictures = new ArrayList<String>();
 
@@ -544,4 +561,6 @@ public class ReportServer {
         }
         return result;
     }
+
+
 }

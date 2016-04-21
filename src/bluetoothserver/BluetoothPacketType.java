@@ -36,7 +36,9 @@ enum BluetoothPacketType {
                             //JSON-Заголовок: {"type":int, "userId":int, "size":int, "version":int}
                             //Тело пакета содержит бинарный кусок файла размером size
                             //В ответ посылается RESPONSE.
-    END_TRANSACTION(6);
+
+    END_TRANSACTION(6);     //Оконание текущей тразкции
+                            //JSON-Заголовок: {"type":int}
 
     private int id;
 
