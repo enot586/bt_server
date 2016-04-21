@@ -239,7 +239,8 @@ public class DatabaseDriver {
         ArrayList<String> resultList = new ArrayList<String>();
 
         while (rs.next()) {
-            resultList.add(rs.getString("query"));
+            String prepare = rs.getString("query");
+            resultList.add(prepare.replace("&","'"));
         }
 
         return resultList;
@@ -261,8 +262,9 @@ public class DatabaseDriver {
     }
 
     public void setToHistory(String query, int databaseId) throws SQLException {
+        String prepare = query.replace("'", "&");
         //Записать все запросы в историю для текущей версии таблицы
-        localDatabaseStatement.executeUpdate("INSERT INTO history (id_version, query) VALUES("+databaseId+",'"+query+"')");
+        localDatabaseStatement.executeUpdate("INSERT INTO history (id_version, query) VALUES("+databaseId+",'"+prepare+"')");
     }
 
     public void setFileToHistory(Path file, int databaseId) throws SQLException {
@@ -467,10 +469,11 @@ public class DatabaseDriver {
     public ArrayList<String> getPictures() {
         ArrayList<String> result = new ArrayList<String>();
         try {
-            ResultSet rs = commonDatabaseStatement.executeQuery("SELECT picture_path FROM pictures");
+            ResultSet rs = commonDatabaseStatement.executeQuery("SELECT path_picture FROM pictures");
 
             while (rs.next()) {
-                result.add(rs.getString("picture_path"));
+                File ddd = new File(rs.getString("path_picture"));
+                result.add(ddd.getName());
             }
         } catch (SQLException e) {
            log.error(e);

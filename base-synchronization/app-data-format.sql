@@ -57,8 +57,8 @@ CREATE TABLE "points_in_routs" (
                                 "id_point_in_points_in_route" INTEGER,
                                 "id_route_in_points_in_route" INTEGER,
                                 "coor_x_in_points_in_route" REAL,
-                                "coor_y_in_points_in_route" REAL
-                               );
+                                "coor_y_in_points_in_route" REAL,
+                                "actuality_in_points_in_route" INTEGER,                              );
 
 CREATE TABLE "points" (
                         "_id_point" PRIMARY KEY AUTOINCREMENT,

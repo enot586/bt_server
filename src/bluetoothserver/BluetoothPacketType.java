@@ -32,10 +32,11 @@ enum BluetoothPacketType {
     SESSION_CLOSE(4),       //Закрытие текущей сессии
                             //JSON-Заголовок: {"type":int}
 
-    REPLACE_DATABASE(5);    //Замена файла базы данных на сервере
+    REPLACE_DATABASE(5),    //Замена файла базы данных на сервере
                             //JSON-Заголовок: {"type":int, "userId":int, "size":int, "version":int}
                             //Тело пакета содержит бинарный кусок файла размером size
                             //В ответ посылается RESPONSE.
+    END_TRANSACTION(6);
 
     private int id;
 

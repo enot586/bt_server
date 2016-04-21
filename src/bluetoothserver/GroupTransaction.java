@@ -28,7 +28,10 @@ public class GroupTransaction {
             if (!groupTransaction.isEmpty()) {
                 if (bt.sendData(groupTransaction.getFirst())) {
                     groupTransactionTimeout.refreshTransactionTimeout();
-                    if (BluetoothPacketType.SESSION_CLOSE == groupTransaction.getFirst().getHeader().get("type")) {
+                    long type = (long)groupTransaction.getFirst().getHeader().get("type");
+
+                    if ((BluetoothPacketType.SESSION_CLOSE.getId() == type) ||
+                            (BluetoothPacketType.END_TRANSACTION.getId() == type)) {
                         groupTransactionTimeout.stop();
                         groupTransactionState = State.DONE;
 

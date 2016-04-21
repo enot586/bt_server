@@ -232,6 +232,13 @@ class BluetoothConnectionHandler implements Runnable {
             log.info("Send fileTransaction");
         } catch (ClassCastException e2) {
         }
+
+
+        Long type = Long.parseLong(t.getHeader().get("type").toString());
+        if (4L == type) {
+            reopenNewConnection();
+        }
+
     }
 
     private String initReceivedFileName(String uniqPart, String dir) throws IOException {

@@ -197,7 +197,8 @@ public class ReportServer {
         try {
             databaseDriver.removeLocalHistory();
             databaseDriver.initDatabaseVersion(bt.getLocalHostMacAddress());
-        } catch (SQLException e) {
+            databaseDriver.setClientVersion(bt.getRemoteDeviceBluetoothAddress(), 1);
+        } catch (IOException|SQLException e) {
             userFeedback.sendUserMessage("Ошибка очистки истории базы данных.");
             log.error(e);
         }
@@ -262,7 +263,7 @@ public class ReportServer {
                 //необходимо передавать все картинки из таблицы pictures
                 groupTransaction.addAll(addPicturesFromTableToGroupTransaction((long)transaction.getHeader().get("userId")));
 
-                groupTransaction.add(addCloseSessionToGroupTransaction());
+                groupTransaction.add(addEndTransactionToGroupTransaction());
 
                 groupTransaction.setCallbacks(
                     new GroupTransactionCallback() {
@@ -293,7 +294,7 @@ public class ReportServer {
                     //версия актуальна, синхронизировать нечего
                     //Делать ничего не нужно, просто отправляем SESSION_CLOSE
                     JSONObject header = new JSONObject();
-                    header.put("type", BluetoothPacketType.SESSION_CLOSE.getId());
+                    header.put("type", BluetoothPacketType.END_TRANSACTION.getId());
                     bt.sendData(new BluetoothSimpleTransaction(header));
                     userFeedback.sendUserMessage("База планшета актуальна.");
                 } else if (clientVersion < dbVersion) {
@@ -306,7 +307,7 @@ public class ReportServer {
                     groupTransaction.addAll(addPicturesToGroupTransaction((long) transaction.getHeader().get("userId"),
                             clientVersion, dbVersion));
 
-                    groupTransaction.add(addCloseSessionToGroupTransaction());
+                    groupTransaction.add(addEndTransactionToGroupTransaction());
 
                     if (groupTransaction.send()) {
                         userFeedback.sendUserMessage("Данные для синхронизации отправлены.");
@@ -338,10 +339,10 @@ public class ReportServer {
         }
 
         JSONObject header = new JSONObject();
-        header.put("type",      new Long(BluetoothPacketType.RESPONSE.getId()));
+        header.put("type", new Long(BluetoothPacketType.RESPONSE.getId()));
         header.put("userId", transaction.getHeader().get("userId"));
         header.put("size", transaction.getHeader().get("size"));
-        header.put("status",    new Long(status));
+        header.put("status", new Long(status));
         bt.sendData(new BluetoothSimpleTransaction(header));
 
         if (transaction.getHeader().containsKey("userId")) {
@@ -510,10 +511,10 @@ public class ReportServer {
         throw new FileNotFoundException();
     }
 
-    private static BluetoothSimpleTransaction addCloseSessionToGroupTransaction() {
+    private static BluetoothSimpleTransaction addEndTransactionToGroupTransaction() {
         //Ставим в группу для отправки закрытия сессии после получения последнего RESPONSE
         JSONObject sessionCloseHeader = new JSONObject();
-        sessionCloseHeader.put("type", BluetoothPacketType.SESSION_CLOSE.getId());
+        sessionCloseHeader.put("type", BluetoothPacketType.END_TRANSACTION.getId());
         return new BluetoothSimpleTransaction(sessionCloseHeader);
     }
 
