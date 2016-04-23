@@ -244,25 +244,68 @@ public class ReportServer {
     }
 
     private static void bluetoothSynchTransactionHandler(BluetoothServer bt, BluetoothSimpleTransaction transaction) {
-        if (!transaction.getHeader().containsKey("userId")) {
+        if (!transaction.getHeader().containsKey("userId") ||
+            !transaction.getHeader().containsKey("version")) {
             userFeedback.sendUserMessage("Ошибка: Некорректный формат SYNCH_REQUEST.");
             return;
         }
 
         int userId = ((Long) transaction.getHeader().get("userId")).intValue();
+        int realClientVersion = ((Long) transaction.getHeader().get("version")).intValue();
 
+        int clientVersion = 0;
         try {
-            int clientVersion = 0;
+            clientVersion = databaseDriver.checkClientVersion(bt.getRemoteDeviceBluetoothAddress());
+        } catch(IOException | SQLException e) {
+            log.error(e);
+            userFeedback.sendUserMessage("Ошибка: не могу установить версию базы клиента");
+            return;
+        }
+
+        int dbVersion = databaseDriver.getDatabaseVersion();
+
+        if (realClientVersion != clientVersion) {
+            userFeedback.sendUserMessage("Конфликт: клиент потерял версионость.");
+            groupTransaction = new GroupTransaction();
+
             try {
-                clientVersion = databaseDriver.checkClientVersion(bt.getRemoteDeviceBluetoothAddress());
-            } catch(SQLException e) {
-                log.error(e);
-                userFeedback.sendUserMessage("Ошибка: не могу установить версию базы клиента");
-                throw e;
+                groupTransaction.add(addReplaceDatabaseToGroupTransaction(userId, dbVersion));
+                //groupTransaction.add(addEndTransactionToGroupTransaction());
+                groupTransaction.setCallbacks(
+                        new GroupTransactionCallback() {
+                            @Override
+                            public void success() {
+                                //присваивать версию только если тразакция завершилась успешно
+                                try {
+                                    databaseDriver.setClientVersion(bt.getRemoteDeviceBluetoothAddress(),
+                                            databaseDriver.getDatabaseVersion());
+                                } catch (IOException | SQLException e) {
+                                    log.error(e);
+                                    userFeedback.sendUserMessage("Ошибка: не удалось инкрементировать весию БД.");
+                                }
+                            }
+
+                            @Override
+                            public void fail() {
+                                log.warn("client RESPONSE fail");
+                                userFeedback.sendUserMessage("Ошибка: не удалось получить ответ от клиента");
+                            }
+                        }
+                );
+
+                if (bt.sendData(groupTransaction)) {
+                    userFeedback.sendUserMessage("Отправлена актуальная база.");
+                } else {
+                    userFeedback.sendUserMessage("Ошибка: Не могу отправить данные.");
+                }
+            } catch(FileNotFoundException e) {
+                log.error("Database not exist !!!");
             }
 
-            int dbVersion = databaseDriver.getDatabaseVersion();
+            return;
+        }
 
+        //try {
             userFeedback.sendUserMessage("Принят запрос на синхронизацию.");
 
             if (clientVersion == 0) {
@@ -277,7 +320,7 @@ public class ReportServer {
 
                 //необходимо передавать все картинки из таблицы pictures
                 groupTransaction.addAll(addPicturesFromTableToGroupTransaction(userId));
-                groupTransaction.add(addEndTransactionToGroupTransaction());
+                groupTransaction.add(addEndTransactionToGroupTransaction(dbVersion));
                 groupTransaction.setCallbacks(
                     new GroupTransactionCallback() {
                         @Override
@@ -311,6 +354,7 @@ public class ReportServer {
                     //Делать ничего не нужно, просто отправляем SESSION_CLOSE
                     JSONObject header = new JSONObject();
                     header.put("type", BluetoothPacketType.END_TRANSACTION.getId());
+                    header.put("version", dbVersion);
                     if(bt.sendData(new BluetoothSimpleTransaction(header))) {
                         userFeedback.sendUserMessage("База планшета актуальна.");
                     } else {
@@ -321,7 +365,7 @@ public class ReportServer {
                     groupTransaction = new GroupTransaction();
                     groupTransaction.addAll(addSqlHistoryToGroupTransaction(userId, clientVersion, dbVersion));
                     groupTransaction.addAll(addPicturesToGroupTransaction(userId, clientVersion, dbVersion));
-                    groupTransaction.add(addEndTransactionToGroupTransaction());
+                    groupTransaction.add(addEndTransactionToGroupTransaction(dbVersion));
 
                     if (bt.sendData(groupTransaction)) {
                         userFeedback.sendUserMessage("Данные для синхронизации отправлены.");
@@ -333,9 +377,9 @@ public class ReportServer {
                     userFeedback.sendUserMessage("Ошибка: конфликт версий. Обратитесь к администратору.");
                 }
             }
-        } catch (SQLException | IOException e) {
-            log.warn(e);
-        }
+//        } catch (SQLException | IOException e) {
+//            log.warn(e);
+//        }
     }
 
     private static void bluetoothSqlQueriesTransactionHandler(BluetoothServer bt, BluetoothFileTransaction transaction) {
@@ -528,10 +572,11 @@ public class ReportServer {
         throw new FileNotFoundException();
     }
 
-    private static BluetoothSimpleTransaction addEndTransactionToGroupTransaction() {
+    private static BluetoothSimpleTransaction addEndTransactionToGroupTransaction(int versionDb_) {
         //Ставим в группу для отправки закрытия сессии после получения последнего RESPONSE
         JSONObject sessionCloseHeader = new JSONObject();
         sessionCloseHeader.put("type", BluetoothPacketType.END_TRANSACTION.getId());
+        sessionCloseHeader.put("version", versionDb_);
         return new BluetoothSimpleTransaction(sessionCloseHeader);
     }
 

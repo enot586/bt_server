@@ -291,7 +291,7 @@ public class DatabaseDriver {
 
         if (null == dataBaseSynchId) {
             localDatabaseStatement.executeUpdate("INSERT INTO clients_version (id_version, mac) VALUES("+1+",'"+mac+"')");
-            dataBaseSynchId = 0;
+            dataBaseSynchId = 1;
         }
     }
 

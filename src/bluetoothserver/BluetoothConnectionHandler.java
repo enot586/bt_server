@@ -18,6 +18,7 @@ class BluetoothConnectionHandler implements Runnable {
     private final int MAX_BUFFER_SIZE = 100*1024;
     private TransactionTimer transactionTimer = new TransactionTimer(5000);
     private CommonUserInterface ui;
+    private String remoteDeviceAddress;
 
     private int connectionId = 0;
 
@@ -129,7 +130,7 @@ class BluetoothConnectionHandler implements Runnable {
                             currentConnection = newStreamConnection;
                             inStream = new BufferedInputStream(currentConnection.openInputStream());
                             outStream = new BufferedOutputStream(currentConnection.openOutputStream());
-
+                            remoteDeviceAddress = RemoteDevice.getRemoteDevice(currentConnection).getBluetoothAddress();
                             connectionState = ConnectionState.CONNECTION_STATE_WORKING;
                             transactionTimer.refreshTransactionTimeout();
                             transactionTimer.start();
@@ -233,7 +234,9 @@ class BluetoothConnectionHandler implements Runnable {
         } catch (ClassCastException e2) {
         }
 
-        int type = ((Long)t.getHeader().get("type")).intValue();
+        //fixme: какой-то артифакт, возникает CastException, вроде как хранится в int
+        int type = ((int)t.getHeader().get("type"))/*.intValue()*/;
+
         if (BluetoothPacketType.SESSION_CLOSE.getId() == type) {
             reopenNewConnection();
         }
@@ -351,8 +354,9 @@ class BluetoothConnectionHandler implements Runnable {
         throw new NoSuchElementException();
     }
 
-    String getRemoteDeviceBluetoothAddress() throws IOException {
-            return RemoteDevice.getRemoteDevice(currentConnection).getBluetoothAddress();
+    String getRemoteDeviceBluetoothAddress() /*throws IOException*/ {
+            //return RemoteDevice.getRemoteDevice(currentConnection).getBluetoothAddress();
+        return remoteDeviceAddress;
     }
 
     public int getConnectionId() {

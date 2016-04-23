@@ -38,7 +38,7 @@ enum BluetoothPacketType {
                             //В ответ посылается RESPONSE.
 
     END_TRANSACTION(6);     //Оконание текущей тразкции
-                            //JSON-Заголовок: {"type":int}
+                            //JSON-Заголовок: {"type":int, "version":int}
 
     private int id;
 
