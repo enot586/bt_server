@@ -1,4 +1,3 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" isELIgnored="false" %>
 <html>
   <head>
     <meta charset="utf-8">
@@ -7,11 +6,6 @@
     <title>Report server</title>
     <script src="jquery-1.12.2.min.js"></script>
     <script language="javascript" type="text/javascript">
-     <%
-        //Необходимые для формирования документа объявления
-        reportserver.DatabaseDriver databaseDriver = reportserver.ReportServer.getDatabaseDriver();
-     %>
-
       //Проверяем поддержку ajax у браузера
       var request = false;
       try {
@@ -37,43 +31,66 @@
       */
       $(document).ready(function() {
         getBluetoothServerStatus();
+        getBluetoothMac();
         userMessageHandler();
+        getOldUserMessages();
+
+        $.ajax({
+          url: '/tablerefresh',
+          type: 'get',
+
+          success: function()
+          {
+              window.location.reload(true);
+          }
+        });
+
+        getDetourFomDb();
+
       });
 
       function bluetoothServerStart() {
-          var url = "/btstart";
-          request.open("GET", url, true);
-          request.onreadystatechange = updateBluetoothServerStatus;
-          request.send(null);
+        $.ajax({
+          url: '/btstart',
+          type: 'get',
+          dataType: "json",
+          success: function(btStatus)
+          {
+            updateBluetoothServerStatus(btStatus.status);
+          }
+        });
       }
 
       function bluetoothServerStop() {
-          var url = "/btstop";
-          request.open("GET", url, true);
-          request.onreadystatechange = updateBluetoothServerStatus;
-          request.send(null);
+        $.ajax({
+          url: '/btstop',
+          type: 'get',
+          dataType: "json",
+          success: function(btStatus)
+          {
+            updateBluetoothServerStatus(btStatus.status);
+          }
+        });
       }
 
       function getBluetoothServerStatus() {
-          var url = "/btstatus";
-          request.open("GET", url, true);
-          request.onreadystatechange = updateBluetoothServerStatus;
-          request.send(null);
+        $.ajax({
+          url: '/btstatus',
+          type: 'get',
+          dataType: "json",
+          success: function(btStatus)
+          {
+            updateBluetoothServerStatus(btStatus.status);
+          }
+        });
       }
 
-      function updateBluetoothServerStatus() {
-          var response = request.responseText;
-          if (request.readyState == 4) {
-              if (request.status == 200) {
-                  document.getElementById("btServerStatus").innerHTML = response;
-              } else {
-                  //alert("status is " + request.status);
-              }
-          }
+      function updateBluetoothServerStatus(status) {
+        $('#btServerStatus').html(status);
       }
 
       //Для обработки пользовательских сообщений
-      var userMessageNumber = <%= databaseDriver.getUserMessageNumber() %>;
+      var userMessageNumber = 0;
 
       function addUserMessageRow(date, text) {
         $('#userMessageTable').prepend("<tr><td><div class=\"debug-message\">"+date+"</div></td>"+
@@ -97,6 +114,51 @@
           }
         });
       }
+
+      function getOldUserMessages() {
+        $.ajax({
+          url: '/get-old-user-message',
+          type: 'post',
+          dataType: "json",
+          success: function(messages) {
+            for (i = 0; i < messages.length; ++i) {
+              addUserMessageRow(messages[i].date, messages[i].text);
+            }
+          }
+        });
+      }
+
+      function getBluetoothMac() {
+        $.ajax({
+          url: '/get-bluetooth-mac',
+          type: 'get',
+          dataType: "json",
+          success: function(message) {
+            $('#btMacAddress').html("Bluetooth mac: "+message.mac);
+          }
+        });
+      }
+
+    function addDetourRow(data) {
+      $('#detourTable').append("<tr class=\"finish-row\" id=\""+i+"\"><td>"+i+
+                                     "</td><td>"+data.user_name+
+                                     "</td><td>"+data.route_name+
+                                     "</td><td>"+data.start_time+
+                                     "</td><td>"+data.end_time+"</td></tr>");
+    }
+
+    function getDetourFomDb() {
+      $.ajax({
+        url: '/get-detour-from-db',
+        type: 'post',
+        dataType: "json",
+        success: function(detour) {
+          for (i = 0; i < detour.length; ++i) {
+            addDetourRow(detour[i]);
+          }
+        }
+      });
+    }
     </script>
   
     <link rel="stylesheet" type="text/css" href="style.css">
@@ -117,7 +179,7 @@
               <td>
                 <table width="100%" cellspacing="0" cellspacing="0">
                   <tr>
-                    <td align="left" colspan="2"><div name="bluetooth-address" class="bluetooth-mac" id="btMacAddress">Bluetooth mac: <%= reportserver.ReportServer.getBluetoothMacAddress() %></div></td>
+                    <td align="left" colspan="2"><div name="bluetooth-address" class="bluetooth-mac" id="btMacAddress">Bluetooth mac:</div></td>
                   </tr>
                   <tr>
                     <td align="left" width="50%"><div class="bluetooth-mac">Состояние bluetooth:</div></td>
@@ -134,19 +196,6 @@
               <td>
                 <div name="bluetooth-address" class="bluetooth-mac">Журнал событий:</div>
                 <table width="100%" cellspacing="0" cellspacing="0" id="userMessageTable">
-                  <%
-                    String[] messages = databaseDriver.getUserMessages();
-                    String[] dates = databaseDriver.getUserMessagesDate();
-
-                    for(int i = 0; i < messages.length; ++i) {
-                      if ((dates[i] != null) && (messages[i]!= null)) {
-                        out.println("<tr class=\"debug-message\">"+
-                                      "<td>"+dates[i]+"</td>"+
-                                      "<td>"+messages[i]+"</td>"+
-                                    "</tr>");
-                      }
-                    }
-                  %>
                 </table>
               </td>
             </tr>
@@ -154,7 +203,20 @@
         </td> 
     
         <td valign="top">
-          <iframe width="100%" height="100%" src="routes-table.jsp"></iframe>
+          <h3 align="left">Выполненные маршруты:</h3>
+          <center>
+            <table width="90%" style="border-width:1px; border-color:#ffffff; border-style:solid; background-color:#ffffff;" id="detourTable">
+              <tr class="title-user-row">
+                <td><a href="" class="sort-title">id</a></td>
+                <td><a href="" class="sort-title">User</a></td>
+                <td><a href="" class="sort-title">Route</a></td>
+                <td><a href="" class="sort-title">Start</a></td>
+                <td><a href="" class="sort-title">End</a></td>
+              </tr>
+            </table>
+          </center>
+          <p align="right"><a href="" class="element-on-page">[10]</a>, <a href="" class="element-on-page">[20]</a>, <a href="" class="element-on-page">[50]</a></p>
+
         </td>
         
         <td width="10%"></td>

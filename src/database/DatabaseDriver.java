@@ -310,7 +310,7 @@ public class DatabaseDriver {
 
     public String[] getUserMessages() {
         try {
-            ResultSet rs = localDatabaseStatement.executeQuery("SELECT message FROM user_messages ORDER BY message_date DESC");
+            ResultSet rs = localDatabaseStatement.executeQuery("SELECT message FROM user_messages ORDER BY message_date ASC");
             String[] messages = new String[30];
 
             for (int i = 0; i < 30; ++i) {
@@ -326,7 +326,7 @@ public class DatabaseDriver {
 
     public String[] getUserMessagesDate() {
         try {
-            ResultSet rs = localDatabaseStatement.executeQuery("SELECT message_date FROM user_messages ORDER BY message_date DESC");
+            ResultSet rs = localDatabaseStatement.executeQuery("SELECT message_date FROM user_messages ORDER BY message_date ASC");
             String[] dates = new String[30];
 
             for (int i = 0; i < 30; ++i) {

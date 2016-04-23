@@ -15,10 +15,12 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.jsp.JettyJspServlet;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.webapp.WebAppContext;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import javax.bluetooth.BluetoothStateException;
 import javax.servlet.AsyncContext;
+import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServlet;
@@ -109,6 +111,9 @@ public class WebServer extends CommonServer {
 
         context.addServlet(new ServletHolder( new WebServer.ServletTableRefresh()), "/tablerefresh");
         context.addServlet(new ServletHolder( new WebServer.ServletUserMessageHandler()), "/usermessage");
+        context.addServlet(new ServletHolder( new WebServer.ServletGetOldUserMessageHandler()), "/get-old-user-message");
+        context.addServlet(new ServletHolder( new WebServer.ServletGetDetourFromDb()), "/get-detour-from-db");
+        context.addServlet(new ServletHolder( new WebServer.ServletGetBluetoothMac()), "/get-bluetooth-mac");
 
         server.setHandler(context);
 
@@ -158,8 +163,9 @@ public class WebServer extends CommonServer {
                 JSONObject text = ui.popUserMessage();
                 AsyncContext asyncRequest = popWebAction(WebActionType.SEND_USER_MESSAGE);
                 ServletResponse response = asyncRequest.getResponse();
+                response.setContentType("text/html");
                 response.setCharacterEncoding("UTF-8");
-                response.getWriter().print(new String(text.toJSONString().getBytes("UTF-8")));
+                response.getWriter().print(text.toString());
                 response.getWriter().flush();
                 asyncRequest.complete();
             }
@@ -191,9 +197,11 @@ public class WebServer extends CommonServer {
             ui.sendUserMessage("Запуск bluetooth-сервера");
 
             try {
-                response.setContentType("text");
+                response.setContentType("text/html");
                 response.setStatus(HttpServletResponse.SC_OK);
-                response.getWriter().println(ReportServer.getStateBluetoothServer().toString());
+                JSONObject responseStatus = new JSONObject();
+                responseStatus.put("status", ReportServer.getStateBluetoothServer().toString());
+                response.getWriter().println(responseStatus.toString());
             } catch (BluetoothStateException e) {
                 log.error(e);
             }
@@ -214,9 +222,11 @@ public class WebServer extends CommonServer {
             }
             ui.sendUserMessage("Остановка bluetooth-сервера");
             try {
-                response.setContentType("text");
+                response.setContentType("text/html");
                 response.setStatus(HttpServletResponse.SC_OK);
-                response.getWriter().println(ReportServer.getStateBluetoothServer().toString());
+                JSONObject responseStatus = new JSONObject();
+                responseStatus.put("status", ReportServer.getStateBluetoothServer().toString());
+                response.getWriter().println(responseStatus.toString());
             } catch (BluetoothStateException e) {
                 log.error(e);
             }
@@ -230,16 +240,18 @@ public class WebServer extends CommonServer {
         protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
         {
             try {
-                response.setContentType("text");
+                response.setContentType("text/html");
                 response.setStatus(HttpServletResponse.SC_OK);
-                response.getWriter().println(ReportServer.getStateBluetoothServer().toString());
+                JSONObject responseStatus = new JSONObject();
+                responseStatus.put("status", ReportServer.getStateBluetoothServer().toString());
+                response.getWriter().println(responseStatus.toString());
             } catch (BluetoothStateException e) {
                 log.error(e);
             }
         }
     }
 
-     public class ServletTableRefresh extends HttpServlet {
+    public class ServletTableRefresh extends HttpServlet {
         @Override
         protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
             AsyncContext asyncContext = request.startAsync();
@@ -258,6 +270,94 @@ public class WebServer extends CommonServer {
             asyncContext.setTimeout(0);
 
             WebServer.putWebAction(WebActionType.SEND_USER_MESSAGE, asyncContext);
+        }
+    }
+
+    public class ServletGetOldUserMessageHandler extends HttpServlet {
+        @Override
+        protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+            try {
+                response.setContentType("text/html");
+                response.setStatus(HttpServletResponse.SC_OK);
+
+                DatabaseDriver databaseDriver = ReportServer.getDatabaseDriver();
+                String[] messages = databaseDriver.getUserMessages();
+                String[] dates = databaseDriver.getUserMessagesDate();
+
+                JSONArray fullresponse = new JSONArray();
+
+                for(int i = 0; i < messages.length; ++i) {
+                    if ((dates[i] != null) && (messages[i]!= null)) {
+                        JSONObject responseJson = new JSONObject();
+                        responseJson.put("date", dates[i]);
+                        responseJson.put("text", messages[i]);
+
+                        fullresponse.add(responseJson);
+                    }
+                }
+                response.setCharacterEncoding("UTF-8");
+                response.getWriter().println(fullresponse.toString());
+            } catch (BluetoothStateException e) {
+                log.error(e);
+            }
+        }
+    }
+
+    public class ServletGetDetourFromDb extends HttpServlet {
+        @Override
+        protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+            try {
+                response.setContentType("text/html");
+                response.setStatus(HttpServletResponse.SC_OK);
+
+                reportserver.DatabaseDriver databaseDriver = reportserver.ReportServer.getDatabaseDriver();
+
+                JSONArray fullresponse = new JSONArray();
+
+                try {
+                    java.util.ArrayList<Integer> ids = databaseDriver.getLatest10IdsDetour();
+
+                    for(Integer i : ids) {
+                        boolean isFinishedRoute = databaseDriver.getStatusFromDetourTable(i);
+                        if (isFinishedRoute) {
+                            JSONObject responseJson = new JSONObject();
+                            responseJson.put("user_name", databaseDriver.getUserNameFromDetourTable(i));
+                            responseJson.put("route_name", databaseDriver.getRouteNameFromDetourTable(i));
+                            responseJson.put("start_time", databaseDriver.getStartTimeFromDetourTable(i));
+                            responseJson.put("end_time", databaseDriver.getEndTimeFromDetourTable(i));
+
+                            fullresponse.add(responseJson);
+                        }
+                    }
+                } catch (java.sql.SQLException e) {
+                    JSONObject responseJson = new JSONObject();
+                    responseJson.put("user_name", "SQL query error...");
+                    responseJson.put("route_name", "SQL query error...");
+                    responseJson.put("start_time", "SQL query error...");
+                    responseJson.put("end_time", "SQL query error...");
+                    fullresponse.add(responseJson);
+                }
+
+                response.setCharacterEncoding("UTF-8");
+                response.getWriter().println(fullresponse.toString());
+            } catch (BluetoothStateException e) {
+                log.error(e);
+            }
+        }
+    }
+
+    public class ServletGetBluetoothMac extends HttpServlet {
+        @Override
+        protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+            response.setContentType("text/html");
+            response.setStatus(HttpServletResponse.SC_OK);
+
+            JSONObject responseJson = new JSONObject();
+            responseJson.put("mac", ReportServer.getBluetoothMacAddress());
+
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().println(responseJson.toString());
         }
     }
 
