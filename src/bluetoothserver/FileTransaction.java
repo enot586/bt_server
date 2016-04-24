@@ -2,11 +2,11 @@ package reportserver;
 
 import org.json.simple.JSONObject;
 
-class BluetoothFileTransaction extends BluetoothSimpleTransaction {
+class FileTransaction extends SimpleTransaction {
 
     private String fileName;
 
-    BluetoothFileTransaction(JSONObject header_, String fileName) {
+    FileTransaction(JSONObject header_, String fileName) {
         super.header = header_;
         this.fileName = fileName;
     }
