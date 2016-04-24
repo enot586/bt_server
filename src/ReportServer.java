@@ -18,7 +18,7 @@ public class ReportServer {
 
     private static final int versionMajor = 1;
     private static final int versionMinor = 0;
-    private static final int versionBuild = 4;
+    private static final int versionBuild = 5;
 
     private static WebServer webServer;
     private static BluetoothServer bluetoothServer;
@@ -33,8 +33,7 @@ public class ReportServer {
 
     private static final Logger log = Logger.getLogger(ReportServer.class);
 
-    private static void printConsoleHelp()
-    {
+    private static void printConsoleHelp()  {
         //String ver = ReportServer.class.getPackage().getImplementationVersion();
         System.out.println("reportserver v"+versionMajor+"."+versionMinor+"build"+versionBuild+"\n"+
                            "Copyright (C) 2016 M&D, Inc.");
@@ -167,6 +166,17 @@ public class ReportServer {
                 }
 
                 if (BluetoothPacketType.END_TRANSACTION.getId() == type) {
+                    /**
+                     * Осуществляем синхронищацию версии на планшете.
+                     * После передачи пачки обновлений на сервер клиент передает END_TRANSACTION.
+                     * Мы закрываем сессию передавая актуальную версию БД, которая перебивается на планшете.
+                     * Тем самым происходит синхронизация версий при обновлении.
+                     */
+                    int dbVersion = databaseDriver.getDatabaseVersion();
+                    JSONObject header = new JSONObject();
+                    header.put("type", BluetoothPacketType.SESSION_CLOSE.getId());
+                    header.put("version", dbVersion);
+                    bt.sendData(new BluetoothSimpleTransaction(header));
                     userFeedback.sendUserMessage("Окончание текущей транзакции");
                     break;
                 }
@@ -258,14 +268,25 @@ public class ReportServer {
             clientVersion = databaseDriver.checkClientVersion(bt.getRemoteDeviceBluetoothAddress());
         } catch(IOException | SQLException e) {
             log.error(e);
+            log.error("Ошибка: не могу установить версию базы клиента");
             userFeedback.sendUserMessage("Ошибка: не могу установить версию базы клиента");
             return;
         }
 
         int dbVersion = databaseDriver.getDatabaseVersion();
 
+        /**
+         * Обнаружено несоответствие версии клиента в планшете и версии клиента в таблице сервера.
+         * Считается, что клиент утратил версионность, то есть либо была подмена базы на плашете,
+         * либо на сервере.
+         * В результате - текущая весрия на планшете не является валидной, поэтому перезаписываем базу плашету.
+         *
+         * note:
+         * Остается дыра: если на другой базе планшет имел такой же номер версии, что и на текущей,
+         * то конфликт останется не замеченным!!!
+         */
         if (realClientVersion != clientVersion) {
-            userFeedback.sendUserMessage("Конфликт: клиент потерял версионость.");
+            userFeedback.sendUserMessage("Конфликт: клиент потерял версионность.");
             groupTransaction = new GroupTransaction();
 
             try {
@@ -300,86 +321,95 @@ public class ReportServer {
                 }
             } catch(FileNotFoundException e) {
                 log.error("Database not exist !!!");
+                userFeedback.sendUserMessage("Ошибка: Отсутствует БД.");
             }
 
             return;
         }
 
-        //try {
-            userFeedback.sendUserMessage("Принят запрос на синхронизацию.");
+        userFeedback.sendUserMessage("Принят запрос на синхронизацию.");
 
-            if (clientVersion == 0) {
-                //первое обращение клиента к серверу. Необходима полная синхронизация
-                groupTransaction = new GroupTransaction();
+        if (clientVersion == 0) {
+            /**
+             * Первое обращение клиента к серверу. Необходима полная синхронизация.
+             * Если планшет с конкретным mac-адресом ни разу не устанавливал соединение с сервером,
+             * то это выявляется по отсутствию клиента в таблице clients_version в local-data.db3
+             * Новый клиент добавляется с версией =0.
+             */
+            groupTransaction = new GroupTransaction();
 
-                try {
-                    groupTransaction.add(addReplaceDatabaseToGroupTransaction(userId, dbVersion));
-                } catch(FileNotFoundException e) {
-                    log.error("Database not exist !!!");
-                }
+            try {
+                groupTransaction.add(addReplaceDatabaseToGroupTransaction(userId, dbVersion));
+            } catch(FileNotFoundException e) {
+                log.error("Database not exist !!!");
+                userFeedback.sendUserMessage("Ошибка: Отсутствует БД.");
+            }
 
-                //необходимо передавать все картинки из таблицы pictures
-                groupTransaction.addAll(addPicturesFromTableToGroupTransaction(userId));
-                groupTransaction.add(addEndTransactionToGroupTransaction(dbVersion));
-                groupTransaction.setCallbacks(
-                    new GroupTransactionCallback() {
-                        @Override
-                        public void success() {
-                            //присваивать версию только если тразакция завершилась успешно
-                            try {
-                                databaseDriver.setClientVersion(bt.getRemoteDeviceBluetoothAddress(),
-                                        databaseDriver.getDatabaseVersion());
-                            } catch (IOException | SQLException e) {
-                                log.error(e);
-                                userFeedback.sendUserMessage("Ошибка: не удалось инкрементировать весию БД.");
-                            }
-                        }
-
-                        @Override
-                        public void fail() {
-                            log.warn("client RESPONSE fail");
-                            userFeedback.sendUserMessage("Ошибка: не удалось получить ответ от клиента");
+            //необходимо передавать все картинки из таблицы pictures.
+            groupTransaction.addAll(addPicturesFromTableToGroupTransaction(userId));
+            groupTransaction.add(addEndTransactionToGroupTransaction(dbVersion));
+            groupTransaction.setCallbacks(
+                new GroupTransactionCallback() {
+                    @Override
+                    public void success() {
+                        //присваивать версию только если тразакция завершилась успешно
+                        try {
+                            databaseDriver.setClientVersion(bt.getRemoteDeviceBluetoothAddress(),
+                                    databaseDriver.getDatabaseVersion());
+                        } catch (IOException | SQLException e) {
+                            log.error(e);
+                            userFeedback.sendUserMessage("Ошибка: не удалось инкрементировать весию БД.");
                         }
                     }
-                );
 
-                if (bt.sendData(groupTransaction)) {
-                    userFeedback.sendUserMessage("Версия устарела. Отправлена актуальная база.");
+                    @Override
+                    public void fail() {
+                        log.warn("client RESPONSE fail");
+                        userFeedback.sendUserMessage("Ошибка: не удалось получить ответ от клиента");
+                    }
+                }
+            );
+
+            if (bt.sendData(groupTransaction)) {
+                userFeedback.sendUserMessage("Версия устарела. Отправлена актуальная база.");
+            } else {
+                userFeedback.sendUserMessage("Ошибка: Не могу отправить данные.");
+            }
+        } else {
+            /**
+             * Соединение установленно с клиентом у которого версия БД валидна.
+             * Выясняем какой уровень синхронизации ему необходим.
+             */
+            if (clientVersion == dbVersion) {
+                /**
+                 * версия актуальна, синхронизировать нечего.
+                 * Делать ничего не нужно, просто отправляем END_TRANSACTION.
+                 */
+                JSONObject header = new JSONObject();
+                header.put("type", BluetoothPacketType.END_TRANSACTION.getId());
+                header.put("version", dbVersion);
+                if(bt.sendData(new BluetoothSimpleTransaction(header))) {
+                    userFeedback.sendUserMessage("База планшета актуальна.");
                 } else {
                     userFeedback.sendUserMessage("Ошибка: Не могу отправить данные.");
                 }
-            } else {
-                if (clientVersion == dbVersion) {
-                    //версия актуальна, синхронизировать нечего
-                    //Делать ничего не нужно, просто отправляем SESSION_CLOSE
-                    JSONObject header = new JSONObject();
-                    header.put("type", BluetoothPacketType.END_TRANSACTION.getId());
-                    header.put("version", dbVersion);
-                    if(bt.sendData(new BluetoothSimpleTransaction(header))) {
-                        userFeedback.sendUserMessage("База планшета актуальна.");
-                    } else {
-                        userFeedback.sendUserMessage("Ошибка: Не могу отправить данные.");
-                    }
-                } else if (clientVersion < dbVersion) {
-                    //Передаем всю положенную клиенту историю
-                    groupTransaction = new GroupTransaction();
-                    groupTransaction.addAll(addSqlHistoryToGroupTransaction(userId, clientVersion, dbVersion));
-                    groupTransaction.addAll(addPicturesToGroupTransaction(userId, clientVersion, dbVersion));
-                    groupTransaction.add(addEndTransactionToGroupTransaction(dbVersion));
+            } else if (clientVersion < dbVersion) {
+                //Передаем всю положенную клиенту историю.
+                groupTransaction = new GroupTransaction();
+                groupTransaction.addAll(addSqlHistoryToGroupTransaction(userId, clientVersion, dbVersion));
+                groupTransaction.addAll(addPicturesToGroupTransaction(userId, clientVersion, dbVersion));
+                groupTransaction.add(addEndTransactionToGroupTransaction(dbVersion));
 
-                    if (bt.sendData(groupTransaction)) {
-                        userFeedback.sendUserMessage("Данные для синхронизации отправлены.");
-                    } else {
-                        userFeedback.sendUserMessage("Ошибка: Не могу отправить данные.");
-                    }
-                } else if (clientVersion > dbVersion) {
-                    //Если версия базы в планшете некорректная
-                    userFeedback.sendUserMessage("Ошибка: конфликт версий. Обратитесь к администратору.");
+                if (bt.sendData(groupTransaction)) {
+                    userFeedback.sendUserMessage("Данные для синхронизации отправлены.");
+                } else {
+                    userFeedback.sendUserMessage("Ошибка: Не могу отправить данные.");
                 }
+            } else if (clientVersion > dbVersion) {
+                //Если версия базы в планшете некорректная.
+                userFeedback.sendUserMessage("Ошибка: конфликт версий. Обратитесь к администратору.");
             }
-//        } catch (SQLException | IOException e) {
-//            log.warn(e);
-//        }
+        }
     }
 
     private static void bluetoothSqlQueriesTransactionHandler(BluetoothServer bt, BluetoothFileTransaction transaction) {
@@ -400,8 +430,10 @@ public class ReportServer {
             log.warn(e);
             status = BluetoothTransactionStatus.ERROR.getId();
         } catch (FileNotFoundException e) {
-            log.error(e);
             status = BluetoothTransactionStatus.ERROR.getId();
+            log.error(e);
+            log.error("Ошибка: Не могу получить доступ к файлу "+transaction.getFileName());
+            userFeedback.sendUserMessage("Ошибка: Не могу получить доступ к файлу "+transaction.getFileName());
             return;
         }
 

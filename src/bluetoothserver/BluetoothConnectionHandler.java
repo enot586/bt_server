@@ -139,6 +139,7 @@ class BluetoothConnectionHandler implements Runnable {
                         }
                     } catch (IOException e1) {
                         log.warn(e1);
+                        ui.sendUserMessage("Ошибка: Не удалось установить соединение.");
                         reopenNewConnection();
                     }
                     break;
