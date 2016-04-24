@@ -105,6 +105,9 @@ public class ReportServer {
     private static void bluetoothTransactionHandler(BluetoothServer bt) {
         if (groupTransaction != null) {
             bluetoothGroupTransactionHandler.timerHandler(groupTransaction);
+            if (groupTransaction.isComplete()) {
+                groupTransaction = null;
+            }
         }
 
         try {
