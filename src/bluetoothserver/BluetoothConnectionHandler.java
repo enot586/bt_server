@@ -235,8 +235,7 @@ class BluetoothConnectionHandler implements Runnable {
         } catch (ClassCastException e2) {
         }
 
-        //fixme: какой-то артифакт, возникает CastException, вроде как хранится в int
-        int type = ((int)t.getHeader().get("type"))/*.intValue()*/;
+        int type = ((Long)t.getHeader().get("type")).intValue();
 
         if (BluetoothPacketType.SESSION_CLOSE.getId() == type) {
             reopenNewConnection();
@@ -280,7 +279,8 @@ class BluetoothConnectionHandler implements Runnable {
                         log.info("receive file:");
                         log.info(header.toString());
 
-                        boolean isTransactionWithBody = ((long)header.get("type")!= BluetoothPacketType.RESPONSE.getId()) &&
+                        int type = ((Long)header.get("type")).intValue();
+                        boolean isTransactionWithBody = (type != BluetoothPacketType.RESPONSE.getId()) &&
                                                         header.containsKey("size");
 
                         if (isTransactionWithBody) {

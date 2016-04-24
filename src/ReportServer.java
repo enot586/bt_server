@@ -28,7 +28,6 @@ public class ReportServer {
     private static GroupTransaction groupTransaction;
 
     private static SqlCommandList sqlScript;
-    private static CommonUserInterface userInterface;
     private static int currentConnectionId = 0;
 
     private static final Logger log = Logger.getLogger(ReportServer.class);
@@ -44,7 +43,6 @@ public class ReportServer {
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {
-
         //PropertyConfigurator.configure("log4j.properties");
         log.info("Application status:\t\t[INIT]");
 
@@ -167,15 +165,15 @@ public class ReportServer {
 
                 if (BluetoothPacketType.END_TRANSACTION.getId() == type) {
                     /**
-                     * Осуществляем синхронищацию версии на планшете.
+                     * Осуществляем синхронизацию версии на планшете.
                      * После передачи пачки обновлений на сервер клиент передает END_TRANSACTION.
                      * Мы закрываем сессию передавая актуальную версию БД, которая перебивается на планшете.
                      * Тем самым происходит синхронизация версий при обновлении.
                      */
                     int dbVersion = databaseDriver.getDatabaseVersion();
                     JSONObject header = new JSONObject();
-                    header.put("type", BluetoothPacketType.SESSION_CLOSE.getId());
-                    header.put("version", dbVersion);
+                    header.put("type", new Long(BluetoothPacketType.SESSION_CLOSE.getId()));
+                    header.put("version", new Long(dbVersion));
                     bt.sendData(new BluetoothSimpleTransaction(header));
                     userFeedback.sendUserMessage("Окончание текущей транзакции");
                     break;
@@ -198,10 +196,10 @@ public class ReportServer {
         int status = BluetoothTransactionStatus.DONE.getId();
 
         JSONObject header = new JSONObject();
-        header.put("type", BluetoothPacketType.RESPONSE.getId());
-        header.put("userId", transaction.getHeader().get("userId"));
-        header.put("size", transaction.getHeader().get("size"));
-        header.put("status", status);
+        header.put("type", new Long(BluetoothPacketType.RESPONSE.getId()) );
+        header.put("userId", (Long)transaction.getHeader().get("userId"));
+        header.put("size", (Long)transaction.getHeader().get("size"));
+        header.put("status", new Long(status));
         bt.sendData(new BluetoothSimpleTransaction(header));
 
         try {
@@ -230,10 +228,10 @@ public class ReportServer {
         int status = BluetoothTransactionStatus.DONE.getId();
 
         JSONObject header = new JSONObject();
-        header.put("type", BluetoothPacketType.RESPONSE.getId());
-        header.put("userId", transaction.getHeader().get("userId"));
-        header.put("size", transaction.getHeader().get("size"));
-        header.put("status", status);
+        header.put("type", new Long(BluetoothPacketType.RESPONSE.getId()) );
+        header.put("userId", (Long)transaction.getHeader().get("userId"));
+        header.put("size", (Long)transaction.getHeader().get("size"));
+        header.put("status", new Long(status));
         bt.sendData(new BluetoothSimpleTransaction(header));
 
         userFeedback.sendUserMessage("Принят файл: "+transaction.getFileName());
@@ -386,8 +384,8 @@ public class ReportServer {
                  * Делать ничего не нужно, просто отправляем END_TRANSACTION.
                  */
                 JSONObject header = new JSONObject();
-                header.put("type", BluetoothPacketType.END_TRANSACTION.getId());
-                header.put("version", dbVersion);
+                header.put("type", new Long(BluetoothPacketType.END_TRANSACTION.getId()));
+                header.put("version", new Long(dbVersion));
                 if(bt.sendData(new BluetoothSimpleTransaction(header))) {
                     userFeedback.sendUserMessage("База планшета актуальна.");
                 } else {
@@ -438,10 +436,10 @@ public class ReportServer {
         }
 
         JSONObject header = new JSONObject();
-        header.put("type", BluetoothPacketType.RESPONSE.getId());
-        header.put("userId", userId);
-        header.put("size", transaction.getHeader().get("size"));
-        header.put("status", status);
+        header.put("type", new Long(BluetoothPacketType.RESPONSE.getId()) );
+        header.put("userId", new Long(userId));
+        header.put("size", (Long)transaction.getHeader().get("size"));
+        header.put("status", new Long(status));
         bt.sendData(new BluetoothSimpleTransaction(header));
 
         boolean isAdmin = false;
@@ -537,9 +535,9 @@ public class ReportServer {
 
             JSONObject header = new JSONObject();
             header.put("type", new Long(BluetoothPacketType.SQL_QUERIES.getId()));
-            header.put("userId", userId);
-            header.put("size", temp.length());
-            header.put("version", dbVersion_);
+            header.put("userId", new Long(userId));
+            header.put("size", new Long(temp.length()));
+            header.put("version", new Long(dbVersion_));
             log.info(temp.getAbsolutePath());
 
             result.add(new BluetoothFileTransaction(header, temp.getAbsolutePath()));
@@ -574,10 +572,10 @@ public class ReportServer {
                 Path path = Paths.get(ProjectDirectories.directoryDownloads + "/" + currentFilename);
                 if (Files.exists(path)) {
                     JSONObject fileHeader = new JSONObject();
-                    fileHeader.put("type", BluetoothPacketType.BINARY_FILE.getId());
-                    fileHeader.put("userId", userId);
+                    fileHeader.put("type", new Long(BluetoothPacketType.BINARY_FILE.getId()));
+                    fileHeader.put("userId", new Long(userId));
                     try {
-                        fileHeader.put("size", Files.size(path));
+                        fileHeader.put("size", new Long(Files.size(path)));
                     } catch (IOException e) {
                         log.error(e);
                     }
@@ -594,10 +592,10 @@ public class ReportServer {
         File databaseFile = new File(ProjectDirectories.commonDatabaseRelativePath);
         if (databaseFile.exists()) {
             JSONObject header = new JSONObject();
-            header.put("type", (BluetoothPacketType.REPLACE_DATABASE.getId()));
-            header.put("userId", userId);
-            header.put("size", databaseFile.length());
-            header.put("version", dbVersion_);
+            header.put("type", new Long(BluetoothPacketType.REPLACE_DATABASE.getId()));
+            header.put("userId", new Long(userId));
+            header.put("size", new Long(databaseFile.length()));
+            header.put("version", new Long(dbVersion_));
 
             return new BluetoothFileTransaction(header, databaseFile.getAbsolutePath());
         }
@@ -607,8 +605,8 @@ public class ReportServer {
     private static BluetoothSimpleTransaction addEndTransactionToGroupTransaction(int versionDb_) {
         //Ставим в группу для отправки закрытия сессии после получения последнего RESPONSE
         JSONObject sessionCloseHeader = new JSONObject();
-        sessionCloseHeader.put("type", BluetoothPacketType.END_TRANSACTION.getId());
-        sessionCloseHeader.put("version", versionDb_);
+        sessionCloseHeader.put("type", new Long(BluetoothPacketType.END_TRANSACTION.getId()));
+        sessionCloseHeader.put("version", new Long(versionDb_));
         return new BluetoothSimpleTransaction(sessionCloseHeader);
     }
 
@@ -624,10 +622,10 @@ public class ReportServer {
                 Path path = Paths.get(ProjectDirectories.directoryDownloads + "/" + currentFilename);
                 if (Files.exists(path)) {
                     JSONObject fileHeader = new JSONObject();
-                    fileHeader.put("type", BluetoothPacketType.BINARY_FILE.getId());
-                    fileHeader.put("userId", userId);
+                    fileHeader.put("type", new Long(BluetoothPacketType.BINARY_FILE.getId()));
+                    fileHeader.put("userId", new Long(userId));
                     try {
-                        fileHeader.put("size", Files.size(path));
+                        fileHeader.put("size", new Long(Files.size(path)));
                     } catch (IOException e) {
                         log.error(e);
                     }
