@@ -297,9 +297,9 @@ public class DatabaseDriver {
 
     public int getUserMessageNumber() {
         try {
-            ResultSet rs1 = localDatabaseStatement.executeQuery("SELECT COUNT(message_date) FROM user_messages");
+            ResultSet rs1 = localDatabaseStatement.executeQuery("SELECT COUNT(message_date) AS count FROM user_messages");
             if (rs1.next()) {
-                return rs1.getInt(1);
+                return rs1.getInt("count");
             }
         } catch (SQLException e) {
             log.warn(e);

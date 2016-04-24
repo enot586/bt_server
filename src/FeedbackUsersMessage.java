@@ -30,7 +30,7 @@ public class FeedbackUsersMessage implements CommonUserInterface {
     }
 
     @Override
-    public void sendUserMessage(String text) {
+    public synchronized void sendUserMessage(String text) {
         try {
             Date date = new Date();
             //Выбираем нужный web-сервер и отправляем ему текст
