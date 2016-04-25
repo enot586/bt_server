@@ -71,7 +71,7 @@ public class DatabaseDriver {
         return dbState;
     }
 
-    void backupCurrentDatabase(String uniqPart) {
+    synchronized void backupCurrentDatabase(String uniqPart) {
         synchronized (dbState) {
             dbState = DatabaseState.BACKUP;
         }
@@ -111,7 +111,7 @@ public class DatabaseDriver {
         }
     }
 
-    void runScript(boolean isAdmin, String clientAddress, SqlCommandList batch, boolean isNeedToIncrementVersion) throws SQLException {
+    synchronized void runScript(boolean isAdmin, String clientAddress, SqlCommandList batch, boolean isNeedToIncrementVersion) throws SQLException {
         try {
             commonDatabaseConnection.setAutoCommit(false);
             localDatabaseConnection.setAutoCommit(false);
@@ -163,7 +163,7 @@ public class DatabaseDriver {
         }
     }
 
-    public void replaceCommonBase(File newBase) throws IOException {
+    synchronized public void replaceCommonBase(File newBase) throws IOException {
         try {
             commonDatabaseConnection.close();
 
@@ -198,12 +198,12 @@ public class DatabaseDriver {
         }
     }
 
-    public boolean isUserAdmin(int userId) throws SQLException {
+    synchronized public boolean isUserAdmin(int userId) throws SQLException {
         ResultSet rs = commonDatabaseStatement.executeQuery("SELECT is_admin FROM users WHERE _id_user="+userId);
         return rs.getBoolean("is_admin");
     }
 
-    public boolean isUserAcceptableTableInQuery(String query) {
+    synchronized public boolean isUserAcceptableTableInQuery(String query) {
         String[] words = query.split(" ");
         if (words[0].equals("INSERT") || words[0].equals("DELETE")) {
             return (words[2].equals("detour")) || (words[2].equals("visits"));
@@ -212,7 +212,7 @@ public class DatabaseDriver {
         return words[0].equals("UPDATE") && (words[2].equals("detour") || words[2].equals("visits"));
     }
 
-    public int checkClientVersion(String mac_address) throws SQLException {
+    synchronized public int checkClientVersion(String mac_address) throws SQLException {
         ResultSet rs = localDatabaseStatement.executeQuery("SELECT id_version FROM clients_version WHERE mac='"+mac_address+"'");
 
         if (!rs.next()) {
@@ -223,7 +223,7 @@ public class DatabaseDriver {
         }
     }
 
-    public void setClientVersion(String mac_address, int id_version) throws SQLException {
+    synchronized public void setClientVersion(String mac_address, int id_version) throws SQLException {
         ResultSet rs = localDatabaseStatement.executeQuery("SELECT id_version FROM clients_version WHERE mac='"+mac_address+"'");
 
         if (!rs.next()) {
@@ -234,7 +234,7 @@ public class DatabaseDriver {
 
     }
 
-    ArrayList<String> getClientHistory(int version) throws SQLException {
+    synchronized ArrayList<String> getClientHistory(int version) throws SQLException {
         ResultSet rs = localDatabaseStatement.executeQuery("SELECT query FROM history WHERE id_version="+version);
         ArrayList<String> resultList = new ArrayList<String>();
 
@@ -246,7 +246,7 @@ public class DatabaseDriver {
         return resultList;
     }
 
-    ArrayList<String> getClientPicturesHistory(int version) throws SQLException {
+    synchronized ArrayList<String> getClientPicturesHistory(int version) throws SQLException {
         ResultSet rs = localDatabaseStatement.executeQuery("SELECT filename FROM pictures_history WHERE id_version="+version);
         ArrayList<String> resultList = new ArrayList<String>();
 
@@ -261,18 +261,18 @@ public class DatabaseDriver {
         return dataBaseSynchId;
     }
 
-    public void setToHistory(String query, int databaseId) throws SQLException {
+    synchronized public void setToHistory(String query, int databaseId) throws SQLException {
         String prepare = query.replace("'", "&");
         //Записать все запросы в историю для текущей версии таблицы
         localDatabaseStatement.executeUpdate("INSERT INTO history (id_version, query) VALUES("+databaseId+",'"+prepare+"')");
     }
 
-    public void setFileToHistory(Path file, int databaseId) throws SQLException {
+    synchronized public void setFileToHistory(Path file, int databaseId) throws SQLException {
         //Записать все запросы в историю для текущей версии таблицы
         localDatabaseStatement.executeUpdate("INSERT INTO pictures_history (id_version, filename) VALUES("+databaseId+",'"+file.getFileName().toString()+"')");
     }
 
-    public Integer getDatabaseVersion(String mac_address) throws SQLException {
+    synchronized public Integer getDatabaseVersion(String mac_address) throws SQLException {
         ResultSet rs = localDatabaseStatement.executeQuery("SELECT id_version FROM clients_version WHERE mac='"+mac_address+"'");
         if (!rs.next()) {
             return null;
@@ -281,12 +281,12 @@ public class DatabaseDriver {
         return rs.getInt("id_version");
     }
 
-    public void incrementDatabaseVersion(String mac_address) throws SQLException {
+    synchronized public void incrementDatabaseVersion(String mac_address) throws SQLException {
         localDatabaseStatement.executeUpdate("UPDATE clients_version SET id_version="+(dataBaseSynchId+1)+" WHERE mac=\""+mac_address+"\"");
         ++dataBaseSynchId;
     }
 
-    public void initDatabaseVersion(String mac) throws SQLException {
+    synchronized public void initDatabaseVersion(String mac) throws SQLException {
         dataBaseSynchId = getDatabaseVersion(mac);
 
         if (null == dataBaseSynchId) {
@@ -295,7 +295,7 @@ public class DatabaseDriver {
         }
     }
 
-    public int getUserMessageNumber() {
+    synchronized public int getUserMessageNumber() {
         try {
             ResultSet rs1 = localDatabaseStatement.executeQuery("SELECT COUNT(message_date) AS count FROM user_messages");
             if (rs1.next()) {
@@ -308,7 +308,7 @@ public class DatabaseDriver {
         return 0;
     }
 
-    public String[] getUserMessages() {
+    synchronized public String[] getUserMessages() {
         try {
             ResultSet rs = localDatabaseStatement.executeQuery("SELECT message FROM user_messages ORDER BY message_date ASC");
             String[] messages = new String[30];
@@ -324,7 +324,7 @@ public class DatabaseDriver {
         return null;
     }
 
-    public String[] getUserMessagesDate() {
+    synchronized public String[] getUserMessagesDate() {
         try {
             ResultSet rs = localDatabaseStatement.executeQuery("SELECT message_date FROM user_messages ORDER BY message_date ASC");
             String[] dates = new String[30];
@@ -340,7 +340,7 @@ public class DatabaseDriver {
         return null;
     }
 
-    public void addUserMessageToDatabase(java.util.Date currentDate, String text) {
+    synchronized public void addUserMessageToDatabase(java.util.Date currentDate, String text) {
         try {
             int rowNumber = getUserMessageNumber();
 
@@ -362,7 +362,7 @@ public class DatabaseDriver {
         }
     }
 
-    public ArrayList<Integer> getLatest10IdsDetour() throws SQLException {
+    synchronized public ArrayList<Integer> getLatest10IdsDetour() throws SQLException {
         ArrayList<Integer> ids = new  ArrayList<Integer>();
 
         ResultSet rs = commonDatabaseStatement.executeQuery("SELECT _id_detour FROM detour ORDER BY _id_detour DESC LIMIT 10");
@@ -376,7 +376,7 @@ public class DatabaseDriver {
 
     }
 
-    public ArrayList<Integer> getDetourTableIds() throws SQLException {
+    synchronized public ArrayList<Integer> getDetourTableIds() throws SQLException {
         ArrayList<Integer> ids = new  ArrayList<Integer>();
 
         ResultSet rs = commonDatabaseStatement.executeQuery("SELECT _id_detour FROM detour");
@@ -389,41 +389,41 @@ public class DatabaseDriver {
         return ids;
     }
 
-    public String getUserNameFromDetourTable(int idDetour) throws SQLException {
+    synchronized public String getUserNameFromDetourTable(int idDetour) throws SQLException {
         ResultSet rs = commonDatabaseStatement.executeQuery("SELECT id_user FROM detour WHERE _id_detour="+idDetour);
         int userId = rs.getInt("id_user");
         rs = commonDatabaseStatement.executeQuery("SELECT fio FROM users WHERE _id_user="+userId);
         return rs.getString("fio");
     }
 
-    public String getRouteNameFromDetourTable(int idDetour) throws SQLException {
+    synchronized public String getRouteNameFromDetourTable(int idDetour) throws SQLException {
         ResultSet rs = commonDatabaseStatement.executeQuery("SELECT id_route FROM detour WHERE _id_detour="+idDetour);
         int routeId = rs.getInt("id_route");
         rs = commonDatabaseStatement.executeQuery("SELECT name FROM routs WHERE _id_route="+routeId);
         return rs.getString("name");
     }
 
-    public String getStartTimeFromDetourTable(int idDetour) throws SQLException {
+    synchronized public String getStartTimeFromDetourTable(int idDetour) throws SQLException {
         ResultSet rs = commonDatabaseStatement.executeQuery("SELECT time_start FROM detour WHERE _id_detour="+idDetour);
         return rs.getString("time_start");
     }
 
-    public String getEndTimeFromDetourTable(int idDetour) throws SQLException {
+    synchronized public String getEndTimeFromDetourTable(int idDetour) throws SQLException {
         ResultSet rs = commonDatabaseStatement.executeQuery("SELECT time_stop FROM detour WHERE _id_detour="+idDetour);
         return rs.getString("time_stop");
     }
 
-    public boolean getStatusFromDetourTable(int idDetour) throws SQLException {
+    synchronized public boolean getStatusFromDetourTable(int idDetour) throws SQLException {
         ResultSet rs = commonDatabaseStatement.executeQuery("SELECT finished FROM detour WHERE _id_detour="+idDetour);
         return rs.getBoolean("finished");
     }
 
-    public String getRoutesTablePathRoutePicture(int idRoute) throws SQLException {
+    synchronized public String getRoutesTablePathRoutePicture(int idRoute) throws SQLException {
         ResultSet rs = commonDatabaseStatement.executeQuery("SELECT path_picture_route FROM routs WHERE _id_route="+idRoute);
         return rs.getString("path_picture_route");
     }
 
-    public void addFileToHistory(Path file, boolean isNeedToIncrementVersion) throws SQLException {
+    synchronized public void addFileToHistory(Path file, boolean isNeedToIncrementVersion) throws SQLException {
         try {
             commonDatabaseConnection.setAutoCommit(false);
             localDatabaseConnection.setAutoCommit(false);
@@ -460,13 +460,13 @@ public class DatabaseDriver {
         }
     }
 
-    public void removeLocalHistory() throws SQLException {
+    synchronized public void removeLocalHistory() throws SQLException {
         localDatabaseStatement.executeUpdate("DELETE FROM history");
         localDatabaseStatement.executeUpdate("DELETE FROM pictures_history");
         localDatabaseStatement.executeUpdate("DELETE FROM clients_version");
     }
 
-    public ArrayList<String> getPictures() {
+    synchronized public ArrayList<String> getPictures() {
         ArrayList<String> result = new ArrayList<String>();
         try {
             ResultSet rs = commonDatabaseStatement.executeQuery("SELECT path_picture FROM pictures");

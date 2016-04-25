@@ -18,7 +18,7 @@ public class ReportServer {
 
     private static final int versionMajor = 1;
     private static final int versionMinor = 0;
-    private static final int versionBuild = 5;
+    private static final int versionBuild = 6;
 
     private static WebServer webServer;
     private static BluetoothServer bluetoothServer;
