@@ -286,27 +286,28 @@ public class ReportServer {
 
             try {
                 groupTransaction.add(addReplaceDatabaseToGroupTransaction(userId, dbVersion));
+                groupTransaction.addAll(addPicturesFromTableToGroupTransaction(userId));
                 groupTransaction.add(addSessionCloseToGroupTransaction(dbVersion));
                 groupTransaction.setCallbacks(
-                        new GroupTransactionCallback() {
-                            @Override
-                            public void success() {
-                                //присваивать версию только если тразакция завершилась успешно
-                                try {
-                                    databaseDriver.setClientVersion(bt.getRemoteDeviceBluetoothAddress(),
-                                            databaseDriver.getDatabaseVersion());
-                                } catch (IOException | SQLException e) {
-                                    log.error(e);
-                                    userFeedback.sendUserMessage("Ошибка: не удалось инкрементировать весию БД для клиента.");
-                                }
-                            }
-
-                            @Override
-                            public void fail() {
-                                log.warn("client RESPONSE fail");
-                                userFeedback.sendUserMessage("Ошибка: не удалось получить ответ от клиента");
+                    new GroupTransactionCallback() {
+                        @Override
+                        public void success() {
+                            //присваивать версию только если тразакция завершилась успешно
+                            try {
+                                databaseDriver.setClientVersion(bt.getRemoteDeviceBluetoothAddress(),
+                                        databaseDriver.getDatabaseVersion());
+                            } catch (IOException | SQLException e) {
+                                log.error(e);
+                                userFeedback.sendUserMessage("Ошибка: не удалось инкрементировать весию БД для клиента.");
                             }
                         }
+
+                        @Override
+                        public void fail() {
+                            log.warn("client RESPONSE fail");
+                            userFeedback.sendUserMessage("Ошибка: не удалось получить ответ от клиента");
+                        }
+                    }
                 );
 
                 if (bt.sendData(groupTransaction)) {
