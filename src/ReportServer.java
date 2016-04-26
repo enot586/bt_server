@@ -286,7 +286,7 @@ public class ReportServer {
 
             try {
                 groupTransaction.add(addReplaceDatabaseToGroupTransaction(userId, dbVersion));
-                //groupTransaction.add(addEndTransactionToGroupTransaction());
+                groupTransaction.add(addSessionCloseToGroupTransaction(dbVersion));
                 groupTransaction.setCallbacks(
                         new GroupTransactionCallback() {
                             @Override
@@ -342,7 +342,7 @@ public class ReportServer {
 
             //необходимо передавать все картинки из таблицы pictures.
             groupTransaction.addAll(addPicturesFromTableToGroupTransaction(userId));
-            groupTransaction.add(addEndTransactionToGroupTransaction(dbVersion));
+            groupTransaction.add(addSessionCloseToGroupTransaction(dbVersion));
             groupTransaction.setCallbacks(
                 new GroupTransactionCallback() {
                     @Override
@@ -415,7 +415,6 @@ public class ReportServer {
                         }
                     }
                 );
-
                 if (bt.sendData(groupTransaction)) {
                     userFeedback.sendUserMessage("Данные для синхронизации отправлены.");
                 } else {
@@ -624,6 +623,14 @@ public class ReportServer {
         //Ставим в группу для отправки закрытия сессии после получения последнего RESPONSE
         JSONObject sessionCloseHeader = new JSONObject();
         sessionCloseHeader.put("type", new Long(BluetoothPacketType.END_TRANSACTION.getId()));
+        sessionCloseHeader.put("version", new Long(versionDb_));
+        return new SimpleTransaction(sessionCloseHeader);
+    }
+
+    private static SimpleTransaction addSessionCloseToGroupTransaction(int versionDb_) {
+        //Ставим в группу для отправки закрытия сессии после получения последнего RESPONSE
+        JSONObject sessionCloseHeader = new JSONObject();
+        sessionCloseHeader.put("type", new Long(BluetoothPacketType.SESSION_CLOSE.getId()));
         sessionCloseHeader.put("version", new Long(versionDb_));
         return new SimpleTransaction(sessionCloseHeader);
     }
