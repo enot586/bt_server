@@ -60,7 +60,7 @@ public class GroupTransaction {
     }
 
     public boolean isComplete() {
-        return (groupTransactionState != State.ACTIVE) || (groupTransactionState != State.EMPTY);
+        return (groupTransactionState != State.ACTIVE) && (groupTransactionState != State.EMPTY);
     }
 
     public void responseHandler(BluetoothServer bt) {

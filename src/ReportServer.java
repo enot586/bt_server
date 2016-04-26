@@ -127,6 +127,7 @@ public class ReportServer {
                         groupTransaction.responseHandler(bt);
                     } catch (NullPointerException e) {
                         //групповая транзакция не создавалсь, игнорируем
+                        log.error("NullPointerException");
                     }
                     break;
                 }
@@ -289,7 +290,7 @@ public class ReportServer {
 
             try {
                 groupTransaction.add(addReplaceDatabaseToGroupTransaction(userId, dbVersion));
-                //groupTransaction.add(addEndTransactionToGroupTransaction());
+                groupTransaction.add(addSessionCloseToGroupTransaction(dbVersion));
                 groupTransaction.setCallbacks(
                         new GroupTransactionCallback() {
                             @Override
@@ -345,7 +346,7 @@ public class ReportServer {
 
             //необходимо передавать все картинки из таблицы pictures.
             groupTransaction.addAll(addPicturesFromTableToGroupTransaction(userId));
-            groupTransaction.add(addEndTransactionToGroupTransaction(dbVersion));
+            groupTransaction.add(addSessionCloseToGroupTransaction(dbVersion));
             groupTransaction.setCallbacks(
                 new GroupTransactionCallback() {
                     @Override
@@ -397,7 +398,27 @@ public class ReportServer {
                 groupTransaction.addAll(addSqlHistoryToGroupTransaction(userId, clientVersion, dbVersion));
                 groupTransaction.addAll(addPicturesToGroupTransaction(userId, clientVersion, dbVersion));
                 groupTransaction.add(addEndTransactionToGroupTransaction(dbVersion));
+                groupTransaction.setCallbacks(
+                    new GroupTransactionCallback() {
+                        @Override
+                        public void success() {
+                            //присваивать версию только если тразакция завершилась успешно
+                            try {
+                                databaseDriver.setClientVersion(bt.getRemoteDeviceBluetoothAddress(),
+                                        databaseDriver.getDatabaseVersion());
+                            } catch (IOException | SQLException e) {
+                                log.error(e);
+                                userFeedback.sendUserMessage("Ошибка: не удалось инкрементировать весию БД.");
+                            }
+                        }
 
+                        @Override
+                        public void fail() {
+                            log.warn("client RESPONSE fail");
+                            userFeedback.sendUserMessage("Ошибка: не удалось получить ответ от клиента");
+                        }
+                    }
+                );
                 if (bt.sendData(groupTransaction)) {
                     userFeedback.sendUserMessage("Данные для синхронизации отправлены.");
                 } else {
@@ -606,6 +627,14 @@ public class ReportServer {
         //Ставим в группу для отправки закрытия сессии после получения последнего RESPONSE
         JSONObject sessionCloseHeader = new JSONObject();
         sessionCloseHeader.put("type", new Long(BluetoothPacketType.END_TRANSACTION.getId()));
+        sessionCloseHeader.put("version", new Long(versionDb_));
+        return new BluetoothSimpleTransaction(sessionCloseHeader);
+    }
+
+    private static BluetoothSimpleTransaction addSessionCloseToGroupTransaction(int versionDb_) {
+        //Ставим в группу для отправки закрытия сессии после получения последнего RESPONSE
+        JSONObject sessionCloseHeader = new JSONObject();
+        sessionCloseHeader.put("type", new Long(BluetoothPacketType.SESSION_CLOSE.getId()));
         sessionCloseHeader.put("version", new Long(versionDb_));
         return new BluetoothSimpleTransaction(sessionCloseHeader);
     }
