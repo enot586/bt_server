@@ -2,10 +2,10 @@ package reportserver;
 
 import org.json.simple.JSONObject;
 
-class BluetoothByteTransaction extends BluetoothSimpleTransaction {
+class ByteTransaction extends SimpleTransaction {
     private byte[] body;
 
-    BluetoothByteTransaction(JSONObject header_, byte[] body_) {
+    ByteTransaction(JSONObject header_, byte[] body_) {
         super.header = header_;
         body = body_;
     }

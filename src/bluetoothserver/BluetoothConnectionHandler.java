@@ -167,7 +167,7 @@ class BluetoothConnectionHandler implements Runnable {
 
     synchronized private void receiveHandler(BufferedInputStream receiverStream) {
         try {
-            BluetoothSimpleTransaction result = dataReceiving(receiverStream);
+            SimpleTransaction result = dataReceiving(receiverStream);
             parent.pushReceivedTransaction(result);
         } catch (NoSuchElementException e) {
             //Ничего критичного, ждем данные
@@ -176,7 +176,7 @@ class BluetoothConnectionHandler implements Runnable {
 
     synchronized private void sendHandler(BufferedOutputStream senderStream) {
         try {
-            BluetoothSimpleTransaction transactionForSend = parent.getFirstSendTransaction();
+            SimpleTransaction transactionForSend = parent.getFirstSendTransaction();
             try {
                 sendTransaction(senderStream, transactionForSend);
                 //Если отправка произошла без исключений удаляем первую транзакцию из списка
@@ -188,7 +188,7 @@ class BluetoothConnectionHandler implements Runnable {
         }
     }
 
-    synchronized private void sendTransaction(BufferedOutputStream senderStream, BluetoothSimpleTransaction t) throws IOException {
+    synchronized private void sendTransaction(BufferedOutputStream senderStream, SimpleTransaction t) throws IOException {
         //Отправляем заголовок
         try {
             senderStream.write(t.getHeader().toJSONString().getBytes());
@@ -202,7 +202,7 @@ class BluetoothConnectionHandler implements Runnable {
 
         //Проверяем тип транзакции и отправляем соответствующий типу блок даных
         try {
-            BluetoothByteTransaction byteTransaction = (BluetoothByteTransaction) t;
+            ByteTransaction byteTransaction = (ByteTransaction) t;
             senderStream.write(byteTransaction.getBody());
             senderStream.flush();
             log.info("Send byteTransaction");
@@ -214,7 +214,7 @@ class BluetoothConnectionHandler implements Runnable {
         }
 
         try {
-            BluetoothFileTransaction fileTransaction = (BluetoothFileTransaction) t;
+            FileTransaction fileTransaction = (FileTransaction) t;
             try (InputStream inputstream = new FileInputStream(fileTransaction.getFileName())) {
                 try (BufferedInputStream fileReader = new BufferedInputStream(inputstream)) {
                     byte[] buffer = new byte[1024 * 1024];
@@ -247,7 +247,7 @@ class BluetoothConnectionHandler implements Runnable {
         return fileNameHandler.generateName(uniqPart, "tmp");
     }
 
-    private BluetoothSimpleTransaction dataReceiving(BufferedInputStream receiverStream) throws NoSuchElementException {
+    private SimpleTransaction dataReceiving(BufferedInputStream receiverStream) throws NoSuchElementException {
         try {
             if (receiverStream.available() == 0) {
                 throw new NoSuchElementException();
@@ -301,8 +301,8 @@ class BluetoothConnectionHandler implements Runnable {
                             break;
 
                         } else {
-                            log.info("BluetoothSimpleTransaction");
-                            return new BluetoothSimpleTransaction(header);
+                            log.info("SimpleTransaction");
+                            return new SimpleTransaction(header);
                         }
                     }
                 } catch (IOException e) {
@@ -346,7 +346,7 @@ class BluetoothConnectionHandler implements Runnable {
 
             if (transactionTotalSize == byteIndexInFile) {
                 log.info("complete receive:" + receiver.getHeader().toJSONString());
-                return new BluetoothFileTransaction(receiver.getHeader(), receivedFileName);
+                return new FileTransaction(receiver.getHeader(), receivedFileName);
             }
         } catch (IOException e) {
             log.warn(e);
@@ -355,8 +355,7 @@ class BluetoothConnectionHandler implements Runnable {
         throw new NoSuchElementException();
     }
 
-    String getRemoteDeviceBluetoothAddress() /*throws IOException*/ {
-            //return RemoteDevice.getRemoteDevice(currentConnection).getBluetoothAddress();
+    String getRemoteDeviceBluetoothAddress() {
         return remoteDeviceAddress;
     }
 

@@ -2,15 +2,15 @@ package reportserver;
 
 import org.json.simple.JSONObject;
 
-class BluetoothSimpleTransaction {
+class SimpleTransaction {
 
     protected JSONObject header;
 
-    BluetoothSimpleTransaction() {
+    SimpleTransaction() {
         
     }
 
-    BluetoothSimpleTransaction(JSONObject header_) {
+    SimpleTransaction(JSONObject header_) {
         header = header_;
     }
     JSONObject getHeader() {

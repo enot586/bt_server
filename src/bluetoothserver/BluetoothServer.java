@@ -20,8 +20,8 @@ class BluetoothServer extends CommonServer {
     //TODO: орагнизовать список, для поддержки нескольких соединений
     private BluetoothConnectionHandler connectionHandler;
 
-    private final LinkedList<BluetoothSimpleTransaction> receivedTransactionsQueue = new LinkedList<BluetoothSimpleTransaction>();
-    private final LinkedList<BluetoothSimpleTransaction> sendTransactionsQueue = new LinkedList<BluetoothSimpleTransaction>();
+    private final LinkedList<SimpleTransaction> receivedTransactionsQueue = new LinkedList<SimpleTransaction>();
+    private final LinkedList<SimpleTransaction> sendTransactionsQueue = new LinkedList<SimpleTransaction>();
     private static final Logger log = Logger.getLogger(BluetoothServer.class);
 
     BluetoothServer(CommonUserInterface ui_) {
@@ -29,13 +29,13 @@ class BluetoothServer extends CommonServer {
         setState(ServerState.SERVER_INITIALIZING);
     }
 
-    synchronized boolean sendData(BluetoothSimpleTransaction t) {
+    synchronized boolean sendData(SimpleTransaction t) {
         return sendTransactionsQueue.offer(t);
     }
 
     synchronized boolean sendData(GroupTransaction t) {
         try {
-            BluetoothSimpleTransaction first = t.getFirst();
+            SimpleTransaction first = t.getFirst();
             if (sendTransactionsQueue.offer(first)) {
                 t.initSendingProcess();
                 t.remove();
@@ -95,11 +95,11 @@ class BluetoothServer extends CommonServer {
         }
     }
 
-    synchronized void pushReceivedTransaction(BluetoothSimpleTransaction receivedTransaction) {
+    synchronized void pushReceivedTransaction(SimpleTransaction receivedTransaction) {
         receivedTransactionsQueue.offer(receivedTransaction);
     }
 
-    synchronized BluetoothSimpleTransaction getFirstReceivedTransaction() throws NoSuchElementException {
+    synchronized SimpleTransaction getFirstReceivedTransaction() throws NoSuchElementException {
         return receivedTransactionsQueue.element();
     }
 
@@ -107,15 +107,15 @@ class BluetoothServer extends CommonServer {
         receivedTransactionsQueue.remove();
     }
 
-    synchronized BluetoothSimpleTransaction popReceivedTransaction() throws NoSuchElementException {
-        BluetoothSimpleTransaction result;
+    synchronized SimpleTransaction popReceivedTransaction() throws NoSuchElementException {
+        SimpleTransaction result;
         result = receivedTransactionsQueue.element();
         receivedTransactionsQueue.remove();
         return result;
     }
 
-    synchronized BluetoothSimpleTransaction popSendTransaction() throws NoSuchElementException {
-        BluetoothSimpleTransaction result;
+    synchronized SimpleTransaction popSendTransaction() throws NoSuchElementException {
+        SimpleTransaction result;
         result = sendTransactionsQueue.element();
         sendTransactionsQueue.remove();
         return result;
@@ -134,7 +134,7 @@ class BluetoothServer extends CommonServer {
         }
      }
 
-    synchronized BluetoothSimpleTransaction getFirstSendTransaction() throws NoSuchElementException {
+    synchronized SimpleTransaction getFirstSendTransaction() throws NoSuchElementException {
         return sendTransactionsQueue.element();
     }
 

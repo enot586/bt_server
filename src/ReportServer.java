@@ -29,6 +29,7 @@ public class ReportServer {
 
     private static SqlCommandList sqlScript;
     private static int currentConnectionId = 0;
+    private static GroupTransactionHandler bluetoothGroupTransactionHandler;
 
     private static final Logger log = Logger.getLogger(ReportServer.class);
 
@@ -91,6 +92,8 @@ public class ReportServer {
             return;
         }
 
+        bluetoothGroupTransactionHandler = new GroupTransactionHandler(bluetoothServer);
+
         log.info("Application status:\t\t[RUNNING]");
 
         while (true) {
@@ -100,19 +103,15 @@ public class ReportServer {
     }
 
     private static void bluetoothTransactionHandler(BluetoothServer bt) {
-
-        try {
-            if (!groupTransaction.isComplete()) {
-                groupTransaction.handler();
-            } else {
+        if (groupTransaction != null) {
+            bluetoothGroupTransactionHandler.timerHandler(groupTransaction);
+            if (groupTransaction.isComplete()) {
                 groupTransaction = null;
             }
-        } catch (NullPointerException e) {
-            //групповая транзакция не создавалась, игнорируем
         }
 
         try {
-            BluetoothSimpleTransaction newReceivedTransaction = bt.getFirstReceivedTransaction();
+            SimpleTransaction newReceivedTransaction = bt.getFirstReceivedTransaction();
 
             if (!newReceivedTransaction.getHeader().containsKey("type")) {
                 userFeedback.sendUserMessage("Ошибка: некорректный формат пакета.");
@@ -123,11 +122,8 @@ public class ReportServer {
 
             do {
                 if (BluetoothPacketType.RESPONSE.getId() == type) {
-                    try {
-                        groupTransaction.responseHandler(bt);
-                    } catch (NullPointerException e) {
-                        //групповая транзакция не создавалсь, игнорируем
-                        log.error("NullPointerException");
+                    if (groupTransaction != null) {
+                        bluetoothGroupTransactionHandler.responsePacketHandler(groupTransaction);
                     }
                     break;
                 }
@@ -139,7 +135,7 @@ public class ReportServer {
 
                 if (BluetoothPacketType.SQL_QUERIES.getId() == type) {
                     try {
-                        bluetoothSqlQueriesTransactionHandler(bt, (BluetoothFileTransaction) newReceivedTransaction);
+                        bluetoothSqlQueriesTransactionHandler(bt, (FileTransaction) newReceivedTransaction);
                     } catch (ClassCastException e) {
                         log.warn(e);
                     }
@@ -148,7 +144,7 @@ public class ReportServer {
 
                 if (BluetoothPacketType.BINARY_FILE.getId() == type) {
                     try {
-                        bluetoothBinaryFileTransactionHandler(bt, (BluetoothFileTransaction) newReceivedTransaction);
+                        bluetoothBinaryFileTransactionHandler(bt, (FileTransaction) newReceivedTransaction);
                     } catch (ClassCastException e) {
                         log.warn(e);
                     }
@@ -157,7 +153,7 @@ public class ReportServer {
 
                 if (BluetoothPacketType.REPLACE_DATABASE.getId() == type) {
                     try {
-                        bluetoothReplaceDatabaseTransactionHandler(bt, (BluetoothFileTransaction) newReceivedTransaction);
+                        bluetoothReplaceDatabaseTransactionHandler(bt, (FileTransaction) newReceivedTransaction);
                     } catch (ClassCastException e) {
                         log.warn(e);
                     }
@@ -175,7 +171,7 @@ public class ReportServer {
                     JSONObject header = new JSONObject();
                     header.put("type", new Long(BluetoothPacketType.SESSION_CLOSE.getId()));
                     header.put("version", new Long(dbVersion));
-                    bt.sendData(new BluetoothSimpleTransaction(header));
+                    bt.sendData(new SimpleTransaction(header));
                     userFeedback.sendUserMessage("Окончание текущей транзакции");
                     break;
                 }
@@ -193,7 +189,7 @@ public class ReportServer {
         }
     }
 
-    private static void bluetoothReplaceDatabaseTransactionHandler(BluetoothServer bt, BluetoothFileTransaction transaction) {
+    private static void bluetoothReplaceDatabaseTransactionHandler(BluetoothServer bt, FileTransaction transaction) {
         int status = BluetoothTransactionStatus.DONE.getId();
 
         JSONObject header = new JSONObject();
@@ -201,7 +197,7 @@ public class ReportServer {
         header.put("userId", (Long)transaction.getHeader().get("userId"));
         header.put("size", (Long)transaction.getHeader().get("size"));
         header.put("status", new Long(status));
-        bt.sendData(new BluetoothSimpleTransaction(header));
+        bt.sendData(new SimpleTransaction(header));
 
         try {
             File dataBase = new File(ProjectDirectories.directoryDownloads + "/" + transaction.getFileName());
@@ -222,7 +218,7 @@ public class ReportServer {
         }
     }
 
-    private static void bluetoothBinaryFileTransactionHandler(BluetoothServer bt, BluetoothFileTransaction transaction) {
+    private static void bluetoothBinaryFileTransactionHandler(BluetoothServer bt, FileTransaction transaction) {
 
         File scriptFile = new File(ProjectDirectories.directoryDownloads + "/" + transaction.getFileName());
 
@@ -233,7 +229,7 @@ public class ReportServer {
         header.put("userId", (Long)transaction.getHeader().get("userId"));
         header.put("size", (Long)transaction.getHeader().get("size"));
         header.put("status", new Long(status));
-        bt.sendData(new BluetoothSimpleTransaction(header));
+        bt.sendData(new SimpleTransaction(header));
 
         userFeedback.sendUserMessage("Принят файл: "+transaction.getFileName());
 
@@ -252,7 +248,7 @@ public class ReportServer {
         currentConnectionId = bt.getConnectionId();
     }
 
-    private static void bluetoothSynchTransactionHandler(BluetoothServer bt, BluetoothSimpleTransaction transaction) {
+    private static void bluetoothSynchTransactionHandler(BluetoothServer bt, SimpleTransaction transaction) {
         if (!transaction.getHeader().containsKey("userId") ||
             !transaction.getHeader().containsKey("version")) {
             userFeedback.sendUserMessage("Ошибка: Некорректный формат SYNCH_REQUEST.");
@@ -290,27 +286,28 @@ public class ReportServer {
 
             try {
                 groupTransaction.add(addReplaceDatabaseToGroupTransaction(userId, dbVersion));
+                groupTransaction.addAll(addPicturesFromTableToGroupTransaction(userId));
                 groupTransaction.add(addSessionCloseToGroupTransaction(dbVersion));
                 groupTransaction.setCallbacks(
-                        new GroupTransactionCallback() {
-                            @Override
-                            public void success() {
-                                //присваивать версию только если тразакция завершилась успешно
-                                try {
-                                    databaseDriver.setClientVersion(bt.getRemoteDeviceBluetoothAddress(),
-                                            databaseDriver.getDatabaseVersion());
-                                } catch (IOException | SQLException e) {
-                                    log.error(e);
-                                    userFeedback.sendUserMessage("Ошибка: не удалось инкрементировать весию БД.");
-                                }
-                            }
-
-                            @Override
-                            public void fail() {
-                                log.warn("client RESPONSE fail");
-                                userFeedback.sendUserMessage("Ошибка: не удалось получить ответ от клиента");
+                    new GroupTransactionCallback() {
+                        @Override
+                        public void success() {
+                            //присваивать версию только если тразакция завершилась успешно
+                            try {
+                                databaseDriver.setClientVersion(bt.getRemoteDeviceBluetoothAddress(),
+                                        databaseDriver.getDatabaseVersion());
+                            } catch (IOException | SQLException e) {
+                                log.error(e);
+                                userFeedback.sendUserMessage("Ошибка: не удалось инкрементировать весию БД для клиента.");
                             }
                         }
+
+                        @Override
+                        public void fail() {
+                            log.warn("client RESPONSE fail");
+                            userFeedback.sendUserMessage("Ошибка: не удалось получить ответ от клиента");
+                        }
+                    }
                 );
 
                 if (bt.sendData(groupTransaction)) {
@@ -387,7 +384,7 @@ public class ReportServer {
                 JSONObject header = new JSONObject();
                 header.put("type", new Long(BluetoothPacketType.END_TRANSACTION.getId()));
                 header.put("version", new Long(dbVersion));
-                if(bt.sendData(new BluetoothSimpleTransaction(header))) {
+                if(bt.sendData(new SimpleTransaction(header))) {
                     userFeedback.sendUserMessage("База планшета актуальна.");
                 } else {
                     userFeedback.sendUserMessage("Ошибка: Не могу отправить данные.");
@@ -431,7 +428,7 @@ public class ReportServer {
         }
     }
 
-    private static void bluetoothSqlQueriesTransactionHandler(BluetoothServer bt, BluetoothFileTransaction transaction) {
+    private static void bluetoothSqlQueriesTransactionHandler(BluetoothServer bt, FileTransaction transaction) {
         if (!transaction.getHeader().containsKey("userId")) {
             userFeedback.sendUserMessage("Ошибка: Некорректный формат SQL_QUERIES.");
             return;
@@ -461,7 +458,7 @@ public class ReportServer {
         header.put("userId", new Long(userId));
         header.put("size", (Long)transaction.getHeader().get("size"));
         header.put("status", new Long(status));
-        bt.sendData(new BluetoothSimpleTransaction(header));
+        bt.sendData(new SimpleTransaction(header));
 
         boolean isAdmin = false;
 
@@ -521,10 +518,10 @@ public class ReportServer {
         return databaseDriver;
     }
 
-    private static LinkedList<BluetoothSimpleTransaction> addSqlHistoryToGroupTransaction(long userId,
-                                                                                         int clientVersion_,
-                                                                                         int dbVersion_) {
-        LinkedList<BluetoothSimpleTransaction> result = new LinkedList<BluetoothSimpleTransaction>();
+    private static LinkedList<SimpleTransaction> addSqlHistoryToGroupTransaction(long userId,
+                                                                                 int clientVersion_,
+                                                                                 int dbVersion_) {
+        LinkedList<SimpleTransaction> result = new LinkedList<SimpleTransaction>();
         ArrayList<String> sourceHistory = new ArrayList<String>();
         try {
             for (int currentVersion = (clientVersion_ + 1); currentVersion <= dbVersion_; ++currentVersion) {
@@ -561,7 +558,7 @@ public class ReportServer {
             header.put("version", new Long(dbVersion_));
             log.info(temp.getAbsolutePath());
 
-            result.add(new BluetoothFileTransaction(header, temp.getAbsolutePath()));
+            result.add(new FileTransaction(header, temp.getAbsolutePath()));
         } catch (IOException e) {
             log.error(e);
         }
@@ -569,10 +566,10 @@ public class ReportServer {
         return result;
     }
 
-    private static LinkedList<BluetoothSimpleTransaction> addPicturesToGroupTransaction(long userId,
-                                                                                       int clientVersion_,
-                                                                                       int dbVersion_) {
-        LinkedList<BluetoothSimpleTransaction> result = new LinkedList<BluetoothSimpleTransaction>();
+    private static LinkedList<SimpleTransaction> addPicturesToGroupTransaction(long userId,
+                                                                               int clientVersion_,
+                                                                               int dbVersion_) {
+        LinkedList<SimpleTransaction> result = new LinkedList<SimpleTransaction>();
         ArrayList<String> picturesHistory = new ArrayList<String>();
 
         try {
@@ -601,14 +598,14 @@ public class ReportServer {
                         log.error(e);
                     }
                     fileHeader.put("filename", currentFilename);
-                    result.add(new BluetoothFileTransaction(fileHeader, path.toAbsolutePath().toString()));
+                    result.add(new FileTransaction(fileHeader, path.toAbsolutePath().toString()));
                 }
             }
         }
     return result;
 }
 
-    private static BluetoothFileTransaction addReplaceDatabaseToGroupTransaction(long userId, int dbVersion_) throws FileNotFoundException {
+    private static FileTransaction addReplaceDatabaseToGroupTransaction(long userId, int dbVersion_) throws FileNotFoundException {
         //передать файлик базы данных целиком
         File databaseFile = new File(ProjectDirectories.commonDatabaseRelativePath);
         if (databaseFile.exists()) {
@@ -618,29 +615,29 @@ public class ReportServer {
             header.put("size", new Long(databaseFile.length()));
             header.put("version", new Long(dbVersion_));
 
-            return new BluetoothFileTransaction(header, databaseFile.getAbsolutePath());
+            return new FileTransaction(header, databaseFile.getAbsolutePath());
         }
         throw new FileNotFoundException();
     }
 
-    private static BluetoothSimpleTransaction addEndTransactionToGroupTransaction(int versionDb_) {
+    private static SimpleTransaction addEndTransactionToGroupTransaction(int versionDb_) {
         //Ставим в группу для отправки закрытия сессии после получения последнего RESPONSE
         JSONObject sessionCloseHeader = new JSONObject();
         sessionCloseHeader.put("type", new Long(BluetoothPacketType.END_TRANSACTION.getId()));
         sessionCloseHeader.put("version", new Long(versionDb_));
-        return new BluetoothSimpleTransaction(sessionCloseHeader);
+        return new SimpleTransaction(sessionCloseHeader);
     }
 
-    private static BluetoothSimpleTransaction addSessionCloseToGroupTransaction(int versionDb_) {
+    private static SimpleTransaction addSessionCloseToGroupTransaction(int versionDb_) {
         //Ставим в группу для отправки закрытия сессии после получения последнего RESPONSE
         JSONObject sessionCloseHeader = new JSONObject();
         sessionCloseHeader.put("type", new Long(BluetoothPacketType.SESSION_CLOSE.getId()));
         sessionCloseHeader.put("version", new Long(versionDb_));
-        return new BluetoothSimpleTransaction(sessionCloseHeader);
+        return new SimpleTransaction(sessionCloseHeader);
     }
 
-    private static LinkedList<BluetoothSimpleTransaction> addPicturesFromTableToGroupTransaction(int userId) {
-        LinkedList<BluetoothSimpleTransaction> result = new LinkedList<BluetoothSimpleTransaction>();
+    private static LinkedList<SimpleTransaction> addPicturesFromTableToGroupTransaction(int userId) {
+        LinkedList<SimpleTransaction> result = new LinkedList<SimpleTransaction>();
         ArrayList<String> pictures = new ArrayList<String>();
 
         pictures.addAll(databaseDriver.getPictures());
@@ -659,7 +656,7 @@ public class ReportServer {
                         log.error(e);
                     }
                     fileHeader.put("filename", currentFilename);
-                    result.add(new BluetoothFileTransaction(fileHeader, path.toAbsolutePath().toString()));
+                    result.add(new FileTransaction(fileHeader, path.toAbsolutePath().toString()));
                 }
             }
         }

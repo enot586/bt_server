@@ -20,4 +20,8 @@ abstract class CommonServer {
     synchronized public ServerState getServerState() {
         return state;
     }
+
+    boolean sendData(GroupTransaction t) {return false;};
+
+    boolean sendData(SimpleTransaction t) {return false;};
 }
