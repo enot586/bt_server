@@ -6,7 +6,7 @@ import java.util.NoSuchElementException;
 
 public class GroupTransaction {
     private LinkedList<SimpleTransaction> groupTransaction = new LinkedList<SimpleTransaction>();
-    private TransactionTimer groupTransactionTimeout = new TransactionTimer(5000);
+    private TransactionTimer groupTransactionTimeout = new TransactionTimer(8000);
     private GroupTransactionCallback callbackTransaction;
 
     public enum State {

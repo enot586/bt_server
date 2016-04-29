@@ -74,10 +74,11 @@ public class DatabaseDriver {
     }
 
     void backupCurrentDatabase(String uniqPart) {
-        dbState = DatabaseState.BACKUP;
-
         try {
             dbGuard.lock();
+
+            dbState = DatabaseState.BACKUP;
+
             commonDatabaseStatement.close();
             commonDatabaseConnection.close();
 
@@ -101,14 +102,10 @@ public class DatabaseDriver {
                 }
             } while (!commonDatabaseConnection.isValid(2));
 
-            synchronized (dbState) {
-                dbState = DatabaseState.OPEN;
-            }
+            dbState = DatabaseState.OPEN;
         } catch (IOException | SQLException e) {
             log.error(e);
-            synchronized (dbState) {
-                dbState = DatabaseState.CLOSE;
-            }
+            dbState = DatabaseState.CLOSE;
         } finally {
             dbGuard.unlock();
         }
@@ -156,8 +153,7 @@ public class DatabaseDriver {
             }
 
             throw e;
-        }
-        finally {
+        } finally {
             try {
                 commonDatabaseConnection.setAutoCommit(true);
                 localDatabaseConnection.setAutoCommit(true);

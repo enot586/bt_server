@@ -18,7 +18,7 @@ public class ReportServer {
 
     private static final int versionMajor = 1;
     private static final int versionMinor = 0;
-    private static final int versionBuild = 6;
+    private static final int versionBuild = 7;
 
     private static WebServer webServer;
     private static BluetoothServer bluetoothServer;
@@ -304,6 +304,7 @@ public class ReportServer {
 
                         @Override
                         public void fail() {
+                            bt.reopenNewConnection();
                             log.warn("client RESPONSE fail");
                             userFeedback.sendUserMessage("Ошибка: не удалось получить ответ от клиента");
                         }
@@ -360,6 +361,7 @@ public class ReportServer {
 
                     @Override
                     public void fail() {
+                        bt.reopenNewConnection();
                         log.warn("client RESPONSE fail");
                         userFeedback.sendUserMessage("Ошибка: не удалось получить ответ от клиента");
                     }
@@ -411,6 +413,7 @@ public class ReportServer {
 
                         @Override
                         public void fail() {
+                            bt.reopenNewConnection();
                             log.warn("client RESPONSE fail");
                             userFeedback.sendUserMessage("Ошибка: не удалось получить ответ от клиента");
                         }

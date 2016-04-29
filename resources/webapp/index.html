@@ -11,15 +11,15 @@
       try {
           request = new XMLHttpRequest();
       } catch (trymicrosoft) {
+        try {
+            request = new ActiveXObject("Msxml2.XMLHTTP");
+        } catch (othermicrosoft) {
           try {
-              request = new ActiveXObject("Msxml2.XMLHTTP");
-          } catch (othermicrosoft) {
-              try {
-                  request = new ActiveXObject("Microsoft.XMLHTTP");
-              } catch (failed) {
-                  request = false;
-              }
+              request = new ActiveXObject("Microsoft.XMLHTTP");
+          } catch (failed) {
+              request = false;
           }
+        }
       }
 
       if (!request)
@@ -34,28 +34,28 @@
         getBluetoothMac();
         userMessageHandler();
         getOldUserMessages();
+        getDetourFomDb();
+        refreshDetourTable();
+      });
 
+      function refreshDetourTable() {
         $.ajax({
           url: '/tablerefresh',
           type: 'get',
-
-          success: function()
-          {
-              window.location.reload(true);
+          success: function() {
+            $('#detourTable').empty();
+            getDetourFomDb();
+            refreshDetourTable();
           }
         });
-
-        getDetourFomDb();
-
-      });
+      }
 
       function bluetoothServerStart() {
         $.ajax({
           url: '/btstart',
           type: 'get',
           dataType: "json",
-          success: function(btStatus)
-          {
+          success: function(btStatus) {
             updateBluetoothServerStatus(btStatus.status);
           }
         });
@@ -66,8 +66,7 @@
           url: '/btstop',
           type: 'get',
           dataType: "json",
-          success: function(btStatus)
-          {
+          success: function(btStatus) {
             updateBluetoothServerStatus(btStatus.status);
           }
         });
@@ -78,8 +77,7 @@
           url: '/btstatus',
           type: 'get',
           dataType: "json",
-          success: function(btStatus)
-          {
+          success: function(btStatus) {
             updateBluetoothServerStatus(btStatus.status);
           }
         });
@@ -99,7 +97,7 @@
         if (userMessageNumber >= 30) {
           $('#userMessageTable').children().find('tr').last().remove();
         } else {
-            ++userMessageNumber;
+          ++userMessageNumber;
         }
       }
 
@@ -139,26 +137,26 @@
         });
       }
 
-    function addDetourRow(data) {
-      $('#detourTable').append("<tr class=\"finish-row\" id=\""+i+"\"><td>"+i+
-                                     "</td><td>"+data.user_name+
-                                     "</td><td>"+data.route_name+
-                                     "</td><td>"+data.start_time+
-                                     "</td><td>"+data.end_time+"</td></tr>");
-    }
+      function addDetourRow(data) {
+        $('#detourTable').append("<tr class=\"finish-row\" id=\""+i+"\"><td>"+i+
+                                 "</td><td>"+data.user_name+
+                                 "</td><td>"+data.route_name+
+                                 "</td><td>"+data.start_time+
+                                 "</td><td>"+data.end_time+"</td></tr>");
+      }
 
-    function getDetourFomDb() {
-      $.ajax({
-        url: '/get-detour-from-db',
-        type: 'post',
-        dataType: "json",
-        success: function(detour) {
-          for (i = 0; i < detour.length; ++i) {
-            addDetourRow(detour[i]);
+      function getDetourFomDb() {
+        $.ajax({
+          url: '/get-detour-from-db',
+          type: 'post',
+          dataType: "json",
+          success: function(detour) {
+            for (i = 0; i < detour.length; ++i) {
+              addDetourRow(detour[i]);
+            }
           }
-        }
-      });
-    }
+        });
+      }
     </script>
   
     <link rel="stylesheet" type="text/css" href="style.css">
@@ -168,7 +166,6 @@
 
   <body bgcolor="#ffffff">
    	<H1 class="main-title">Report server</H1>
-
     <table width="100%" cellspacing="0" cellspacing="0" border="0">
       <tr>
         <td width="20%" valign="top" align="center">

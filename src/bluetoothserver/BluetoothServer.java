@@ -142,7 +142,7 @@ class BluetoothServer extends CommonServer {
         sendTransactionsQueue.remove();
     }
 
-    public int getConnectionId(/*BluetoothConnectionHandler connectionHandler_*/) {
-        return /*connectionHandler_*/connectionHandler.getConnectionId();
+    public int getConnectionId() {
+        return connectionHandler.getConnectionId();
     }
 }

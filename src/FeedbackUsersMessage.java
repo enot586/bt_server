@@ -33,7 +33,7 @@ public class FeedbackUsersMessage implements CommonUserInterface {
     public synchronized void sendUserMessage(String text) {
         try {
             Date date = new Date();
-            //Выбираем нужный web-сервер и отправляем ему текст
+
             addUserMessage(date, text);
             //отправляем в базу
             dbd.addUserMessageToDatabase(date, text);
