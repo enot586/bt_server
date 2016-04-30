@@ -17,32 +17,28 @@ public class FeedbackUsersMessage implements CommonUserInterface {
         dbd = dbd_;
     }
 
-    private void addUserMessage(Date date, String text) {
+     private synchronized void addUserMessage(Date date, String text) {
         JSONObject userMessage = new JSONObject();
         String pattern = "yyyy-MM-dd HH:mm:ss.SSS";
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
         String strDate = simpleDateFormat.format(date);
         userMessage.put("date", strDate);
         userMessage.put("text", text);
-        synchronized (userMessages) {
-            userMessages.add(userMessage);
-        }
+        userMessages.add(userMessage);
     }
 
     @Override
-    public synchronized void sendUserMessage(String text) {
+    public void sendUserMessage(String text) {
         try {
             Date date = new Date();
-
             addUserMessage(date, text);
             //отправляем в базу
             dbd.addUserMessageToDatabase(date, text);
         } catch (Exception e) {
-
         }
     }
 
-    public synchronized JSONObject popUserMessage() throws NoSuchElementException {
+     public synchronized JSONObject popUserMessage() throws NoSuchElementException {
         JSONObject text = userMessages.peek();
         if (text == null)  throw new NoSuchElementException();
         userMessages.remove();

@@ -208,13 +208,32 @@ public class ReportServer {
             log.error(e);
         }
 
+        /**
+         * При подмене базы данных важно соблюдать очередность рассылки!
+         * Сначала клиент должен отправлять базу, чтобы текущая версия БД установилась =1,
+         * а затем отправлять файлы. Чтобы привязать их к текущей версии.
+         * Обратный порядок приведет к некорректной записи версии для файлов.
+         * Т.к. при замене базы текущая версия БД сбрасывается в 1.
+         */
         try {
             databaseDriver.removeLocalHistory();
             databaseDriver.initDatabaseVersion(bt.getLocalHostMacAddress());
             databaseDriver.setClientVersion(bt.getRemoteDeviceBluetoothAddress(), 1);
+
+            //чтобы исключить инкремент версии при получении файлов, если они будут отосланы
+            currentConnectionId = bt.getConnectionId();
         } catch (IOException|SQLException e) {
             userFeedback.sendUserMessage("Ошибка очистки истории базы данных.");
             log.error(e);
+        }
+
+        //обновить таблицу у веб-морды
+        try {
+            AsyncContext asyncRefreshDetourTable = WebServer.popWebAction(WebActionType.REFRESH_DETOUR_TABLE);
+            asyncRefreshDetourTable.complete();
+        } catch (NullPointerException e) {
+            //по каким-то причинам ajax соединение установлено не было
+            log.warn(e);
         }
     }
 
@@ -294,8 +313,7 @@ public class ReportServer {
                         public void success() {
                             //присваивать версию только если тразакция завершилась успешно
                             try {
-                                databaseDriver.setClientVersion(bt.getRemoteDeviceBluetoothAddress(),
-                                        databaseDriver.getDatabaseVersion());
+                                databaseDriver.setClientVersion(bt.getRemoteDeviceBluetoothAddress(), dbVersion);
                             } catch (IOException | SQLException e) {
                                 log.error(e);
                                 userFeedback.sendUserMessage("Ошибка: не удалось инкрементировать весию БД для клиента.");
@@ -484,6 +502,7 @@ public class ReportServer {
             userFeedback.sendUserMessage("Ошибка обработки SQL-запроса. Cинхронизация отменена.");
         }
 
+        //обновить таблицу у веб-морды
         try {
             AsyncContext asyncRefreshDetourTable = WebServer.popWebAction(WebActionType.REFRESH_DETOUR_TABLE);
             asyncRefreshDetourTable.complete();
@@ -493,11 +512,11 @@ public class ReportServer {
         }
     }
 
-    static CommonServer.ServerState getStateBluetoothServer() {
+    public static CommonServer.ServerState getStateBluetoothServer() {
         return bluetoothServer.getServerState();
     }
 
-    static void bluetoothServerStart() throws Exception {
+    public static void bluetoothServerStart() throws Exception {
         try {
             bluetoothServer.start();
         } catch(Exception e) {
@@ -505,7 +524,7 @@ public class ReportServer {
         }
     }
 
-    static void bluetoothServerStop() throws Exception {
+    public static void bluetoothServerStop() throws Exception {
         try {
             bluetoothServer.stop();
         } catch(Exception e) {
@@ -665,6 +684,5 @@ public class ReportServer {
         }
         return result;
     }
-
 
 }

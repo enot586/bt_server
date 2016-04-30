@@ -96,8 +96,9 @@ class BluetoothConnectionHandler implements Runnable {
     private StreamConnection createConnection(String url) throws IOException {
         StreamConnection connection = clientSession.acceptAndOpen();
         RemoteDevice dev = RemoteDevice.getRemoteDevice(connection);
-        log.info("Remote device address:"+dev.getBluetoothAddress());
-        log.info("Remote device name:"+dev.getFriendlyName(true));
+        remoteDeviceAddress = dev.getBluetoothAddress();
+        log.info("Remote device address:"+remoteDeviceAddress);
+        //log.info("Remote device name:"+dev.getFriendlyName(true));
         return connection;
     }
 
@@ -136,7 +137,6 @@ class BluetoothConnectionHandler implements Runnable {
                         currentConnection = newStreamConnection;
                         inStream = new BufferedInputStream(currentConnection.openInputStream());
                         outStream = new BufferedOutputStream(currentConnection.openOutputStream());
-                        remoteDeviceAddress = RemoteDevice.getRemoteDevice(currentConnection).getBluetoothAddress();
                         connectionState = ConnectionState.CONNECTION_STATE_WORKING;
                         transactionTimer.refreshTransactionTimeout();
                         transactionTimer.start();
@@ -145,6 +145,7 @@ class BluetoothConnectionHandler implements Runnable {
                     } catch (IOException e1) {
                         log.warn(e1);
                         ui.sendUserMessage("Ошибка: Не удалось установить соединение.");
+                        connectionStateGuard.unlock();
                         reopenNewConnection();
                     } finally {
                         connectionStateGuard.unlock();

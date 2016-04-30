@@ -29,11 +29,11 @@ class BluetoothServer extends CommonServer {
         setState(ServerState.SERVER_INITIALIZING);
     }
 
-    synchronized boolean sendData(SimpleTransaction t) {
+    public synchronized boolean sendData(SimpleTransaction t) {
         return sendTransactionsQueue.offer(t);
     }
 
-    synchronized boolean sendData(GroupTransaction t) {
+    public synchronized boolean sendData(GroupTransaction t) {
         try {
             SimpleTransaction first = t.getFirst();
             if (sendTransactionsQueue.offer(first)) {
@@ -58,7 +58,7 @@ class BluetoothServer extends CommonServer {
         return this.getServerState() != ServerState.SERVER_INITIALIZING;
     }
 
-    void init() throws IOException, Exception {
+    public void init() throws IOException, Exception {
         setState(ServerState.SERVER_INITIALIZING);
         uuid = new UUID("1101", true);
         name = "ReportServer";
@@ -68,12 +68,12 @@ class BluetoothServer extends CommonServer {
         setState(ServerState.SERVER_STOPPED);
     }
 
-    void reopenNewConnection() {
+    public void reopenNewConnection() {
         //todo: подумать как обслуживать несколько подключений(несколько BluetoothConnectionHandler)
         connectionHandler.reopenNewConnection();
     }
 
-    synchronized public void stop() throws IOException {
+    public synchronized void stop() throws IOException {
         if (!isReadyToWork()) return;
         setState(ServerState.SERVER_STOPPED);
         log.info("Bluetooth server stop()");
@@ -81,7 +81,7 @@ class BluetoothServer extends CommonServer {
         if (serverThread != null) serverThread.interrupt();
     }
 
-    synchronized public void start() throws Exception {
+    public synchronized void start() throws Exception {
         if (this.getServerState() == ServerState.SERVER_STOPPED) {
             try {
                 createConnectionHandlerThread();
@@ -95,37 +95,23 @@ class BluetoothServer extends CommonServer {
         }
     }
 
-    synchronized void pushReceivedTransaction(SimpleTransaction receivedTransaction) {
+    public synchronized void pushReceivedTransaction(SimpleTransaction receivedTransaction) {
         receivedTransactionsQueue.offer(receivedTransaction);
     }
 
-    synchronized SimpleTransaction getFirstReceivedTransaction() throws NoSuchElementException {
+    public synchronized SimpleTransaction getFirstReceivedTransaction() throws NoSuchElementException {
         return receivedTransactionsQueue.element();
     }
 
-    synchronized void removeFirstReceivedTransaction() throws NoSuchElementException {
+    public synchronized void removeFirstReceivedTransaction() throws NoSuchElementException {
         receivedTransactionsQueue.remove();
-    }
-
-    synchronized SimpleTransaction popReceivedTransaction() throws NoSuchElementException {
-        SimpleTransaction result;
-        result = receivedTransactionsQueue.element();
-        receivedTransactionsQueue.remove();
-        return result;
-    }
-
-    synchronized SimpleTransaction popSendTransaction() throws NoSuchElementException {
-        SimpleTransaction result;
-        result = sendTransactionsQueue.element();
-        sendTransactionsQueue.remove();
-        return result;
     }
 
     public String getRemoteDeviceBluetoothAddress() throws IOException {
         return connectionHandler.getRemoteDeviceBluetoothAddress();
     }
 
-    String getLocalHostMacAddress() {
+    public synchronized String getLocalHostMacAddress() {
         try {
             LocalDevice host = LocalDevice.getLocalDevice();
             return host.getBluetoothAddress();
@@ -134,11 +120,11 @@ class BluetoothServer extends CommonServer {
         }
      }
 
-    synchronized SimpleTransaction getFirstSendTransaction() throws NoSuchElementException {
+    public synchronized SimpleTransaction getFirstSendTransaction() throws NoSuchElementException {
         return sendTransactionsQueue.element();
     }
 
-    synchronized void removeFirstSendTransaction() throws NoSuchElementException {
+    public synchronized void removeFirstSendTransaction() throws NoSuchElementException {
         sendTransactionsQueue.remove();
     }
 

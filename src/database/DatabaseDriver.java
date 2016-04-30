@@ -10,7 +10,6 @@ import java.nio.file.StandardCopyOption;
 import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.locks.ReentrantLock;
 
 public class DatabaseDriver {
     private String commonUrl;
@@ -23,8 +22,6 @@ public class DatabaseDriver {
 
     private Integer dataBaseSynchId = 0;
 
-    private ReentrantLock dbGuard = new ReentrantLock();
-
     private static final Logger log = Logger.getLogger(DatabaseDriver.class);
 
     private enum DatabaseState {
@@ -35,7 +32,7 @@ public class DatabaseDriver {
 
     private DatabaseState dbState = DatabaseState.CLOSE;
 
-    void init(String commonUrl_, String localUrl_) throws SQLException {
+    public void init(String commonUrl_, String localUrl_) throws SQLException {
         commonUrl = commonUrl_;
         localUrl = localUrl_;
 
@@ -69,14 +66,12 @@ public class DatabaseDriver {
         }
     }
 
-    public DatabaseState getBdState() {
+    public synchronized DatabaseState getBdState() {
         return dbState;
     }
 
-    void backupCurrentDatabase(String uniqPart) {
+    public synchronized void backupCurrentDatabase(String uniqPart) {
         try {
-            dbGuard.lock();
-
             dbState = DatabaseState.BACKUP;
 
             commonDatabaseStatement.close();
@@ -106,14 +101,11 @@ public class DatabaseDriver {
         } catch (IOException | SQLException e) {
             log.error(e);
             dbState = DatabaseState.CLOSE;
-        } finally {
-            dbGuard.unlock();
         }
     }
 
-    void runScript(boolean isAdmin, String clientAddress, SqlCommandList batch, boolean isNeedToIncrementVersion) throws SQLException {
+    public synchronized void runScript(boolean isAdmin, String clientAddress, SqlCommandList batch, boolean isNeedToIncrementVersion) throws SQLException {
         try {
-            dbGuard.lock();
             commonDatabaseConnection.setAutoCommit(false);
             localDatabaseConnection.setAutoCommit(false);
 
@@ -160,13 +152,11 @@ public class DatabaseDriver {
             } catch (SQLException e2) {
                 log.error(e2);
             }
-            dbGuard.unlock();
         }
     }
 
-    public void replaceCommonBase(File newBase) throws IOException {
+    public synchronized void replaceCommonBase(File newBase) throws IOException {
         try {
-            dbGuard.lock();
             commonDatabaseConnection.close();
 
             try {
@@ -197,19 +187,12 @@ public class DatabaseDriver {
 
         } catch (SQLException e) {
            log.warn(e);
-        } finally {
-            dbGuard.unlock();
         }
     }
 
-    public boolean isUserAdmin(int userId) throws SQLException {
-        try {
-            dbGuard.lock();
-            ResultSet rs = commonDatabaseStatement.executeQuery("SELECT is_admin FROM users WHERE _id_user=" + userId);
-            return rs.getBoolean("is_admin");
-        } finally {
-            dbGuard.unlock();
-        }
+    public synchronized boolean isUserAdmin(int userId) throws SQLException {
+        ResultSet rs = commonDatabaseStatement.executeQuery("SELECT is_admin FROM users WHERE _id_user=" + userId);
+        return rs.getBoolean("is_admin");
     }
 
     public boolean isUserAcceptableTableInQuery(String query) {
@@ -221,136 +204,89 @@ public class DatabaseDriver {
         return words[0].equals("UPDATE") && (words[2].equals("detour") || words[2].equals("visits"));
     }
 
-    public int checkClientVersion(String mac_address) throws SQLException {
-        try {
-            dbGuard.lock();
-            ResultSet rs = localDatabaseStatement.executeQuery("SELECT id_version FROM clients_version WHERE mac='" + mac_address + "'");
+    public synchronized int checkClientVersion(String mac_address) throws SQLException {
+        ResultSet rs = localDatabaseStatement.executeQuery("SELECT id_version FROM clients_version WHERE mac='" + mac_address + "'");
 
-            if (!rs.next()) {
-                localDatabaseStatement.executeUpdate("INSERT INTO clients_version (id_version, mac) VALUES (0, '" + mac_address + "')");
-                return 0;
-            } else {
-                return (int) rs.getInt("id_version");
-            }
-        } finally {
-            dbGuard.lock();
+        if (!rs.next()) {
+            localDatabaseStatement.executeUpdate("INSERT INTO clients_version (id_version, mac) VALUES (0, '" + mac_address + "')");
+            return 0;
+        } else {
+            return (int) rs.getInt("id_version");
         }
     }
 
-    public void setClientVersion(String mac_address, int id_version) throws SQLException {
-        try {
-            dbGuard.lock();
-            ResultSet rs = localDatabaseStatement.executeQuery("SELECT id_version FROM clients_version WHERE mac='" + mac_address + "'");
+    public synchronized void setClientVersion(String mac_address, int id_version) throws SQLException {
+        ResultSet rs = localDatabaseStatement.executeQuery("SELECT id_version FROM clients_version WHERE mac='" + mac_address + "'");
 
-            if (!rs.next()) {
-                localDatabaseStatement.executeUpdate("INSERT INTO clients_version (id_version, mac) VALUES (" + id_version + ", '" + mac_address + "')");
-            } else {
-                localDatabaseStatement.executeUpdate("UPDATE clients_version SET id_version=" + id_version + " WHERE mac='" + mac_address + "'");
-            }
-        } finally {
-            dbGuard.unlock();
+        if (!rs.next()) {
+            localDatabaseStatement.executeUpdate("INSERT INTO clients_version (id_version, mac) VALUES (" + id_version + ", '" + mac_address + "')");
+        } else {
+            localDatabaseStatement.executeUpdate("UPDATE clients_version SET id_version=" + id_version + " WHERE mac='" + mac_address + "'");
         }
     }
 
-    ArrayList<String> getClientHistory(int version) throws SQLException {
-        try {
-            dbGuard.lock();
-            ResultSet rs = localDatabaseStatement.executeQuery("SELECT query FROM history WHERE id_version=" + version);
-            ArrayList<String> resultList = new ArrayList<String>();
+    public synchronized ArrayList<String> getClientHistory(int version) throws SQLException {
+        ResultSet rs = localDatabaseStatement.executeQuery("SELECT query FROM history WHERE id_version=" + version);
+        ArrayList<String> resultList = new ArrayList<String>();
 
-            while (rs.next()) {
-                String prepare = rs.getString("query");
-                resultList.add(prepare.replace("&", "'"));
-            }
-
-            return resultList;
-        } finally {
-            dbGuard.unlock();
+        while (rs.next()) {
+            String prepare = rs.getString("query");
+            resultList.add(prepare.replace("&", "'"));
         }
+
+        return resultList;
     }
 
-    ArrayList<String> getClientPicturesHistory(int version) throws SQLException {
-        try {
-            dbGuard.lock();
-            ResultSet rs = localDatabaseStatement.executeQuery("SELECT filename FROM pictures_history WHERE id_version=" + version);
-            ArrayList<String> resultList = new ArrayList<String>();
+    public synchronized ArrayList<String> getClientPicturesHistory(int version) throws SQLException {
+        ResultSet rs = localDatabaseStatement.executeQuery("SELECT filename FROM pictures_history WHERE id_version=" + version);
+        ArrayList<String> resultList = new ArrayList<String>();
 
-            while (rs.next()) {
-                resultList.add(rs.getString("filename"));
-            }
-
-            return resultList;
-        } finally {
-            dbGuard.unlock();
+        while (rs.next()) {
+            resultList.add(rs.getString("filename"));
         }
+
+        return resultList;
     }
 
-    public int getDatabaseVersion() {
+    public synchronized int getDatabaseVersion() {
         return dataBaseSynchId;
     }
 
-    public void setToHistory(String query, int databaseId) throws SQLException {
-        try {
-            dbGuard.lock();
-            String prepare = query.replace("'", "&");
-            //Записать все запросы в историю для текущей версии таблицы
-            localDatabaseStatement.executeUpdate("INSERT INTO history (id_version, query) VALUES(" + databaseId + ",'" + prepare + "')");
-        } finally {
-            dbGuard.unlock();
-        }
+    public synchronized void setToHistory(String query, int databaseId) throws SQLException {
+        String prepare = query.replace("'", "&");
+        //Записать все запросы в историю для текущей версии таблицы
+        localDatabaseStatement.executeUpdate("INSERT INTO history (id_version, query) VALUES(" + databaseId + ",'" + prepare + "')");
     }
 
-    public void setFileToHistory(Path file, int databaseId) throws SQLException {
-        try {
-            dbGuard.lock();
-            //Записать все запросы в историю для текущей версии таблицы
-            localDatabaseStatement.executeUpdate("INSERT INTO pictures_history (id_version, filename) VALUES(" + databaseId + ",'" + file.getFileName().toString() + "')");
-        } finally {
-            dbGuard.unlock();
-        }
+    public synchronized void setFileToHistory(Path file, int databaseId) throws SQLException {
+        //Записать все запросы в историю для текущей версии таблицы
+        localDatabaseStatement.executeUpdate("INSERT INTO pictures_history (id_version, filename) VALUES(" + databaseId + ",'" + file.getFileName().toString() + "')");
     }
 
-    public Integer getDatabaseVersion(String mac_address) throws SQLException {
-        try {
-            dbGuard.lock();
-            ResultSet rs = localDatabaseStatement.executeQuery("SELECT id_version FROM clients_version WHERE mac='" + mac_address + "'");
-            if (!rs.next()) {
-                return null;
-            }
-
-            return rs.getInt("id_version");
-        } finally {
-            dbGuard.unlock();
+    public synchronized Integer getDatabaseVersion(String mac_address) throws SQLException {
+        ResultSet rs = localDatabaseStatement.executeQuery("SELECT id_version FROM clients_version WHERE mac='" + mac_address + "'");
+        if (!rs.next()) {
+            return null;
         }
+
+        return rs.getInt("id_version");
     }
 
-    public void incrementDatabaseVersion(String mac_address) throws SQLException {
-        try {
-            dbGuard.lock();
-            localDatabaseStatement.executeUpdate("UPDATE clients_version SET id_version=" + (dataBaseSynchId + 1) + " WHERE mac=\"" + mac_address + "\"");
-            ++dataBaseSynchId;
-        } finally {
-            dbGuard.unlock();
-        }
+    public synchronized void incrementDatabaseVersion(String mac_address) throws SQLException {
+        localDatabaseStatement.executeUpdate("UPDATE clients_version SET id_version=" + (dataBaseSynchId + 1) + " WHERE mac=\"" + mac_address + "\"");
+        ++dataBaseSynchId;
     }
 
-    public void initDatabaseVersion(String mac) throws SQLException {
+    public synchronized void initDatabaseVersion(String mac) throws SQLException {
         dataBaseSynchId = getDatabaseVersion(mac);
-
-        try {
-            dbGuard.lock();
-            if (null == dataBaseSynchId) {
-                localDatabaseStatement.executeUpdate("INSERT INTO clients_version (id_version, mac) VALUES(" + 1 + ",'" + mac + "')");
-                dataBaseSynchId = 1;
-            }
-        } finally {
-            dbGuard.unlock();
+        if (null == dataBaseSynchId) {
+            localDatabaseStatement.executeUpdate("INSERT INTO clients_version (id_version, mac) VALUES(" + 1 + ",'" + mac + "')");
+            dataBaseSynchId = 1;
         }
     }
 
-    public int getUserMessageNumber() {
+    public synchronized int getUserMessageNumber() {
         try {
-            dbGuard.lock();
             ResultSet rs1 = localDatabaseStatement.executeQuery("SELECT COUNT(message_date) AS count FROM user_messages");
             if (rs1.next()) {
                 return rs1.getInt("count");
@@ -358,15 +294,12 @@ public class DatabaseDriver {
         } catch (SQLException e) {
             log.warn(e);
             return 0;
-        } finally {
-            dbGuard.unlock();
         }
         return 0;
     }
 
-    public String[] getUserMessages() {
+    public synchronized String[] getUserMessages() {
         try {
-            dbGuard.lock();
             ResultSet rs = localDatabaseStatement.executeQuery("SELECT message FROM user_messages ORDER BY message_date ASC");
             String[] messages = new String[30];
 
@@ -377,15 +310,12 @@ public class DatabaseDriver {
             return messages;
         } catch (SQLException e) {
             log.warn(e);
-        } finally {
-            dbGuard.unlock();
         }
         return null;
     }
 
-    public String[] getUserMessagesDate() {
+    public synchronized String[] getUserMessagesDate() {
         try {
-            dbGuard.lock();
             ResultSet rs = localDatabaseStatement.executeQuery("SELECT message_date FROM user_messages ORDER BY message_date ASC");
             String[] dates = new String[30];
 
@@ -396,17 +326,14 @@ public class DatabaseDriver {
             return dates;
         } catch (SQLException e) {
             log.warn(e);
-        } finally {
-            dbGuard.unlock();
         }
         return null;
     }
 
-    public void addUserMessageToDatabase(java.util.Date currentDate, String text) {
+    public synchronized void addUserMessageToDatabase(java.util.Date currentDate, String text) {
         try {
             int rowNumber = getUserMessageNumber();
 
-            dbGuard.lock();
             if (rowNumber >= 30) {
                 ResultSet rs = localDatabaseStatement.executeQuery("SELECT _id_message, MIN(message_date) FROM user_messages");
 
@@ -422,111 +349,68 @@ public class DatabaseDriver {
             localDatabaseStatement.executeUpdate("INSERT INTO user_messages (message, message_date) VALUES ('"+text+"','"+date+"')");
         } catch (SQLException e) {
             log.error(e);
-        } finally {
-            dbGuard.unlock();
         }
     }
 
-    public ArrayList<Integer> getLatest10IdsDetour() throws SQLException {
+    public synchronized ArrayList<Integer> getLatest10IdsDetour() throws SQLException {
         ArrayList<Integer> ids = new  ArrayList<Integer>();
-        try {
-            dbGuard.lock();
-            ResultSet rs = commonDatabaseStatement.executeQuery("SELECT _id_detour FROM detour ORDER BY _id_detour DESC LIMIT 10");
+        ResultSet rs = commonDatabaseStatement.executeQuery("SELECT _id_detour FROM detour ORDER BY _id_detour DESC LIMIT 10");
 
-            int i = 0;
-            while (rs.next()) {
-                int id = rs.getInt("_id_detour");
-                ids.add(i++, id);
-            }
-            return ids;
-        } finally {
-            dbGuard.unlock();
+        int i = 0;
+        while (rs.next()) {
+            int id = rs.getInt("_id_detour");
+            ids.add(i++, id);
         }
-
+        return ids;
     }
 
-    public ArrayList<Integer> getDetourTableIds() throws SQLException {
+    public synchronized ArrayList<Integer> getDetourTableIds() throws SQLException {
         ArrayList<Integer> ids = new  ArrayList<Integer>();
-        try {
-            dbGuard.lock();
-            ResultSet rs = commonDatabaseStatement.executeQuery("SELECT _id_detour FROM detour");
+        ResultSet rs = commonDatabaseStatement.executeQuery("SELECT _id_detour FROM detour");
 
-            int i = 0;
-            while (rs.next()) {
-                int id = rs.getInt("_id_detour");
-                ids.add(i++, id);
-            }
-            return ids;
-        } finally {
-            dbGuard.unlock();
+        int i = 0;
+        while (rs.next()) {
+            int id = rs.getInt("_id_detour");
+            ids.add(i++, id);
         }
+        return ids;
     }
 
-    public String getUserNameFromDetourTable(int idDetour) throws SQLException {
-        try {
-            dbGuard.lock();
-            ResultSet rs = commonDatabaseStatement.executeQuery("SELECT id_user FROM detour WHERE _id_detour=" + idDetour);
-            int userId = rs.getInt("id_user");
-            rs = commonDatabaseStatement.executeQuery("SELECT fio FROM users WHERE _id_user=" + userId);
-            return rs.getString("fio");
-        } finally {
-            dbGuard.unlock();
-        }
+    public synchronized String getUserNameFromDetourTable(int idDetour) throws SQLException {
+        ResultSet rs = commonDatabaseStatement.executeQuery("SELECT id_user FROM detour WHERE _id_detour=" + idDetour);
+        int userId = rs.getInt("id_user");
+        rs = commonDatabaseStatement.executeQuery("SELECT fio FROM users WHERE _id_user=" + userId);
+        return rs.getString("fio");
     }
 
-    public String getRouteNameFromDetourTable(int idDetour) throws SQLException {
-        try {
-            dbGuard.lock();
-            ResultSet rs = commonDatabaseStatement.executeQuery("SELECT id_route FROM detour WHERE _id_detour=" + idDetour);
-            int routeId = rs.getInt("id_route");
-            rs = commonDatabaseStatement.executeQuery("SELECT name FROM routs WHERE _id_route=" + routeId);
-            return rs.getString("name");
-        } finally {
-            dbGuard.unlock();
-        }
+    public synchronized String getRouteNameFromDetourTable(int idDetour) throws SQLException {
+        ResultSet rs = commonDatabaseStatement.executeQuery("SELECT id_route FROM detour WHERE _id_detour=" + idDetour);
+        int routeId = rs.getInt("id_route");
+        rs = commonDatabaseStatement.executeQuery("SELECT name FROM routs WHERE _id_route=" + routeId);
+        return rs.getString("name");
     }
 
-    public String getStartTimeFromDetourTable(int idDetour) throws SQLException {
-        try {
-            dbGuard.lock();
-            ResultSet rs = commonDatabaseStatement.executeQuery("SELECT time_start FROM detour WHERE _id_detour=" + idDetour);
-            return rs.getString("time_start");
-        } finally {
-            dbGuard.unlock();
-        }
+    public synchronized String getStartTimeFromDetourTable(int idDetour) throws SQLException {
+        ResultSet rs = commonDatabaseStatement.executeQuery("SELECT time_start FROM detour WHERE _id_detour=" + idDetour);
+        return rs.getString("time_start");
     }
 
-    public String getEndTimeFromDetourTable(int idDetour) throws SQLException {
-        try {
-            dbGuard.lock();
-            ResultSet rs = commonDatabaseStatement.executeQuery("SELECT time_stop FROM detour WHERE _id_detour=" + idDetour);
-            return rs.getString("time_stop");
-        } finally {
-            dbGuard.unlock();
-        }
+    public synchronized String getEndTimeFromDetourTable(int idDetour) throws SQLException {
+        ResultSet rs = commonDatabaseStatement.executeQuery("SELECT time_stop FROM detour WHERE _id_detour=" + idDetour);
+        return rs.getString("time_stop");
     }
 
-    public boolean getStatusFromDetourTable(int idDetour) throws SQLException {
-        try {
-            dbGuard.lock();
-            ResultSet rs = commonDatabaseStatement.executeQuery("SELECT finished FROM detour WHERE _id_detour=" + idDetour);
-            return rs.getBoolean("finished");
-        } finally {
-            dbGuard.unlock();
-        }
+    public synchronized boolean getStatusFromDetourTable(int idDetour) throws SQLException {
+        ResultSet rs = commonDatabaseStatement.executeQuery("SELECT finished FROM detour WHERE _id_detour=" + idDetour);
+        return rs.getBoolean("finished");
     }
 
-    public String getRoutesTablePathRoutePicture(int idRoute) throws SQLException {
-        try {
-            dbGuard.lock();
-            ResultSet rs = commonDatabaseStatement.executeQuery("SELECT path_picture_route FROM routs WHERE _id_route=" + idRoute);
-            return rs.getString("path_picture_route");
-        } finally {
-            dbGuard.unlock();
-        }
+    public synchronized String getRoutesTablePathRoutePicture(int idRoute) throws SQLException {
+        ResultSet rs = commonDatabaseStatement.executeQuery("SELECT path_picture_route FROM routs WHERE _id_route=" + idRoute);
+        return rs.getString("path_picture_route");
     }
 
-    synchronized public void addFileToHistory(Path file, boolean isNeedToIncrementVersion) throws SQLException {
+    public synchronized void addFileToHistory(Path file, boolean isNeedToIncrementVersion) throws SQLException {
         try {
             commonDatabaseConnection.setAutoCommit(false);
             localDatabaseConnection.setAutoCommit(false);
@@ -563,21 +447,15 @@ public class DatabaseDriver {
         }
     }
 
-    public void removeLocalHistory() throws SQLException {
-        try {
-            dbGuard.lock();
-            localDatabaseStatement.executeUpdate("DELETE FROM history");
-            localDatabaseStatement.executeUpdate("DELETE FROM pictures_history");
-            localDatabaseStatement.executeUpdate("DELETE FROM clients_version");
-        } finally {
-            dbGuard.unlock();
-        }
+    public synchronized void removeLocalHistory() throws SQLException {
+        localDatabaseStatement.executeUpdate("DELETE FROM history");
+        localDatabaseStatement.executeUpdate("DELETE FROM pictures_history");
+        localDatabaseStatement.executeUpdate("DELETE FROM clients_version");
     }
 
-    public ArrayList<String> getPictures() {
+    public synchronized ArrayList<String> getPictures() {
         ArrayList<String> result = new ArrayList<String>();
         try {
-            dbGuard.lock();
             ResultSet rs = commonDatabaseStatement.executeQuery("SELECT path_picture FROM pictures");
 
             while (rs.next()) {
@@ -586,10 +464,7 @@ public class DatabaseDriver {
             }
         } catch (SQLException e) {
            log.error(e);
-        } finally {
-            dbGuard.unlock();
         }
-
         return result;
     }
 }
