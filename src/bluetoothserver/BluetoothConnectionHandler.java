@@ -124,7 +124,9 @@ class BluetoothConnectionHandler implements Runnable {
 
                     } catch (NullPointerException | IOException e) {
                     } finally {
-                        connectionStateGuard.unlock();
+                        if (connectionStateGuard.isHeldByCurrentThread()) {
+                            connectionStateGuard.unlock();
+                        }
                     }
 
                     break;
@@ -132,8 +134,8 @@ class BluetoothConnectionHandler implements Runnable {
 
                 case CONNECTION_STATE_CREATE_CONNECTION: {
                     try {
-                        connectionStateGuard.lock();
                         StreamConnection newStreamConnection = createConnection(url);
+                        connectionStateGuard.lock();
                         currentConnection = newStreamConnection;
                         inStream = new BufferedInputStream(currentConnection.openInputStream());
                         outStream = new BufferedOutputStream(currentConnection.openOutputStream());
@@ -145,10 +147,14 @@ class BluetoothConnectionHandler implements Runnable {
                     } catch (IOException e1) {
                         log.warn(e1);
                         ui.sendUserMessage("Ошибка: Не удалось установить соединение.");
-                        connectionStateGuard.unlock();
+                        if (connectionStateGuard.isHeldByCurrentThread()) {
+                            connectionStateGuard.unlock();
+                        }
                         reopenNewConnection();
                     } finally {
-                        connectionStateGuard.unlock();
+                        if (connectionStateGuard.isHeldByCurrentThread()) {
+                            connectionStateGuard.unlock();
+                        }
                     }
                     break;
                 }

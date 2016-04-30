@@ -25,11 +25,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="ReportServer.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="ReportServer.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/ReportServer.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="143">
-              <caret line="28" column="0" selection-start-line="28" selection-start-column="0" selection-end-line="28" selection-end-column="0" />
+            <state relative-caret-position="120">
+              <caret line="21" column="0" selection-start-line="21" selection-start-column="0" selection-end-line="21" selection-end-column="0" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="method#printConsoleHelp#0;class#ReportServer#0" expanded="false" />
@@ -44,7 +44,6 @@
                 <element signature="method#fail#0;class#18481:19528" expanded="false" />
                 <element signature="method#bluetoothSqlQueriesTransactionHandler#0;class#ReportServer#0" expanded="false" />
                 <element signature="method#bluetoothServerStart#0;class#ReportServer#0" expanded="false" />
-                <element signature="method#bluetoothServerStop#0;class#ReportServer#0" expanded="false" />
                 <element signature="method#addSqlHistoryToGroupTransaction#0;class#ReportServer#0" expanded="false" />
                 <element signature="method#addPicturesToGroupTransaction#0;class#ReportServer#0" expanded="false" />
                 <element signature="method#addReplaceDatabaseToGroupTransaction#0;class#ReportServer#0" expanded="false" />
@@ -56,24 +55,20 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="BluetoothServer.java" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/bluetoothserver/BluetoothServer.java">
+      <file leaf-file-name="BluetoothConnectionHandler.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/bluetoothserver/BluetoothConnectionHandler.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="169">
-              <caret line="51" column="0" selection-start-line="51" selection-start-column="0" selection-end-line="51" selection-end-column="0" />
+            <state relative-caret-position="56">
+              <caret line="22" column="26" selection-start-line="22" selection-start-column="26" selection-end-line="22" selection-end-column="26" />
               <folding>
-                <element signature="method#BluetoothServer#0;class#BluetoothServer#0" expanded="false" />
-                <element signature="method#sendData#1;class#BluetoothServer#0" expanded="false" />
-                <element signature="method#init#0;class#BluetoothServer#0" expanded="false" />
-                <element signature="method#reopenNewConnection#0;class#BluetoothServer#0" expanded="false" />
-                <element signature="method#stop#0;class#BluetoothServer#0" expanded="false" />
-                <element signature="method#pushReceivedTransaction#0;class#BluetoothServer#0" expanded="false" />
-                <element signature="method#getFirstReceivedTransaction#0;class#BluetoothServer#0" expanded="false" />
-                <element signature="method#removeFirstReceivedTransaction#0;class#BluetoothServer#0" expanded="false" />
-                <element signature="method#getRemoteDeviceBluetoothAddress#0;class#BluetoothServer#0" expanded="false" />
-                <element signature="method#getLocalHostMacAddress#0;class#BluetoothServer#0" expanded="false" />
-                <element signature="method#getFirstSendTransaction#0;class#BluetoothServer#0" expanded="false" />
-                <element signature="method#removeFirstSendTransaction#0;class#BluetoothServer#0" expanded="false" />
+                <element signature="class#ConnectionState#0;class#BluetoothConnectionHandler#0" expanded="false" />
+                <element signature="method#BluetoothConnectionHandler#0;class#BluetoothConnectionHandler#0" expanded="false" />
+                <element signature="method#createConnection#0;class#BluetoothConnectionHandler#0" expanded="false" />
+                <element signature="method#receiveHandler#0;class#BluetoothConnectionHandler#0" expanded="false" />
+                <element signature="method#sendHandler#0;class#BluetoothConnectionHandler#0" expanded="false" />
+                <element signature="method#sendTransaction#0;class#BluetoothConnectionHandler#0" expanded="false" />
+                <element signature="method#initReceivedFileName#0;class#BluetoothConnectionHandler#0" expanded="false" />
+                <element signature="method#dataReceiving#0;class#BluetoothConnectionHandler#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -95,7 +90,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/src/bluetoothserver/BluetoothFileTransaction.java" />
         <option value="$PROJECT_DIR$/src/webserver/ServletBtStatus.java" />
         <option value="$PROJECT_DIR$/src/WebActionType.java" />
         <option value="$PROJECT_DIR$/src/webserver/ServletBtStop.java" />
@@ -111,7 +105,6 @@
         <option value="$PROJECT_DIR$/src/database/LocalDatabaseDriver.java" />
         <option value="$PROJECT_DIR$/src/database/CommonDatabaseDriver.java" />
         <option value="$PROJECT_DIR$/src/FileHandler.java" />
-        <option value="$PROJECT_DIR$/log4j.properties" />
         <option value="$PROJECT_DIR$/src/ProjectDirectories.java" />
         <option value="$PROJECT_DIR$/META-INF/MANIFEST.MF" />
         <option value="$PROJECT_DIR$/run.bat" />
@@ -141,10 +134,12 @@
         <option value="$PROJECT_DIR$/src/bluetoothserver/GroupTransaction.java" />
         <option value="$PROJECT_DIR$/src/bluetoothserver/GroupTransactionHandler.java" />
         <option value="$PROJECT_DIR$/resources/webapp/index.html" />
-        <option value="$PROJECT_DIR$/src/bluetoothserver/BluetoothConnectionHandler.java" />
         <option value="$PROJECT_DIR$/src/database/DatabaseDriver.java" />
         <option value="$PROJECT_DIR$/src/FeedbackUsersMessage.java" />
         <option value="$PROJECT_DIR$/src/bluetoothserver/BluetoothServer.java" />
+        <option value="$PROJECT_DIR$/src/log4j.properties" />
+        <option value="$PROJECT_DIR$/log4j.properties" />
+        <option value="$PROJECT_DIR$/src/bluetoothserver/BluetoothConnectionHandler.java" />
         <option value="$PROJECT_DIR$/src/ReportServer.java" />
       </list>
     </option>
@@ -637,7 +632,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1040" height="586" extended-state="6" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.49600798" order="6" side_tool="false" content_ui="tabs" />
@@ -648,18 +643,18 @@
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.30523917" sideWeight="0.5403423" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.33265308" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.17653061" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.6051402" sideWeight="0.5287286" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3893643" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Debug" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.60747665" sideWeight="0.6369193" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.16588785" sideWeight="0.6369193" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.23348519" sideWeight="0.5287286" order="1" side_tool="false" content_ui="tabs" />
     </layout>
     <layout-to-restore>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -701,7 +696,7 @@
       <breakpoints-dialog>
         <breakpoints-dialog />
       </breakpoints-dialog>
-      <option name="time" value="429" />
+      <option name="time" value="434" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -710,28 +705,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/base-synchronization/app-data-format.sql">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="430">
-          <caret line="60" column="71" selection-start-line="60" selection-start-column="71" selection-end-line="60" selection-end-column="71" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/resources/webapp/index.jsp" />
-    <entry file="jar://$PROJECT_DIR$/jars/servlet-api-3.1.jar!/javax/servlet/http/HttpServlet.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-251">
-          <caret line="21" column="22" selection-start-line="21" selection-start-column="22" selection-end-line="21" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$PROJECT_DIR$/jars/servlet-api-3.1.jar!/javax/servlet/http/HttpServletResponse.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-520">
-          <caret line="16" column="25" selection-start-line="16" selection-start-column="25" selection-end-line="16" selection-end-column="25" />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://$PROJECT_DIR$/jars/servlet-api-3.1.jar!/javax/servlet/ServletResponse.class">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="400">
@@ -929,13 +902,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/CommonServer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="300">
-          <caret line="15" column="16" selection-start-line="15" selection-start-column="4" selection-end-line="15" selection-end-column="16" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/CommonUserInterface.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="120">
@@ -948,31 +914,6 @@
         <state relative-caret-position="340">
           <caret line="41" column="16" selection-start-line="41" selection-start-column="16" selection-end-line="41" selection-end-column="16" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/webserver/WebServer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="261">
-          <caret line="262" column="9" selection-start-line="262" selection-start-column="9" selection-end-line="262" selection-end-column="9" />
-          <folding>
-            <element signature="method#WebServer#0;class#WebServer#0" expanded="false" />
-            <element signature="method#getWebRootResourceUri#0;class#WebServer#0" expanded="false" />
-            <element signature="method#stop#0;class#WebServer#0" expanded="false" />
-            <element signature="method#start#0;class#WebServer#0" expanded="false" />
-            <element signature="method#putWebAction#0;class#WebServer#0" expanded="false" />
-            <element signature="method#popWebAction#0;class#WebServer#0" expanded="false" />
-            <element signature="method#userMessageHandler#0;class#WebServer#0" expanded="false" />
-            <element signature="class#ServletBtStart#0;class#WebServer#0" expanded="false" />
-            <element signature="class#ServletBtStatus#0;class#WebServer#0" expanded="false" />
-            <element signature="class#ServletUserMessageHandler#0;class#WebServer#0" expanded="false" />
-            <element signature="class#ServletGetOldUserMessageHandler#0;class#WebServer#0" expanded="false" />
-            <element signature="method#doPost#0;class#ServletGetOldUserMessageHandler#0;class#WebServer#0" expanded="false" />
-            <element signature="class#ServletGetDetourFromDb#0;class#WebServer#0" expanded="false" />
-            <element signature="method#doPost#0;class#ServletGetDetourFromDb#0;class#WebServer#0" expanded="false" />
-            <element signature="class#ServletGetBluetoothMac#0;class#WebServer#0" expanded="false" />
-            <element signature="method#doGet#0;class#ServletGetBluetoothMac#0;class#WebServer#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -989,7 +930,7 @@
         <state relative-caret-position="327">
           <caret line="17" column="0" selection-start-line="17" selection-start-column="0" selection-end-line="17" selection-end-column="0" />
           <folding>
-            <element signature="imports" expanded="true" />
+            <element signature="imports" expanded="false" />
             <element signature="class#DatabaseState#0;class#DatabaseDriver#0" expanded="false" />
             <element signature="method#init#0;class#DatabaseDriver#0" expanded="false" />
             <element signature="method#backupCurrentDatabase#0;class#DatabaseDriver#0" expanded="false" />
@@ -1033,17 +974,105 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/log4j.properties">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="20">
+          <caret line="1" column="32" selection-start-line="1" selection-start-column="32" selection-end-line="1" selection-end-column="32" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/log4j.properties">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="20">
+          <caret line="1" column="32" selection-start-line="1" selection-start-column="25" selection-end-line="1" selection-end-column="32" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$PROJECT_DIR$/jars/log4j-1.2.17.jar!/org/apache/log4j/Category.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="81">
+          <caret line="267" column="0" selection-start-line="267" selection-start-column="0" selection-end-line="267" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/CommonServer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="70">
+          <caret line="17" column="0" selection-start-line="17" selection-start-column="0" selection-end-line="17" selection-end-column="0" />
+          <folding>
+            <element signature="e#361#362#0" expanded="true" />
+            <element signature="e#447#448#0" expanded="true" />
+            <element signature="e#475#476#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/bluetoothserver/BluetoothServer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="130">
+          <caret line="78" column="44" selection-start-line="78" selection-start-column="44" selection-end-line="78" selection-end-column="44" />
+          <folding>
+            <element signature="method#BluetoothServer#0;class#BluetoothServer#0" expanded="false" />
+            <element signature="method#sendData#1;class#BluetoothServer#0" expanded="false" />
+            <element signature="e#1801#1802#0" expanded="true" />
+            <element signature="e#1880#1881#0" expanded="true" />
+            <element signature="method#init#0;class#BluetoothServer#0" expanded="false" />
+            <element signature="method#reopenNewConnection#0;class#BluetoothServer#0" expanded="false" />
+            <element signature="method#pushReceivedTransaction#0;class#BluetoothServer#0" expanded="false" />
+            <element signature="method#getFirstReceivedTransaction#0;class#BluetoothServer#0" expanded="false" />
+            <element signature="method#removeFirstReceivedTransaction#0;class#BluetoothServer#0" expanded="false" />
+            <element signature="method#getRemoteDeviceBluetoothAddress#0;class#BluetoothServer#0" expanded="false" />
+            <element signature="method#getLocalHostMacAddress#0;class#BluetoothServer#0" expanded="false" />
+            <element signature="method#getFirstSendTransaction#0;class#BluetoothServer#0" expanded="false" />
+            <element signature="method#removeFirstSendTransaction#0;class#BluetoothServer#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/webserver/WebServer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="176">
+          <caret line="217" column="17" selection-start-line="217" selection-start-column="17" selection-end-line="217" selection-end-column="17" />
+          <folding>
+            <element signature="method#WebServer#0;class#WebServer#0" expanded="false" />
+            <element signature="method#getWebRootResourceUri#0;class#WebServer#0" expanded="false" />
+            <element signature="method#stop#0;class#WebServer#0" expanded="false" />
+            <element signature="method#start#0;class#WebServer#0" expanded="false" />
+            <element signature="method#putWebAction#0;class#WebServer#0" expanded="false" />
+            <element signature="method#popWebAction#0;class#WebServer#0" expanded="false" />
+            <element signature="method#userMessageHandler#0;class#WebServer#0" expanded="false" />
+            <element signature="class#ServletBtStart#0;class#WebServer#0" expanded="false" />
+            <element signature="class#ServletBtStatus#0;class#WebServer#0" expanded="false" />
+            <element signature="class#ServletUserMessageHandler#0;class#WebServer#0" expanded="false" />
+            <element signature="class#ServletGetOldUserMessageHandler#0;class#WebServer#0" expanded="false" />
+            <element signature="method#doPost#0;class#ServletGetOldUserMessageHandler#0;class#WebServer#0" expanded="false" />
+            <element signature="class#ServletGetDetourFromDb#0;class#WebServer#0" expanded="false" />
+            <element signature="method#doPost#0;class#ServletGetDetourFromDb#0;class#WebServer#0" expanded="false" />
+            <element signature="class#ServletGetBluetoothMac#0;class#WebServer#0" expanded="false" />
+            <element signature="method#doGet#0;class#ServletGetBluetoothMac#0;class#WebServer#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://C:/Program Files/Java/jdk1.8.0_25/src.zip!/java/lang/Thread.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="56">
+          <caret line="744" column="0" selection-start-line="744" selection-start-column="0" selection-end-line="744" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/bluetoothserver/BluetoothConnectionHandler.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="760">
-          <caret line="170" column="0" selection-start-line="170" selection-start-column="0" selection-end-line="170" selection-end-column="0" />
+        <state relative-caret-position="56">
+          <caret line="22" column="26" selection-start-line="22" selection-start-column="26" selection-end-line="22" selection-end-column="26" />
           <folding>
             <element signature="class#ConnectionState#0;class#BluetoothConnectionHandler#0" expanded="false" />
             <element signature="method#BluetoothConnectionHandler#0;class#BluetoothConnectionHandler#0" expanded="false" />
-            <element signature="method#stop#0;class#BluetoothConnectionHandler#0" expanded="false" />
-            <element signature="method#start#0;class#BluetoothConnectionHandler#0" expanded="false" />
             <element signature="method#createConnection#0;class#BluetoothConnectionHandler#0" expanded="false" />
-            <element signature="method#run#0;class#BluetoothConnectionHandler#0" expanded="false" />
             <element signature="method#receiveHandler#0;class#BluetoothConnectionHandler#0" expanded="false" />
             <element signature="method#sendHandler#0;class#BluetoothConnectionHandler#0" expanded="false" />
             <element signature="method#sendTransaction#0;class#BluetoothConnectionHandler#0" expanded="false" />
@@ -1055,8 +1084,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/ReportServer.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="143">
-          <caret line="28" column="0" selection-start-line="28" selection-start-column="0" selection-end-line="28" selection-end-column="0" />
+        <state relative-caret-position="120">
+          <caret line="21" column="0" selection-start-line="21" selection-start-column="0" selection-end-line="21" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="method#printConsoleHelp#0;class#ReportServer#0" expanded="false" />
@@ -1071,34 +1100,12 @@
             <element signature="method#fail#0;class#18481:19528" expanded="false" />
             <element signature="method#bluetoothSqlQueriesTransactionHandler#0;class#ReportServer#0" expanded="false" />
             <element signature="method#bluetoothServerStart#0;class#ReportServer#0" expanded="false" />
-            <element signature="method#bluetoothServerStop#0;class#ReportServer#0" expanded="false" />
             <element signature="method#addSqlHistoryToGroupTransaction#0;class#ReportServer#0" expanded="false" />
             <element signature="method#addPicturesToGroupTransaction#0;class#ReportServer#0" expanded="false" />
             <element signature="method#addReplaceDatabaseToGroupTransaction#0;class#ReportServer#0" expanded="false" />
             <element signature="method#addEndTransactionToGroupTransaction#0;class#ReportServer#0" expanded="false" />
             <element signature="method#addSessionCloseToGroupTransaction#0;class#ReportServer#0" expanded="false" />
             <element signature="method#addPicturesFromTableToGroupTransaction#0;class#ReportServer#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/bluetoothserver/BluetoothServer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="169">
-          <caret line="51" column="0" selection-start-line="51" selection-start-column="0" selection-end-line="51" selection-end-column="0" />
-          <folding>
-            <element signature="method#BluetoothServer#0;class#BluetoothServer#0" expanded="false" />
-            <element signature="method#sendData#1;class#BluetoothServer#0" expanded="false" />
-            <element signature="method#init#0;class#BluetoothServer#0" expanded="false" />
-            <element signature="method#reopenNewConnection#0;class#BluetoothServer#0" expanded="false" />
-            <element signature="method#stop#0;class#BluetoothServer#0" expanded="false" />
-            <element signature="method#pushReceivedTransaction#0;class#BluetoothServer#0" expanded="false" />
-            <element signature="method#getFirstReceivedTransaction#0;class#BluetoothServer#0" expanded="false" />
-            <element signature="method#removeFirstReceivedTransaction#0;class#BluetoothServer#0" expanded="false" />
-            <element signature="method#getRemoteDeviceBluetoothAddress#0;class#BluetoothServer#0" expanded="false" />
-            <element signature="method#getLocalHostMacAddress#0;class#BluetoothServer#0" expanded="false" />
-            <element signature="method#getFirstSendTransaction#0;class#BluetoothServer#0" expanded="false" />
-            <element signature="method#removeFirstSendTransaction#0;class#BluetoothServer#0" expanded="false" />
           </folding>
         </state>
       </provider>
