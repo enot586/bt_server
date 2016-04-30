@@ -1,5 +1,7 @@
 package reportserver;
 
+import javax.bluetooth.BluetoothStateException;
+import javax.bluetooth.LocalDevice;
 import javax.servlet.AsyncContext;
 import java.io.*;
 import java.nio.file.Files;
@@ -10,6 +12,7 @@ import java.sql.SQLSyntaxErrorException;
 import java.util.*;
 
 import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
 import org.json.simple.JSONObject;
 
 import static java.lang.Thread.sleep;
@@ -93,6 +96,15 @@ public class ReportServer {
         }
 
         bluetoothGroupTransactionHandler = new GroupTransactionHandler(bluetoothServer);
+
+        //Bluetooth-сервер стартует при старте
+        try {
+            bluetoothServerStart();
+            log.info("Bluetooth status:\t\t[RUNNING]");
+        } catch (Exception e) {
+            userFeedback.sendUserMessage("Ошибка: не удалось запустить bluetooth.");
+            log.info("Bluetooth status:\t\t[STOPED]");
+        }
 
         log.info("Application status:\t\t[RUNNING]");
 
@@ -518,6 +530,7 @@ public class ReportServer {
 
     public static void bluetoothServerStart() throws Exception {
         try {
+            LocalDevice bluetoothLocalDevice = LocalDevice.getLocalDevice();
             bluetoothServer.start();
         } catch(Exception e) {
             log.error(e);

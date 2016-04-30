@@ -43,7 +43,7 @@
           url: '/tablerefresh',
           type: 'get',
           success: function() {
-            $('#detourTable').empty();
+            $('.finish-row').remove();
             getDetourFomDb();
             refreshDetourTable();
           }
@@ -169,7 +169,6 @@
     <table width="100%" cellspacing="0" cellspacing="0" border="0">
       <tr>
         <td width="20%" valign="top" align="center">
-        
           <img src="img/title.png" width="100%">
           <table width="100%" class="left-menu" cellspacing="0" cellspacing="0">
             <tr>
@@ -183,7 +182,7 @@
                     <td align="left" bgcolor="#cccccc"><div name="text1" class="btserver-status" id="btServerStatus">Чтение состояния...</div></td>
                   </tr>
                   <tr>
-                    <td align="left"><a href="without-javascript.html" onClick="bluetoothServerStart(); return false">Запустить</a></td>
+                    <td align="left"> <a href="without-javascript.html" onClick="bluetoothServerStart(); return false">Запустить</a></td>
                     <td align="left"><a href="without-javascript.html" onClick="bluetoothServerStop(); return false">Остановить</a></td>
                   </tr>
                 </table>
