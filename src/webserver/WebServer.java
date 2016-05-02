@@ -116,6 +116,7 @@ public class WebServer extends CommonServer {
         context.addServlet(new ServletHolder( new WebServer.ServletGetBluetoothMac()), "/get-bluetooth-mac");
         context.addServlet(new ServletHolder( new WebServer.ServletGetUsersList()), "/get-user-list");
         context.addServlet(new ServletHolder( new WebServer.ServletGetRoutesList()), "/get-route-list");
+        context.addServlet(new ServletHolder( new WebServer.ServletGetFilteredDetour()), "/get-filtered-detour");
 
         server.setHandler(context);
 
@@ -383,6 +384,26 @@ public class WebServer extends CommonServer {
             response.setStatus(HttpServletResponse.SC_OK);
 
             JSONArray responseJson = ReportServer.getRoutesList();
+
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().println(responseJson.toString());
+        }
+    }
+
+    public class ServletGetFilteredDetour extends HttpServlet {
+        @Override
+        protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+            response.setContentType("text/html");
+            response.setStatus(HttpServletResponse.SC_OK);
+
+            int userId = (request.getParameter("userId").equals("*")) ? 0 : Integer.parseInt(request.getParameter("userId"));
+            int routeId = (request.getParameter("routeId").equals("*")) ? 0 : Integer.parseInt(request.getParameter("routeId"));
+            JSONArray responseJson = ReportServer.getFilteredDetour(
+                                                                    userId, routeId,
+                                                                    Integer.parseInt(request.getParameter("rowNumber")),
+                                                                    request.getParameter("startDate"),
+                                                                    request.getParameter("finishDate")
+                                                                   );
 
             response.setCharacterEncoding("UTF-8");
             response.getWriter().println(responseJson.toString());

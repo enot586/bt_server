@@ -42,7 +42,7 @@ public class DatabaseDriver {
         return result;
     }
 
-    public ArrayList<RouteData> getRoutesList() {
+    public synchronized ArrayList<RouteData> getRoutesList() {
         ArrayList<RouteData> result = new ArrayList<RouteData>();
         try {
             ResultSet rs = commonDatabaseStatement.executeQuery("SELECT name,_id_route FROM routs");
@@ -57,6 +57,10 @@ public class DatabaseDriver {
         }
 
         return result;
+    }
+
+    public synchronized ArrayList<RouteData> getFilteredDetour() {
+        return null;
     }
 
     private enum DatabaseState {

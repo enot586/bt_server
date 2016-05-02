@@ -728,4 +728,18 @@ public class ReportServer {
 
         return result;
     }
+
+    public static JSONArray getFilteredDetour(int userId, int routeId, int rowNumber, String startDate, String finishDate) {
+        ArrayList<RouteData> routes = databaseDriver.getFilteredDetour();
+        JSONArray result = new JSONArray();
+
+        for( RouteData i : routes) {
+            JSONObject route = new JSONObject();
+
+
+            result.add(route);
+        }
+
+        return result;
+    }
 }
