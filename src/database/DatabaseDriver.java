@@ -8,8 +8,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.sql.*;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.Date;
 
 public class DatabaseDriver {
     private String commonUrl;
@@ -59,8 +62,78 @@ public class DatabaseDriver {
         return result;
     }
 
-    public synchronized ArrayList<RouteData> getFilteredDetour() {
-        return null;
+    public synchronized ArrayList<DetourData> getFilteredDetour(int userId, int routeId, int rowNumber, String startDate, String finishDate) {
+        ArrayList<DetourData> result = new ArrayList<DetourData>();
+        String condition = new String();
+
+        if (userId > 0) {
+            condition+= "(id_user="+userId+")";
+        }
+
+        if (routeId > 0) {
+            if (condition.length() > 0) condition+=" AND ";
+            condition+= "(id_route="+routeId+")";
+        }
+
+        SimpleDateFormat userFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+        SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        if (startDate.length() > 0) {
+            try {
+                Date date = userFormat.parse(startDate);
+                if (condition.length() > 0) condition+=" AND ";
+                condition+= "(time_start>='"+dbFormat.format(date)+"')";
+            } catch (ParseException e) {
+            }
+        }
+
+        if (finishDate.length() > 0) {
+            try {
+                Date date = userFormat.parse(finishDate);
+                if (condition.length() > 0) condition+=" AND ";
+                condition+= "(time_start<='"+dbFormat.format(date)+"')";
+            } catch (ParseException e) {
+            }
+        }
+
+        try {
+            String query = "SELECT _id_detour, id_user, id_route, time_start, time_stop "+
+                            "FROM detour ";
+            if (condition.length() > 0) {
+                query+= "WHERE "+condition+" ";
+            } else {
+                query+= " ";
+            }
+            query+= "ORDER BY time_start DESC LIMIT "+rowNumber;
+
+            ResultSet rs = commonDatabaseStatement.executeQuery(query);
+            while (rs.next()) {
+                DetourData detourRow = new DetourData();
+                detourRow._id_detour = rs.getInt("_id_detour");
+                detourRow.id_user = rs.getInt("id_user");
+                detourRow.id_route = rs.getInt("id_route");
+
+                String dbFormatDate = rs.getString("time_start");
+                try {
+                    Date date = dbFormat.parse(dbFormatDate);
+                    detourRow.time_start = userFormat.format(date).toString();
+                } catch (ParseException e) {
+                    detourRow.time_start = "null";
+                }
+
+                dbFormatDate = rs.getString("time_stop");
+                try {
+                    Date date = dbFormat.parse(dbFormatDate);
+                    detourRow.time_stop = userFormat.format(date).toString();
+                } catch (ParseException e) {
+                    detourRow.time_stop = "null";
+                }
+
+                result.add(detourRow);
+            }
+        } catch (SQLException e) {
+        }
+
+        return result;
     }
 
     private enum DatabaseState {
@@ -420,6 +493,24 @@ public class DatabaseDriver {
         int userId = rs.getInt("id_user");
         rs = commonDatabaseStatement.executeQuery("SELECT fio FROM users WHERE _id_user=" + userId);
         return rs.getString("fio");
+    }
+
+    public synchronized  String getUserName(int userId) {
+        try {
+            ResultSet rs = commonDatabaseStatement.executeQuery("SELECT fio FROM users WHERE _id_user=" + userId);
+            return rs.getString("fio");
+        } catch (SQLException e) {
+        }
+        return new String();
+    }
+
+    public synchronized  String getRouteName(int routeId) {
+        try {
+            ResultSet rs = commonDatabaseStatement.executeQuery("SELECT name FROM routs WHERE _id_route=" + routeId);
+            return rs.getString("name");
+        } catch (SQLException e) {
+        }
+        return new String();
     }
 
     public synchronized String getRouteNameFromDetourTable(int idDetour) throws SQLException {

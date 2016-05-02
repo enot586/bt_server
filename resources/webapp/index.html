@@ -140,7 +140,7 @@
       }
 
       function addDetourRow(data) {
-        $('#detourTable').append("<tr class=\"finish-row\" id=\""+i+"\"><td>"+i+
+        $('#detourTable').append("<tr class=\"finish-row\"><td>"+data._id_detour+
                                  "</td><td>"+data.user_name+
                                  "</td><td>"+data.route_name+
                                  "</td><td>"+data.start_time+
@@ -201,7 +201,7 @@
           success: function(detour_table) {
             $('.finish-row').remove();
             for (i = 0; i<detour_table.length; ++i) {
-
+              addDetourRow(detour_table[i]);
             }
           }
         });
@@ -281,7 +281,7 @@
 
                 <tr>
                   <td colspan="3">
-                    Дата обхода:<br>
+                    Дата обхода(дд.мм.гггг чч.мм.сс):<br>
                     Начиная с: <input type="text" name="filter_date_start" id="filter_date_start_">
                     Заканчивая по: <input type="text" name="filter_date_finish" id="filter_date_finish_">
                   </td>
@@ -307,8 +307,6 @@
               </tr>
             </table>
           </center>
-          <p align="right"><a href="" class="element-on-page">[10]</a>, <a href="" class="element-on-page">[20]</a>, <a href="" class="element-on-page">[50]</a></p>
-
         </td>
         
         <td width="10%"></td>

@@ -9,6 +9,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.sql.SQLSyntaxErrorException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import org.apache.log4j.Logger;
@@ -730,14 +731,23 @@ public class ReportServer {
     }
 
     public static JSONArray getFilteredDetour(int userId, int routeId, int rowNumber, String startDate, String finishDate) {
-        ArrayList<RouteData> routes = databaseDriver.getFilteredDetour();
+        ArrayList<DetourData> detour = databaseDriver.getFilteredDetour(userId, routeId, rowNumber, startDate, finishDate);
         JSONArray result = new JSONArray();
 
-        for( RouteData i : routes) {
-            JSONObject route = new JSONObject();
+        for( DetourData i : detour) {
+            JSONObject detourRow = new JSONObject();
 
+            detourRow.put("_id_detour", i._id_detour);
 
-            result.add(route);
+            String user_name = databaseDriver.getUserName(i.id_user);
+            detourRow.put("user_name", user_name);
+
+            String route_name = databaseDriver.getRouteName(i.id_route);
+            detourRow.put("route_name", route_name);
+
+            detourRow.put("start_time", i.time_start);
+            detourRow.put("end_time", i.time_stop);
+            result.add(detourRow);
         }
 
         return result;

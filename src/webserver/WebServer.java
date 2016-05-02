@@ -325,6 +325,7 @@ public class WebServer extends CommonServer {
                         boolean isFinishedRoute = databaseDriver.getStatusFromDetourTable(i);
                         if (isFinishedRoute) {
                             JSONObject responseJson = new JSONObject();
+                            responseJson.put("_id_detour", i);
                             responseJson.put("user_name", databaseDriver.getUserNameFromDetourTable(i));
                             responseJson.put("route_name", databaseDriver.getRouteNameFromDetourTable(i));
                             responseJson.put("start_time", databaseDriver.getStartTimeFromDetourTable(i));
@@ -396,15 +397,13 @@ public class WebServer extends CommonServer {
             response.setContentType("text/html");
             response.setStatus(HttpServletResponse.SC_OK);
 
-            int userId = (request.getParameter("userId").equals("*")) ? 0 : Integer.parseInt(request.getParameter("userId"));
-            int routeId = (request.getParameter("routeId").equals("*")) ? 0 : Integer.parseInt(request.getParameter("routeId"));
             JSONArray responseJson = ReportServer.getFilteredDetour(
-                                                                    userId, routeId,
+                                                                    Integer.parseInt(request.getParameter("userId")),
+                                                                    Integer.parseInt(request.getParameter("routeId")),
                                                                     Integer.parseInt(request.getParameter("rowNumber")),
                                                                     request.getParameter("startDate"),
                                                                     request.getParameter("finishDate")
                                                                    );
-
             response.setCharacterEncoding("UTF-8");
             response.getWriter().println(responseJson.toString());
         }
