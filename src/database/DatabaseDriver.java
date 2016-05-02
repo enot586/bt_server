@@ -24,6 +24,41 @@ public class DatabaseDriver {
 
     private static final Logger log = Logger.getLogger(DatabaseDriver.class);
 
+    public synchronized ArrayList<UserData> getUsersList() {
+        ArrayList<UserData> result = new ArrayList<UserData>();
+        try {
+            ResultSet rs = commonDatabaseStatement.executeQuery("SELECT fio,_id_user, id_position FROM users");
+            while (rs.next()) {
+                UserData user = new UserData();
+                user.fio = rs.getString("fio");
+                user._id_user = rs.getInt("_id_user");
+                user.id_position = rs.getInt("id_position");
+                result.add(user);
+            }
+        } catch (SQLException e) {
+
+        }
+
+        return result;
+    }
+
+    public ArrayList<RouteData> getRoutesList() {
+        ArrayList<RouteData> result = new ArrayList<RouteData>();
+        try {
+            ResultSet rs = commonDatabaseStatement.executeQuery("SELECT name,_id_route FROM routs");
+            while (rs.next()) {
+                RouteData route = new RouteData();
+                route.name = rs.getString("name");
+                route._id_route = rs.getInt("_id_route");
+                result.add(route);
+            }
+        } catch (SQLException e) {
+
+        }
+
+        return result;
+    }
+
     private enum DatabaseState {
         CLOSE,
         OPEN,

@@ -114,6 +114,8 @@ public class WebServer extends CommonServer {
         context.addServlet(new ServletHolder( new WebServer.ServletGetOldUserMessageHandler()), "/get-old-user-message");
         context.addServlet(new ServletHolder( new WebServer.ServletGetDetourFromDb()), "/get-detour-from-db");
         context.addServlet(new ServletHolder( new WebServer.ServletGetBluetoothMac()), "/get-bluetooth-mac");
+        context.addServlet(new ServletHolder( new WebServer.ServletGetUsersList()), "/get-user-list");
+        context.addServlet(new ServletHolder( new WebServer.ServletGetRoutesList()), "/get-route-list");
 
         server.setHandler(context);
 
@@ -190,11 +192,11 @@ public class WebServer extends CommonServer {
         {
             try {
                 ReportServer.bluetoothServerStart();
+                ui.sendUserMessage("Запуск bluetooth-сервера");
             } catch (Exception e) {
                 log.error(e);
+                ui.sendUserMessage("Ошибка: не удалось запустить bluetooth.");
             }
-
-            ui.sendUserMessage("Запуск bluetooth-сервера");
 
             try {
                 response.setContentType("text/html");
@@ -355,6 +357,32 @@ public class WebServer extends CommonServer {
 
             JSONObject responseJson = new JSONObject();
             responseJson.put("mac", ReportServer.getBluetoothMacAddress());
+
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().println(responseJson.toString());
+        }
+    }
+
+    public class ServletGetUsersList extends HttpServlet {
+        @Override
+        protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+            response.setContentType("text/html");
+            response.setStatus(HttpServletResponse.SC_OK);
+
+            JSONArray responseJson = ReportServer.getUsersList();
+
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().println(responseJson.toString());
+        }
+    }
+
+    public class ServletGetRoutesList extends HttpServlet {
+        @Override
+        protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+            response.setContentType("text/html");
+            response.setStatus(HttpServletResponse.SC_OK);
+
+            JSONArray responseJson = ReportServer.getRoutesList();
 
             response.setCharacterEncoding("UTF-8");
             response.getWriter().println(responseJson.toString());

@@ -13,6 +13,7 @@ import java.util.*;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import static java.lang.Thread.sleep;
@@ -97,11 +98,12 @@ public class ReportServer {
 
         bluetoothGroupTransactionHandler = new GroupTransactionHandler(bluetoothServer);
 
-        //Bluetooth-сервер стартует при старте
+        //Bluetooth-сервер запускается при старте
         try {
             bluetoothServerStart();
             log.info("Bluetooth status:\t\t[RUNNING]");
         } catch (Exception e) {
+            log.error(e);
             userFeedback.sendUserMessage("Ошибка: не удалось запустить bluetooth.");
             log.info("Bluetooth status:\t\t[STOPED]");
         }
@@ -529,12 +531,8 @@ public class ReportServer {
     }
 
     public static void bluetoothServerStart() throws Exception {
-        try {
-            LocalDevice bluetoothLocalDevice = LocalDevice.getLocalDevice();
-            bluetoothServer.start();
-        } catch(Exception e) {
-            log.error(e);
-        }
+        LocalDevice bluetoothLocalDevice = LocalDevice.getLocalDevice();
+        bluetoothServer.start();
     }
 
     public static void bluetoothServerStop() throws Exception {
@@ -698,4 +696,36 @@ public class ReportServer {
         return result;
     }
 
+    public static JSONArray getUsersList() {
+        ArrayList<UserData> users = databaseDriver.getUsersList();
+        JSONArray result = new JSONArray();
+
+        for( UserData i : users) {
+            JSONObject user = new JSONObject();
+
+            user.put("id", i._id_user);
+            user.put("fio", i.fio);
+            user.put("position", i.id_position);
+
+            result.add(user);
+        }
+
+        return result;
+    }
+
+    public static JSONArray getRoutesList() {
+        ArrayList<RouteData> routes = databaseDriver.getRoutesList();
+        JSONArray result = new JSONArray();
+
+        for( RouteData i : routes) {
+            JSONObject route = new JSONObject();
+
+            route.put("id", i._id_route);
+            route.put("name", i.name);
+
+            result.add(route);
+        }
+
+        return result;
+    }
 }

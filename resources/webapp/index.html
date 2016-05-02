@@ -34,7 +34,9 @@
         getBluetoothMac();
         userMessageHandler();
         getOldUserMessages();
-        getDetourFomDb();
+        getDetourFromDb();
+        getUserLisFromDb();
+        getRouteLisFromDb();
         refreshDetourTable();
       });
 
@@ -44,7 +46,7 @@
           type: 'get',
           success: function() {
             $('.finish-row').remove();
-            getDetourFomDb();
+            getDetourFromDb();
             refreshDetourTable();
           }
         });
@@ -145,7 +147,7 @@
                                  "</td><td>"+data.end_time+"</td></tr>");
       }
 
-      function getDetourFomDb() {
+      function getDetourFromDb() {
         $.ajax({
           url: '/get-detour-from-db',
           type: 'post',
@@ -153,6 +155,32 @@
           success: function(detour) {
             for (i = 0; i < detour.length; ++i) {
               addDetourRow(detour[i]);
+            }
+          }
+        });
+      }
+
+      function getUserLisFromDb() {
+        $.ajax({
+          url: '/get-user-list',
+          type: 'post',
+          dataType: "json",
+          success: function(users) {
+            for (i = 0; i < users.length; ++i) {
+              $('#filter_user_').append("<option value="+users[i].id+">"+users[i].fio+"</option>");
+            }
+          }
+        });
+      }
+
+      function getRouteLisFromDb() {
+        $.ajax({
+          url: '/get-route-list',
+          type: 'post',
+          dataType: "json",
+          success: function(routes) {
+            for (i = 0; i < routes.length; ++i) {
+              $('#filter_route_').append("<option value="+routes[i].id+">"+routes[i].name+"</option>");
             }
           }
         });
@@ -165,7 +193,7 @@
   </head>
 
   <body bgcolor="#ffffff">
-   	<H1 class="main-title">Report server</H1>
+   	<H2 class="main-title">Cервер отчетности обходов</H2>
     <table width="100%" cellspacing="0" cellspacing="0" border="0">
       <tr>
         <td width="20%" valign="top" align="center">
@@ -199,6 +227,52 @@
         </td> 
     
         <td valign="top">
+          <div id="filter_menu">
+            <form name="filter_detour">
+              <table cellspacing="10" cellpadding="0" border="0" bgcolor="#EDF7FF">
+                <tr class="title-user-row">
+                  <td colspan="3">
+                    <span class="sort-title">Фильтрация записей</span>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td>
+                    Имя пользователя:<br>
+                    <select name="filter_user" id="filter_user_">
+                      <option value="0">Все пользователи</option>
+                    </select>
+                  </td>
+
+                  <td>
+                    Название маршрута:<br>
+                    <select name="filter_route" id="filter_route_">
+                      <option value="0">Все маршруты</option>
+                    </select>
+                  </td>
+
+                  <td>
+                    Количество отображаемых записей:<br>
+                    <input type="text" name="filter_row_number" id="filter_row_number_" maxlength="4" size="4" value="10">
+                  </td>
+                </tr>
+
+                <tr>
+                  <td colspan="3">
+                    Дата обхода:<br>
+                    Начиная с: <input type="text" name="filter_date_start">
+                    Заканчивая по: <input type="text" name="filter_date_finish">
+                  </td>
+                </tr>
+
+                <tr>
+                  <td>
+                    <input type="button" name="filter_submit" value="Применить">
+                  </td>
+                </tr>
+              </table>
+            </form>
+          </div>
           <h3 align="left">Выполненные маршруты:</h3>
           <center>
             <table width="90%" style="border-width:1px; border-color:#ffffff; border-style:solid; background-color:#ffffff;" id="detourTable">
