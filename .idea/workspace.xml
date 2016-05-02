@@ -25,11 +25,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="DatabaseDriver.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="DatabaseDriver.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/database/DatabaseDriver.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="560">
-              <caret line="131" column="13" selection-start-line="131" selection-start-column="13" selection-end-line="131" selection-end-column="13" />
+            <state relative-caret-position="260">
+              <caret line="25" column="40" selection-start-line="25" selection-start-column="40" selection-end-line="25" selection-end-column="40" />
               <folding>
                 <element signature="e#2137#2149#0" expanded="true" />
                 <element signature="class#DatabaseState#0;class#DatabaseDriver#0" expanded="false" />
@@ -73,18 +73,18 @@
       <file leaf-file-name="index.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/resources/webapp/index.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="330">
-              <caret line="310" column="8" selection-start-line="310" selection-start-column="8" selection-end-line="310" selection-end-column="8" />
+            <state relative-caret-position="362">
+              <caret line="309" column="13" selection-start-line="309" selection-start-column="13" selection-end-line="309" selection-end-column="13" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ReportServer.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="ReportServer.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/ReportServer.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="317">
-              <caret line="746" column="0" selection-start-line="746" selection-start-column="0" selection-end-line="746" selection-end-column="0" />
+            <state relative-caret-position="200">
+              <caret line="27" column="39" selection-start-line="27" selection-start-column="39" selection-end-line="27" selection-end-column="39" />
               <folding>
                 <element signature="method#printConsoleHelp#0;class#ReportServer#0" expanded="false" />
                 <element signature="method#bluetoothTransactionHandler#0;class#ReportServer#0" expanded="false" />
@@ -197,8 +197,8 @@
         <option value="$PROJECT_DIR$/src/DetourData.java" />
         <option value="$PROJECT_DIR$/src/webserver/WebServer.java" />
         <option value="$PROJECT_DIR$/resources/webapp/index.html" />
-        <option value="$PROJECT_DIR$/src/ReportServer.java" />
         <option value="$PROJECT_DIR$/src/database/DatabaseDriver.java" />
+        <option value="$PROJECT_DIR$/src/ReportServer.java" />
       </list>
     </option>
   </component>
@@ -1067,48 +1067,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/resources/webapp/index.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="330">
-          <caret line="310" column="8" selection-start-line="310" selection-start-column="8" selection-end-line="310" selection-end-column="8" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/ReportServer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="317">
-          <caret line="746" column="0" selection-start-line="746" selection-start-column="0" selection-end-line="746" selection-end-column="0" />
-          <folding>
-            <element signature="method#printConsoleHelp#0;class#ReportServer#0" expanded="false" />
-            <element signature="method#bluetoothTransactionHandler#0;class#ReportServer#0" expanded="false" />
-            <element signature="method#bluetoothReplaceDatabaseTransactionHandler#0;class#ReportServer#0" expanded="false" />
-            <element signature="method#bluetoothBinaryFileTransactionHandler#0;class#ReportServer#0" expanded="false" />
-            <element signature="method#bluetoothSynchTransactionHandler#0;class#ReportServer#0" expanded="false" />
-            <element signature="class#16351:17326" expanded="false" />
-            <element signature="method#success#0;class#16351:17326" expanded="false" />
-            <element signature="method#fail#0;class#16351:17326" expanded="false" />
-            <element signature="class#19045:20092" expanded="false" />
-            <element signature="method#fail#0;class#19045:20092" expanded="false" />
-            <element signature="method#bluetoothSqlQueriesTransactionHandler#0;class#ReportServer#0" expanded="false" />
-            <element signature="method#bluetoothServerStart#0;class#ReportServer#0" expanded="false" />
-            <element signature="method#bluetoothServerStop#0;class#ReportServer#0" expanded="false" />
-            <element signature="method#addSqlHistoryToGroupTransaction#0;class#ReportServer#0" expanded="false" />
-            <element signature="method#addPicturesToGroupTransaction#0;class#ReportServer#0" expanded="false" />
-            <element signature="method#addReplaceDatabaseToGroupTransaction#0;class#ReportServer#0" expanded="false" />
-            <element signature="method#addEndTransactionToGroupTransaction#0;class#ReportServer#0" expanded="false" />
-            <element signature="method#addSessionCloseToGroupTransaction#0;class#ReportServer#0" expanded="false" />
-            <element signature="method#addPicturesFromTableToGroupTransaction#0;class#ReportServer#0" expanded="false" />
-            <element signature="method#getUsersList#0;class#ReportServer#0" expanded="false" />
-            <element signature="method#getRoutesList#0;class#ReportServer#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/database/DatabaseDriver.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="560">
-          <caret line="131" column="13" selection-start-line="131" selection-start-column="13" selection-end-line="131" selection-end-column="13" />
+        <state relative-caret-position="260">
+          <caret line="25" column="40" selection-start-line="25" selection-start-column="40" selection-end-line="25" selection-end-column="40" />
           <folding>
             <element signature="e#2137#2149#0" expanded="true" />
             <element signature="class#DatabaseState#0;class#DatabaseDriver#0" expanded="false" />
@@ -1144,6 +1106,44 @@
             <element signature="method#addFileToHistory#0;class#DatabaseDriver#0" expanded="false" />
             <element signature="method#removeLocalHistory#0;class#DatabaseDriver#0" expanded="false" />
             <element signature="method#getPictures#0;class#DatabaseDriver#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/resources/webapp/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="362">
+          <caret line="309" column="13" selection-start-line="309" selection-start-column="13" selection-end-line="309" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/ReportServer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="200">
+          <caret line="27" column="39" selection-start-line="27" selection-start-column="39" selection-end-line="27" selection-end-column="39" />
+          <folding>
+            <element signature="method#printConsoleHelp#0;class#ReportServer#0" expanded="false" />
+            <element signature="method#bluetoothTransactionHandler#0;class#ReportServer#0" expanded="false" />
+            <element signature="method#bluetoothReplaceDatabaseTransactionHandler#0;class#ReportServer#0" expanded="false" />
+            <element signature="method#bluetoothBinaryFileTransactionHandler#0;class#ReportServer#0" expanded="false" />
+            <element signature="method#bluetoothSynchTransactionHandler#0;class#ReportServer#0" expanded="false" />
+            <element signature="class#16351:17326" expanded="false" />
+            <element signature="method#success#0;class#16351:17326" expanded="false" />
+            <element signature="method#fail#0;class#16351:17326" expanded="false" />
+            <element signature="class#19045:20092" expanded="false" />
+            <element signature="method#fail#0;class#19045:20092" expanded="false" />
+            <element signature="method#bluetoothSqlQueriesTransactionHandler#0;class#ReportServer#0" expanded="false" />
+            <element signature="method#bluetoothServerStart#0;class#ReportServer#0" expanded="false" />
+            <element signature="method#bluetoothServerStop#0;class#ReportServer#0" expanded="false" />
+            <element signature="method#addSqlHistoryToGroupTransaction#0;class#ReportServer#0" expanded="false" />
+            <element signature="method#addPicturesToGroupTransaction#0;class#ReportServer#0" expanded="false" />
+            <element signature="method#addReplaceDatabaseToGroupTransaction#0;class#ReportServer#0" expanded="false" />
+            <element signature="method#addEndTransactionToGroupTransaction#0;class#ReportServer#0" expanded="false" />
+            <element signature="method#addSessionCloseToGroupTransaction#0;class#ReportServer#0" expanded="false" />
+            <element signature="method#addPicturesFromTableToGroupTransaction#0;class#ReportServer#0" expanded="false" />
+            <element signature="method#getUsersList#0;class#ReportServer#0" expanded="false" />
+            <element signature="method#getRoutesList#0;class#ReportServer#0" expanded="false" />
           </folding>
         </state>
       </provider>
