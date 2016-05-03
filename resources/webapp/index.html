@@ -148,13 +148,15 @@
       }
 
       function getDetourFromDb() {
-        $.ajax({
-          url: '/get-detour-from-db',
+       $.ajax({
+          url: '/get-filtered-detour',
           type: 'post',
           dataType: "json",
-          success: function(detour) {
-            for (i = 0; i < detour.length; ++i) {
-              addDetourRow(detour[i]);
+          data: { userId: 0, routeId:0, rowNumber:30, startDate:"", finishDate:""},
+          success: function(detour_table) {
+            $('.finish-row').remove();
+            for (i = 0; i<detour_table.length; ++i) {
+              addDetourRow(detour_table[i]);
             }
           }
         });
@@ -275,7 +277,7 @@
 
                   <td>
                     Количество отображаемых записей:<br>
-                    <input type="text" name="filter_row_number" id="filter_row_number_" maxlength="4" size="4" value="10">
+                    <input type="text" name="filter_row_number" id="filter_row_number_" maxlength="4" size="4" value="30">
                   </td>
                 </tr>
 

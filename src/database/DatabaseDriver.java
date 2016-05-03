@@ -66,7 +66,11 @@ public class DatabaseDriver {
         ArrayList<DetourData> result = new ArrayList<DetourData>();
         String condition = new String();
 
+        //отображаем только законченные маршруты
+        condition+= "(finished=1)";
+
         if (userId > 0) {
+            if (condition.length() > 0) condition+=" AND ";
             condition+= "(id_user="+userId+")";
         }
 
@@ -464,37 +468,6 @@ public class DatabaseDriver {
         }
     }
 
-    public synchronized ArrayList<Integer> getLatest10IdsDetour() throws SQLException {
-        ArrayList<Integer> ids = new  ArrayList<Integer>();
-        ResultSet rs = commonDatabaseStatement.executeQuery("SELECT _id_detour FROM detour ORDER BY _id_detour DESC LIMIT 10");
-
-        int i = 0;
-        while (rs.next()) {
-            int id = rs.getInt("_id_detour");
-            ids.add(i++, id);
-        }
-        return ids;
-    }
-
-    public synchronized ArrayList<Integer> getDetourTableIds() throws SQLException {
-        ArrayList<Integer> ids = new  ArrayList<Integer>();
-        ResultSet rs = commonDatabaseStatement.executeQuery("SELECT _id_detour FROM detour");
-
-        int i = 0;
-        while (rs.next()) {
-            int id = rs.getInt("_id_detour");
-            ids.add(i++, id);
-        }
-        return ids;
-    }
-
-    public synchronized String getUserNameFromDetourTable(int idDetour) throws SQLException {
-        ResultSet rs = commonDatabaseStatement.executeQuery("SELECT id_user FROM detour WHERE _id_detour=" + idDetour);
-        int userId = rs.getInt("id_user");
-        rs = commonDatabaseStatement.executeQuery("SELECT fio FROM users WHERE _id_user=" + userId);
-        return rs.getString("fio");
-    }
-
     public synchronized  String getUserName(int userId) {
         try {
             ResultSet rs = commonDatabaseStatement.executeQuery("SELECT fio FROM users WHERE _id_user=" + userId);
@@ -511,28 +484,6 @@ public class DatabaseDriver {
         } catch (SQLException e) {
         }
         return new String();
-    }
-
-    public synchronized String getRouteNameFromDetourTable(int idDetour) throws SQLException {
-        ResultSet rs = commonDatabaseStatement.executeQuery("SELECT id_route FROM detour WHERE _id_detour=" + idDetour);
-        int routeId = rs.getInt("id_route");
-        rs = commonDatabaseStatement.executeQuery("SELECT name FROM routs WHERE _id_route=" + routeId);
-        return rs.getString("name");
-    }
-
-    public synchronized String getStartTimeFromDetourTable(int idDetour) throws SQLException {
-        ResultSet rs = commonDatabaseStatement.executeQuery("SELECT time_start FROM detour WHERE _id_detour=" + idDetour);
-        return rs.getString("time_start");
-    }
-
-    public synchronized String getEndTimeFromDetourTable(int idDetour) throws SQLException {
-        ResultSet rs = commonDatabaseStatement.executeQuery("SELECT time_stop FROM detour WHERE _id_detour=" + idDetour);
-        return rs.getString("time_stop");
-    }
-
-    public synchronized boolean getStatusFromDetourTable(int idDetour) throws SQLException {
-        ResultSet rs = commonDatabaseStatement.executeQuery("SELECT finished FROM detour WHERE _id_detour=" + idDetour);
-        return rs.getBoolean("finished");
     }
 
     public synchronized String getRoutesTablePathRoutePicture(int idRoute) throws SQLException {

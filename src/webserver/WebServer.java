@@ -112,7 +112,6 @@ public class WebServer extends CommonServer {
         context.addServlet(new ServletHolder( new WebServer.ServletTableRefresh()), "/tablerefresh");
         context.addServlet(new ServletHolder( new WebServer.ServletUserMessageHandler()), "/usermessage");
         context.addServlet(new ServletHolder( new WebServer.ServletGetOldUserMessageHandler()), "/get-old-user-message");
-        context.addServlet(new ServletHolder( new WebServer.ServletGetDetourFromDb()), "/get-detour-from-db");
         context.addServlet(new ServletHolder( new WebServer.ServletGetBluetoothMac()), "/get-bluetooth-mac");
         context.addServlet(new ServletHolder( new WebServer.ServletGetUsersList()), "/get-user-list");
         context.addServlet(new ServletHolder( new WebServer.ServletGetRoutesList()), "/get-route-list");
@@ -299,50 +298,6 @@ public class WebServer extends CommonServer {
                         fullresponse.add(responseJson);
                     }
                 }
-                response.setCharacterEncoding("UTF-8");
-                response.getWriter().println(fullresponse.toString());
-            } catch (BluetoothStateException e) {
-                log.error(e);
-            }
-        }
-    }
-
-    public class ServletGetDetourFromDb extends HttpServlet {
-        @Override
-        protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-            try {
-                response.setContentType("text/html");
-                response.setStatus(HttpServletResponse.SC_OK);
-
-                reportserver.DatabaseDriver databaseDriver = reportserver.ReportServer.getDatabaseDriver();
-
-                JSONArray fullresponse = new JSONArray();
-
-                try {
-                    java.util.ArrayList<Integer> ids = databaseDriver.getLatest10IdsDetour();
-
-                    for(Integer i : ids) {
-                        boolean isFinishedRoute = databaseDriver.getStatusFromDetourTable(i);
-                        if (isFinishedRoute) {
-                            JSONObject responseJson = new JSONObject();
-                            responseJson.put("_id_detour", i);
-                            responseJson.put("user_name", databaseDriver.getUserNameFromDetourTable(i));
-                            responseJson.put("route_name", databaseDriver.getRouteNameFromDetourTable(i));
-                            responseJson.put("start_time", databaseDriver.getStartTimeFromDetourTable(i));
-                            responseJson.put("end_time", databaseDriver.getEndTimeFromDetourTable(i));
-
-                            fullresponse.add(responseJson);
-                        }
-                    }
-                } catch (java.sql.SQLException e) {
-                    JSONObject responseJson = new JSONObject();
-                    responseJson.put("user_name", "SQL query error...");
-                    responseJson.put("route_name", "SQL query error...");
-                    responseJson.put("start_time", "SQL query error...");
-                    responseJson.put("end_time", "SQL query error...");
-                    fullresponse.add(responseJson);
-                }
-
                 response.setCharacterEncoding("UTF-8");
                 response.getWriter().println(fullresponse.toString());
             } catch (BluetoothStateException e) {
