@@ -1,6 +1,5 @@
 package reportserver;
 
-import javax.bluetooth.BluetoothStateException;
 import javax.bluetooth.LocalDevice;
 import javax.servlet.AsyncContext;
 import java.io.*;
@@ -9,11 +8,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.sql.SQLSyntaxErrorException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -747,6 +744,24 @@ public class ReportServer {
 
             detourRow.put("start_time", i.time_start);
             detourRow.put("end_time", i.time_stop);
+            result.add(detourRow);
+        }
+
+        return result;
+    }
+
+    public static JSONArray getVisits(int detourId) {
+        ArrayList<VisitData> visits = databaseDriver.getVisitis(detourId);
+        JSONArray result = new JSONArray();
+
+        for( VisitData i : visits) {
+            JSONObject detourRow = new JSONObject();
+
+            detourRow.put("_id_visit", i._id_visit);
+            detourRow.put("id_point", i.id_point);
+            detourRow.put("id_detour", detourId);
+            detourRow.put("time", i.time);
+
             result.add(detourRow);
         }
 

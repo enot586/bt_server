@@ -42,10 +42,10 @@
 
       function refreshDetourTable() {
         $.ajax({
-          url: '/tablerefresh',
-          type: 'get',
+          url: "/tablerefresh",
+          type: "get",
           success: function() {
-            $('.finish-row').remove();
+            $(".finish-row").remove();
             getDetourFromDb();
             refreshDetourTable();
           }
@@ -54,8 +54,8 @@
 
       function bluetoothServerStart() {
         $.ajax({
-          url: '/btstart',
-          type: 'get',
+          url: "/btstart",
+          type: "get",
           dataType: "json",
           success: function(btStatus) {
             updateBluetoothServerStatus(btStatus.status);
@@ -65,8 +65,8 @@
 
       function bluetoothServerStop() {
         $.ajax({
-          url: '/btstop',
-          type: 'get',
+          url: "/btstop",
+          type: "get",
           dataType: "json",
           success: function(btStatus) {
             updateBluetoothServerStatus(btStatus.status);
@@ -76,8 +76,8 @@
 
       function getBluetoothServerStatus() {
         $.ajax({
-          url: '/btstatus',
-          type: 'get',
+          url: "/btstatus",
+          type: "get",
           dataType: "json",
           success: function(btStatus) {
             updateBluetoothServerStatus(btStatus.status);
@@ -86,18 +86,18 @@
       }
 
       function updateBluetoothServerStatus(status) {
-        $('#btServerStatus').html(status);
+        $("#btServerStatus").html(status);
       }
 
       //Для обработки пользовательских сообщений
       var userMessageNumber = 0;
 
       function addUserMessageRow(date, text) {
-        $('#userMessageTable').prepend("<tr><td><div class=\"debug-message\">"+date+"</div></td>"+
+        $("#userMessageTable").prepend("<tr><td><div class=\"debug-message\">"+date+"</div></td>"+
                                        "<td><div class=\"debug-message\">"+text+"</div></td></tr>");
 
         if (userMessageNumber >= 30) {
-          $('#userMessageTable').children().find('tr').last().remove();
+          $("#userMessageTable").children().find("tr").last().remove();
         } else {
           ++userMessageNumber;
         }
@@ -105,8 +105,8 @@
 
       function userMessageHandler() {
         $.ajax({
-          url: '/usermessage',
-          type: 'get',
+          url: "/usermessage",
+          type: "get",
           dataType: "json",
           success: function(message) {
             addUserMessageRow(message.date, message.text);
@@ -117,8 +117,8 @@
 
       function getOldUserMessages() {
         $.ajax({
-          url: '/get-old-user-message',
-          type: 'post',
+          url: "/get-old-user-message",
+          type: "post",
           dataType: "json",
           success: function(messages) {
             for (i = 0; i < messages.length; ++i) {
@@ -130,31 +130,68 @@
 
       function getBluetoothMac() {
         $.ajax({
-          url: '/get-bluetooth-mac',
-          type: 'get',
+          url: "/get-bluetooth-mac",
+          type: "get",
           dataType: "json",
           success: function(message) {
-            $('#btMacAddress').html("Bluetooth mac: "+message.mac);
+            $("#btMacAddress").html("Bluetooth mac: "+message.mac);
           }
         });
       }
 
+      function showVisits(idDetour) {
+        $.ajax({
+          url: "/get-visits",
+          type: "post",
+          dataType: "json",
+          data: { detourId: idDetour },
+          success: function(visits) {
+            if (visits.length == 0)
+              return;
+
+            var activeRow = document.getElementById("row"+idDetour);
+            activeRow.setAttribute("onClick","hideVisits("+idDetour+")");
+
+            var tablePoints = "<tr class=\"finish-row\" id=\"points"+idDetour+"\"><td colspan=\"5\"><table border=\"0\">";
+
+            for (i=0; i<visits.length; ++i) {
+              tablePoints+= "<tr class=\"finish-row\" id=\"point"+visits._id+"\">"+
+                              "<td>"+visits[i]._id_visit+"</td>"+
+                              "<td>"+visits[i].id_point+"</td>"+
+                              "<td>"+visits[i].time+"</td>"+
+                            "</tr>";
+            }
+
+            tablePoints+= "</table></td></tr>";
+            activeRow.insertAdjacentHTML("afterend", tablePoints);
+          }
+        });
+      }
+
+      function hideVisits(idDetour) {
+        var row = document.getElementById("row"+idDetour);
+        row.setAttribute("onClick","showVisits("+idDetour+")");
+        var points = document.getElementById("points"+idDetour);
+        points.parentNode.removeChild(points);
+      }
+
       function addDetourRow(data) {
-        $('#detourTable').append("<tr class=\"finish-row\"><td>"+data._id_detour+
-                                 "</td><td>"+data.user_name+
-                                 "</td><td>"+data.route_name+
-                                 "</td><td>"+data.start_time+
-                                 "</td><td>"+data.end_time+"</td></tr>");
+        $("#detourTable").append("<tr class=\"finish-row\" id=\"row"+data._id_detour+"\" onClick=\"showVisits("+data._id_detour+")\">"+
+                                 "<td>"+data._id_detour+"</td>"+
+                                 "<td>"+data.user_name+"</td>"+
+                                 "<td>"+data.route_name+"</td>"+
+                                 "<td>"+data.start_time+"</td>"+
+                                 "<td>"+data.end_time+"</td></tr>");
       }
 
       function getDetourFromDb() {
        $.ajax({
-          url: '/get-filtered-detour',
-          type: 'post',
+          url: "/get-filtered-detour",
+          type: "post",
           dataType: "json",
           data: { userId: 0, routeId:0, rowNumber:30, startDate:"", finishDate:""},
           success: function(detour_table) {
-            $('.finish-row').remove();
+            $(".finish-row").remove();
             for (i = 0; i<detour_table.length; ++i) {
               addDetourRow(detour_table[i]);
             }
@@ -164,12 +201,12 @@
 
       function getUserLisFromDb() {
         $.ajax({
-          url: '/get-user-list',
-          type: 'post',
+          url: "/get-user-list",
+          type: "post",
           dataType: "json",
           success: function(users) {
             for (i = 0; i < users.length; ++i) {
-              $('#filter_user_').append("<option value="+users[i].id+">"+users[i].fio+"</option>");
+              $("#filter_user_").append("<option value="+users[i].id+">"+users[i].fio+"</option>");
             }
           }
         });
@@ -177,12 +214,12 @@
 
       function getRouteLisFromDb() {
         $.ajax({
-          url: '/get-route-list',
-          type: 'post',
+          url: "/get-route-list",
+          type: "post",
           dataType: "json",
           success: function(routes) {
             for (i = 0; i < routes.length; ++i) {
-              $('#filter_route_').append("<option value="+routes[i].id+">"+routes[i].name+"</option>");
+              $("#filter_route_").append("<option value="+routes[i].id+">"+routes[i].name+"</option>");
             }
           }
         });
@@ -196,12 +233,12 @@
         var enddate = $("#filter_date_finish_").val();
 
         $.ajax({
-          url: '/get-filtered-detour',
-          type: 'post',
+          url: "/get-filtered-detour",
+          type: "post",
           dataType: "json",
           data: { userId: userid, routeId:routeid, rowNumber:rowNum, startDate:begindate, finishDate:enddate},
           success: function(detour_table) {
-            $('.finish-row').remove();
+            $(".finish-row").remove();
             for (i = 0; i<detour_table.length; ++i) {
               addDetourRow(detour_table[i]);
             }

@@ -121,7 +121,7 @@ public class DatabaseDriver {
                     Date date = dbFormat.parse(dbFormatDate);
                     detourRow.time_start = userFormat.format(date).toString();
                 } catch (ParseException e) {
-                    detourRow.time_start = "null";
+                    detourRow.time_start = "Некорректный формат";
                 }
 
                 dbFormatDate = rs.getString("time_stop");
@@ -129,7 +129,7 @@ public class DatabaseDriver {
                     Date date = dbFormat.parse(dbFormatDate);
                     detourRow.time_stop = userFormat.format(date).toString();
                 } catch (ParseException e) {
-                    detourRow.time_stop = "null";
+                    detourRow.time_stop = "Некорректный формат";
                 }
 
                 result.add(detourRow);
@@ -137,6 +137,31 @@ public class DatabaseDriver {
         } catch (SQLException e) {
         }
 
+        return result;
+    }
+
+    public synchronized ArrayList<VisitData> getVisitis(int detourId) {
+        ArrayList<VisitData> result = new ArrayList<VisitData>();
+        try {
+            ResultSet rs = commonDatabaseStatement.executeQuery("SELECT _id_visit, id_point, time FROM visits WHERE id_detour="+detourId);
+            while (rs.next()) {
+                VisitData visit = new VisitData();
+                visit._id_visit = rs.getInt("_id_visit");
+                visit.id_point = rs.getInt("id_point");
+                visit.time = rs.getString("time");
+                try {
+                    SimpleDateFormat userFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+                    SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    Date date = dbFormat.parse(visit.time);
+                    visit.time = userFormat.format(date);
+                } catch (ParseException e) {
+                    visit.time = "Некорректный формат";
+                }
+
+                result.add(visit);
+            }
+        } catch (SQLException e) {
+        }
         return result;
     }
 
@@ -177,6 +202,18 @@ public class DatabaseDriver {
             synchronized (dbState) {
                 dbState = DatabaseState.OPEN;
             }
+
+//Генерация толстой базы для отлдаки
+//            for (int i = 0; i < 100; ++i) {
+//                commonDatabaseStatement.execute("INSERT INTO users (fio, id_position, is_admin, user_in_system, user_in_archive)"+
+//                                                "VALUES ('"+"Пользователь"+i+"', 2, 0, 0, 0)");
+//            }
+//
+//            for (int i = 1; i < 1000; ++i) {
+//                commonDatabaseStatement.execute("INSERT INTO detour (id_user, id_route, id_shedule, time_start, time_stop, finished, send)"+
+//                        "VALUES ("+((i%30)+1)+","+((i%2)+1)+", 0, '2015-04-28 13:14:40', '2015-04-28 16:55:00', 1, 1)");
+//            }
+
         } catch (SQLException|ClassNotFoundException e) {
             log.error(e);
         }

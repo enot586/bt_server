@@ -116,6 +116,7 @@ public class WebServer extends CommonServer {
         context.addServlet(new ServletHolder( new WebServer.ServletGetUsersList()), "/get-user-list");
         context.addServlet(new ServletHolder( new WebServer.ServletGetRoutesList()), "/get-route-list");
         context.addServlet(new ServletHolder( new WebServer.ServletGetFilteredDetour()), "/get-filtered-detour");
+        context.addServlet(new ServletHolder( new WebServer.ServletGetVisits()), "/get-visits");
 
         server.setHandler(context);
 
@@ -359,6 +360,19 @@ public class WebServer extends CommonServer {
                                                                     request.getParameter("startDate"),
                                                                     request.getParameter("finishDate")
                                                                    );
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().println(responseJson.toString());
+        }
+    }
+
+    public class ServletGetVisits extends HttpServlet {
+        @Override
+        protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+            response.setContentType("text/html");
+            response.setStatus(HttpServletResponse.SC_OK);
+
+            JSONArray responseJson = ReportServer.getVisits(Integer.parseInt(request.getParameter("detourId")));
+
             response.setCharacterEncoding("UTF-8");
             response.getWriter().println(responseJson.toString());
         }
