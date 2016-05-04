@@ -24,7 +24,13 @@ public class DatabaseDriver {
     private Connection localDatabaseConnection;
 
     private Integer dataBaseSynchId = 0;
+    private enum DatabaseState {
+        CLOSE,
+        OPEN,
+        BACKUP
+    }
 
+    private DatabaseState dbState = DatabaseState.CLOSE;
     private static final Logger log = Logger.getLogger(DatabaseDriver.class);
 
     public synchronized ArrayList<UserData> getUsersList() {
@@ -181,15 +187,7 @@ public class DatabaseDriver {
         return null;
     }
 
-    private enum DatabaseState {
-        CLOSE,
-        OPEN,
-        BACKUP
-    }
-
-    private DatabaseState dbState = DatabaseState.CLOSE;
-
-    public void init(String commonUrl_, String localUrl_) throws SQLException {
+    public synchronized void init(String commonUrl_, String localUrl_) throws SQLException {
         commonUrl = commonUrl_;
         localUrl = localUrl_;
 
@@ -215,9 +213,7 @@ public class DatabaseDriver {
 
             localDatabaseStatement = localDatabaseConnection.createStatement();
 
-            synchronized (dbState) {
-                dbState = DatabaseState.OPEN;
-            }
+            dbState = DatabaseState.OPEN;
 
 //Генерация толстой базы для отлдаки
 //            for (int i = 0; i < 100; ++i) {
