@@ -149,6 +149,7 @@ public class DatabaseDriver {
                 visit._id_visit = rs.getInt("_id_visit");
                 visit.id_point = rs.getInt("id_point");
                 visit.time = rs.getString("time");
+
                 try {
                     SimpleDateFormat userFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
                     SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -160,9 +161,24 @@ public class DatabaseDriver {
 
                 result.add(visit);
             }
+
+            for (VisitData i : result) {
+                i.description = getPointDescription(i.id_point);
+            }
         } catch (SQLException e) {
         }
         return result;
+    }
+
+    public synchronized String getPointDescription(int pointId) {
+        try {
+            ResultSet rs = commonDatabaseStatement.executeQuery("SELECT description FROM points WHERE _id_point="+pointId);
+            while (rs.next()) {
+                return rs.getString("description");
+            }
+        } catch (SQLException e) {
+        }
+        return null;
     }
 
     private enum DatabaseState {

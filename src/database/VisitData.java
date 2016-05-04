@@ -5,4 +5,5 @@ public class VisitData {
     int id_point;
     int id_detour;
     String time;
+    String description;
 }

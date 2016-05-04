@@ -149,30 +149,30 @@
             if (visits.length == 0)
               return;
 
-            var activeRow = document.getElementById("row"+idDetour);
-            activeRow.setAttribute("onClick","hideVisits("+idDetour+")");
-
-            var tablePoints = "<tr class=\"finish-row\" id=\"points"+idDetour+"\"><td colspan=\"5\"><table border=\"0\">";
+            var tablePoints = "";
 
             for (i=0; i<visits.length; ++i) {
-              tablePoints+= "<tr class=\"finish-row\" id=\"point"+visits._id+"\">"+
-                              "<td>"+visits[i]._id_visit+"</td>"+
-                              "<td>"+visits[i].id_point+"</td>"+
+              tablePoints+= "<tr class=\"finish-row\" id=\"points"+idDetour+"_"+i+"\"><td></td><td></td>"+
+                              "<td>"+visits[i].id_point+" "+visits[i].description+"</td>"+
                               "<td>"+visits[i].time+"</td>"+
+                              "<td></td>"+
                             "</tr>";
             }
 
-            tablePoints+= "</table></td></tr>";
+            var activeRow = document.getElementById("row"+idDetour);
+            activeRow.setAttribute("onClick","hideVisits("+idDetour+","+visits.length+")");
             activeRow.insertAdjacentHTML("afterend", tablePoints);
           }
         });
       }
 
-      function hideVisits(idDetour) {
+      function hideVisits(idDetour, rowNumber) {
         var row = document.getElementById("row"+idDetour);
         row.setAttribute("onClick","showVisits("+idDetour+")");
-        var points = document.getElementById("points"+idDetour);
-        points.parentNode.removeChild(points);
+        for (i=0; i<rowNumber; ++i) {
+          var points = document.getElementById("points"+idDetour+"_"+i);
+          points.parentNode.removeChild(points);
+        }
       }
 
       function addDetourRow(data) {

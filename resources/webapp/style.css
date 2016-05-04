@@ -24,15 +24,15 @@
   font-weight:normal;
 }
 
+.finish-row:hover {
+  background-color:#FFFFCC;
+}
+
 .point-row {
-  background-color:#CCCCFF;
+  background-color:#EDF7FF;
   font-family:verdana;
   font-size:10pt;
   font-weight:normal;
-}
-
-.finish-row:hover {
-  background-color:#FFFFCC;
 }
 
 .unfinish-row {

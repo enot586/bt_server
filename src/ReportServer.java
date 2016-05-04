@@ -761,6 +761,7 @@ public class ReportServer {
             detourRow.put("id_point", i.id_point);
             detourRow.put("id_detour", detourId);
             detourRow.put("time", i.time);
+            detourRow.put("description", i.description);
 
             result.add(detourRow);
         }
