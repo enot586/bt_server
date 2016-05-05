@@ -25,7 +25,7 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="DatabaseDriver.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="DatabaseDriver.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/database/DatabaseDriver.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="269">
@@ -62,6 +62,16 @@
                 <element signature="method#removeLocalHistory#0;class#DatabaseDriver#0" expanded="false" />
                 <element signature="method#getPictures#0;class#DatabaseDriver#0" expanded="false" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="index.html" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/resources/webapp/index.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="240">
+              <caret line="353" column="61" selection-start-line="353" selection-start-column="61" selection-end-line="353" selection-end-column="61" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -201,8 +211,8 @@
         <option value="$PROJECT_DIR$/src/log4j.properties" />
         <option value="$PROJECT_DIR$/src/webserver/WebServer.java" />
         <option value="$PROJECT_DIR$/src/ReportServer.java" />
-        <option value="$PROJECT_DIR$/resources/webapp/index.html" />
         <option value="$PROJECT_DIR$/src/database/DatabaseDriver.java" />
+        <option value="$PROJECT_DIR$/resources/webapp/index.html" />
       </list>
     </option>
   </component>
@@ -711,7 +721,7 @@
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.44305238" sideWeight="0.42298287" order="9" side_tool="true" content_ui="tabs" x="1142" y="0" width="546" height="1058" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" show_stripe_button="false" weight="0.32959184" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.39749432" sideWeight="0.5378973" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.39749432" sideWeight="0.5378973" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.16564792" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Structure" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3893643" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -1143,14 +1153,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/resources/webapp/index.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-702">
-          <caret line="192" column="43" selection-start-line="192" selection-start-column="43" selection-end-line="192" selection-end-column="43" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/database/DatabaseDriver.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="269">
@@ -1187,6 +1189,14 @@
             <element signature="method#removeLocalHistory#0;class#DatabaseDriver#0" expanded="false" />
             <element signature="method#getPictures#0;class#DatabaseDriver#0" expanded="false" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/resources/webapp/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="240">
+          <caret line="353" column="61" selection-start-line="353" selection-start-column="61" selection-end-line="353" selection-end-column="61" />
+          <folding />
         </state>
       </provider>
     </entry>
