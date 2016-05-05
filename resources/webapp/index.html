@@ -189,7 +189,7 @@
           url: "/get-filtered-detour",
           type: "post",
           dataType: "json",
-          data: { userId: 0, routeId:0, rowNumber:30, startDate:"", finishDate:""},
+          data: { userId: 0, routeId:0, rowNumber:30, startDate1:"", startDate2:"", finishDate1:"", finishDate2:""},
           success: function(detour_table) {
             $(".finish-row").remove();
             for (i = 0; i<detour_table.length; ++i) {
@@ -229,14 +229,18 @@
         var userid = $("#filter_user_ option:selected").val();
         var routeid = $("#filter_route_ option:selected").val();
         var rowNum = $("#filter_row_number_").val();
-        var begindate = $("#filter_date_start_").val();
-        var enddate = $("#filter_date_finish_").val();
+        var startBeginDate = $("#filter_date_start_").val();
+        var startEndDate = $("#filter_date_start2_").val();
+        var finishBeginDate = $("#filter_date_finish_").val();
+        var finishEndDate = $("#filter_date_finish2_").val();
 
         $.ajax({
           url: "/get-filtered-detour",
           type: "post",
           dataType: "json",
-          data: { userId: userid, routeId:routeid, rowNumber:rowNum, startDate:begindate, finishDate:enddate},
+          data: { userId: userid, routeId:routeid, rowNumber:rowNum,
+                  startDate1:startBeginDate, startDate2:startEndDate,
+                  finishDate1:finishBeginDate, finishDate2:finishEndDate},
           success: function(detour_table) {
             $(".finish-row").remove();
             for (i = 0; i<detour_table.length; ++i) {
@@ -320,9 +324,17 @@
 
                 <tr>
                   <td colspan="3">
-                    Дата обхода(дд.мм.гггг чч.мм.сс):<br>
+                    Дата начала обхода(дд.мм.гггг чч.мм.сс):<br>
                     Начиная с: <input type="text" name="filter_date_start" id="filter_date_start_">
-                    Заканчивая по: <input type="text" name="filter_date_finish" id="filter_date_finish_">
+                    Заканчивая по: <input type="text" name="filter_date_start2" id="filter_date_start2_">
+                  </td>
+                </tr>
+
+                <tr>
+                  <td colspan="3">
+                    Дата конца обхода(дд.мм.гггг чч.мм.сс):<br>
+                    Начиная с: <input type="text" name="filter_date_finish" id="filter_date_finish_">
+                    Заканчивая по: <input type="text" name="filter_date_finish2" id="filter_date_finish2_">
                   </td>
                 </tr>
 

@@ -357,8 +357,10 @@ public class WebServer extends CommonServer {
                                                                     Integer.parseInt(request.getParameter("userId")),
                                                                     Integer.parseInt(request.getParameter("routeId")),
                                                                     Integer.parseInt(request.getParameter("rowNumber")),
-                                                                    request.getParameter("startDate"),
-                                                                    request.getParameter("finishDate")
+                                                                    request.getParameter("startDate1"),
+                                                                    request.getParameter("startDate2"),
+                                                                    request.getParameter("finishDate1"),
+                                                                    request.getParameter("finishDate2")
                                                                    );
             response.setCharacterEncoding("UTF-8");
             response.getWriter().println(responseJson.toString());

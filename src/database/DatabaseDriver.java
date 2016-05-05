@@ -68,7 +68,9 @@ public class DatabaseDriver {
         return result;
     }
 
-    public synchronized ArrayList<DetourData> getFilteredDetour(int userId, int routeId, int rowNumber, String startDate, String finishDate) {
+    public synchronized ArrayList<DetourData> getFilteredDetour(int userId, int routeId, int rowNumber,
+                                                                String startDate1, String startDate2,
+                                                                String finishDate1, String finishDate2) {
         ArrayList<DetourData> result = new ArrayList<DetourData>();
         String condition = new String();
 
@@ -87,20 +89,39 @@ public class DatabaseDriver {
 
         SimpleDateFormat userFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
         SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        if (startDate.length() > 0) {
+
+        if (startDate1.length() > 0) {
             try {
-                Date date = userFormat.parse(startDate);
+                Date date = userFormat.parse(startDate1);
                 if (condition.length() > 0) condition+=" AND ";
                 condition+= "(time_start>='"+dbFormat.format(date)+"')";
             } catch (ParseException e) {
             }
         }
 
-        if (finishDate.length() > 0) {
+        if (startDate2.length() > 0) {
             try {
-                Date date = userFormat.parse(finishDate);
+                Date date = userFormat.parse(startDate2);
                 if (condition.length() > 0) condition+=" AND ";
                 condition+= "(time_start<='"+dbFormat.format(date)+"')";
+            } catch (ParseException e) {
+            }
+        }
+
+        if (finishDate1.length() > 0) {
+            try {
+                Date date = userFormat.parse(finishDate1);
+                if (condition.length() > 0) condition+=" AND ";
+                condition+= "(time_stop>='"+dbFormat.format(date)+"')";
+            } catch (ParseException e) {
+            }
+        }
+
+        if (finishDate2.length() > 0) {
+            try {
+                Date date = userFormat.parse(finishDate2);
+                if (condition.length() > 0) condition+=" AND ";
+                condition+= "(time_stop<='"+dbFormat.format(date)+"')";
             } catch (ParseException e) {
             }
         }
@@ -220,10 +241,10 @@ public class DatabaseDriver {
 //                commonDatabaseStatement.execute("INSERT INTO users (fio, id_position, is_admin, user_in_system, user_in_archive)"+
 //                                                "VALUES ('"+"Пользователь"+i+"', 2, 0, 0, 0)");
 //            }
-//
+
 //            for (int i = 1; i < 1000; ++i) {
 //                commonDatabaseStatement.execute("INSERT INTO detour (id_user, id_route, id_shedule, time_start, time_stop, finished, send)"+
-//                        "VALUES ("+((i%30)+1)+","+((i%2)+1)+", 0, '2015-04-28 13:14:40', '2015-04-28 16:55:00', 1, 1)");
+//                        "VALUES ("+((i%30)+1)+","+((i%3)+1)+", 0, '2015-0"+((i%8)+1)+"-28 0"+((i%8)+1)+":14:40', '2015-0"+((i%8)+1)+"-28 0"+((i%8)+1)+":55:00', 1, 1)");
 //            }
 
         } catch (SQLException|ClassNotFoundException e) {
