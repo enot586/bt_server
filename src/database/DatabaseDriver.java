@@ -167,7 +167,7 @@ public class DatabaseDriver {
         return result;
     }
 
-    public synchronized ArrayList<VisitData> getVisitis(int detourId) {
+    public synchronized ArrayList<VisitData> getVisits(int detourId) {
         ArrayList<VisitData> result = new ArrayList<VisitData>();
         try {
             ResultSet rs = commonDatabaseStatement.executeQuery("SELECT _id_visit, id_point, time FROM visits WHERE id_detour="+detourId);
@@ -176,6 +176,7 @@ public class DatabaseDriver {
                 visit._id_visit = rs.getInt("_id_visit");
                 visit.id_point = rs.getInt("id_point");
                 visit.time = rs.getString("time");
+                visit.id_detour = detourId;
 
                 try {
                     SimpleDateFormat userFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
@@ -248,6 +249,20 @@ public class DatabaseDriver {
 //            }
 
         } catch (SQLException|ClassNotFoundException e) {
+            log.error(e);
+        }
+    }
+
+    public synchronized void close() {
+        try {
+            commonDatabaseStatement.close();
+            localDatabaseStatement.close();
+
+            commonDatabaseConnection.close();
+            localDatabaseConnection.close();
+
+            dbState = DatabaseState.CLOSE;
+        } catch (SQLException e) {
             log.error(e);
         }
     }

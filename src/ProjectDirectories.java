@@ -9,4 +9,7 @@ public class ProjectDirectories {
     public static final String commonDatabaseRelativePath   = directoryDatabase+"/"+commonDatabaseFileName;
     public static final String localDatabaseRelativePath    = directoryDatabase+"/"+localDatabaseFileName;
 
+    public static final String test_commonDatabaseRelativePath   = "src/tests/common-test.db3";
+    public static final String test_localDatabaseRelativePath    = "src/tests/local-test.db3";
+
 }

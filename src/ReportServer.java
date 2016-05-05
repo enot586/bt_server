@@ -755,7 +755,7 @@ public class ReportServer {
     }
 
     public static JSONArray getVisits(int detourId) {
-        ArrayList<VisitData> visits = databaseDriver.getVisitis(detourId);
+        ArrayList<VisitData> visits = databaseDriver.getVisits(detourId);
         JSONArray result = new JSONArray();
 
         for( VisitData i : visits) {
