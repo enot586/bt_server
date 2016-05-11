@@ -202,7 +202,7 @@ class BluetoothConnectionHandler implements Runnable {
         }
     }
 
-    synchronized private void sendTransaction(BufferedOutputStream senderStream, SimpleTransaction t) throws IOException {
+    synchronized protected void sendTransaction(BufferedOutputStream senderStream, SimpleTransaction t) throws IOException {
         //Отправляем заголовок
         try {
             senderStream.write(t.getHeader().toJSONString().getBytes());
@@ -262,7 +262,7 @@ class BluetoothConnectionHandler implements Runnable {
         return fileNameHandler.generateName(uniqPart, "tmp");
     }
 
-    private SimpleTransaction dataReceiving(BufferedInputStream receiverStream) throws NoSuchElementException {
+    protected SimpleTransaction dataReceiving(BufferedInputStream receiverStream) throws NoSuchElementException {
         try {
             if (receiverStream.available() == 0) {
                 throw new NoSuchElementException();

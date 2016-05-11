@@ -28,25 +28,10 @@ public class JSONReceiverTest {
     }
 
     @Test
-    public void isHeaderReceived() throws Exception {
-
-    }
-
-    @Test
-    public void getHeader() throws Exception {
-
-    }
-
-    @Test
-    public void getHeaderSizeInBytes() throws Exception {
-
-    }
-
-    @Test
     public void receiveHeader() throws Exception {
         byte[] receiveString = testRecevierPattern.getBytes();
         for (int i = 0; i < testRecevierPattern.length()-1; ++i) {
-            jr.receiveHeader(Arrays.copyOfRange(receiveString,i,i+1), 1);
+            jr.receiveHeader(Arrays.copyOfRange(receiveString, i, i+1), 1);
 
             if (jr.isHeaderReceived()) {
                 JSONObject header = jr.getHeader();
