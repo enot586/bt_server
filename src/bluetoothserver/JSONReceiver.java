@@ -39,6 +39,7 @@ class JSONReceiver {
         return jsonString.length();
     }
 
+    //fixme: фактически принимается только 1 байт, переделать на byte вместо byte[]
     public int receiveHeader(byte[] packetBuffer, int size) {
         byteIndex = 0;
         while (byteIndex < size) {
