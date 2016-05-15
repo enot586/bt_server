@@ -20,7 +20,6 @@ import org.json.simple.JSONObject;
 
 import javax.bluetooth.BluetoothStateException;
 import javax.servlet.AsyncContext;
-import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServlet;
@@ -36,14 +35,16 @@ public class WebServer extends CommonServer {
     private String siteAddress;
     private static Map< WebActionType, AsyncContext > webActions = new HashMap< WebActionType, AsyncContext >();
     private CommonUserInterface ui;
+    private ActionFromWeb webActionsHandler;
     private static Logger log = Logger.getLogger(ReportServer.class);
     private Thread threadLocalHandler;
 
-    WebServer(int port, String siteAddress_, CommonUserInterface messageForUser_) {
+    WebServer(int port, String siteAddress_, ActionFromWeb webActionsHandler_, CommonUserInterface messageForUser_) {
         setState(ServerState.SERVER_INITIALIZING);
         server = new Server(port);
         siteAddress = siteAddress_;
         ui = messageForUser_;
+        webActionsHandler = webActionsHandler_;
     }
 
     private URI getWebRootResourceUri() throws FileNotFoundException, URISyntaxException {
@@ -192,7 +193,7 @@ public class WebServer extends CommonServer {
         protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
         {
             try {
-                ReportServer.bluetoothServerStart();
+                webActionsHandler.bluetoothServerStart();
                 ui.sendUserMessage("Запуск bluetooth-сервера");
             } catch (Exception e) {
                 log.error(e);
@@ -203,7 +204,7 @@ public class WebServer extends CommonServer {
                 response.setContentType("text/html");
                 response.setStatus(HttpServletResponse.SC_OK);
                 JSONObject responseStatus = new JSONObject();
-                responseStatus.put("status", ReportServer.getStateBluetoothServer().toString());
+                responseStatus.put("status", webActionsHandler.getStateBluetoothServer().toString());
                 response.getWriter().println(responseStatus.toString());
             } catch (BluetoothStateException e) {
                 log.error(e);
@@ -219,7 +220,7 @@ public class WebServer extends CommonServer {
         protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
         {
             try {
-                ReportServer.bluetoothServerStop();
+                webActionsHandler.bluetoothServerStop();
             } catch (Exception e) {
                 log.error(e);
             }
@@ -228,7 +229,7 @@ public class WebServer extends CommonServer {
                 response.setContentType("text/html");
                 response.setStatus(HttpServletResponse.SC_OK);
                 JSONObject responseStatus = new JSONObject();
-                responseStatus.put("status", ReportServer.getStateBluetoothServer().toString());
+                responseStatus.put("status", webActionsHandler.getStateBluetoothServer().toString());
                 response.getWriter().println(responseStatus.toString());
             } catch (BluetoothStateException e) {
                 log.error(e);
@@ -246,7 +247,7 @@ public class WebServer extends CommonServer {
                 response.setContentType("text/html");
                 response.setStatus(HttpServletResponse.SC_OK);
                 JSONObject responseStatus = new JSONObject();
-                responseStatus.put("status", ReportServer.getStateBluetoothServer().toString());
+                responseStatus.put("status", webActionsHandler.getStateBluetoothServer().toString());
                 response.getWriter().println(responseStatus.toString());
             } catch (BluetoothStateException e) {
                 log.error(e);
@@ -284,23 +285,10 @@ public class WebServer extends CommonServer {
                 response.setContentType("text/html");
                 response.setStatus(HttpServletResponse.SC_OK);
 
-                DatabaseDriver databaseDriver = ReportServer.getDatabaseDriver();
-                String[] messages = databaseDriver.getUserMessages();
-                String[] dates = databaseDriver.getUserMessagesDate();
+                JSONArray responseJson = webActionsHandler.getOldUserMessageHandler();
 
-                JSONArray fullresponse = new JSONArray();
-
-                for(int i = 0; i < messages.length; ++i) {
-                    if ((dates[i] != null) && (messages[i]!= null)) {
-                        JSONObject responseJson = new JSONObject();
-                        responseJson.put("date", dates[i]);
-                        responseJson.put("text", messages[i]);
-
-                        fullresponse.add(responseJson);
-                    }
-                }
                 response.setCharacterEncoding("UTF-8");
-                response.getWriter().println(fullresponse.toString());
+                response.getWriter().println(responseJson.toString());
             } catch (BluetoothStateException e) {
                 log.error(e);
             }
@@ -314,7 +302,7 @@ public class WebServer extends CommonServer {
             response.setStatus(HttpServletResponse.SC_OK);
 
             JSONObject responseJson = new JSONObject();
-            responseJson.put("mac", ReportServer.getBluetoothMacAddress());
+            responseJson.put("mac", webActionsHandler.getBluetoothMacAddress());
 
             response.setCharacterEncoding("UTF-8");
             response.getWriter().println(responseJson.toString());
@@ -327,7 +315,7 @@ public class WebServer extends CommonServer {
             response.setContentType("text/html");
             response.setStatus(HttpServletResponse.SC_OK);
 
-            JSONArray responseJson = ReportServer.getUsersList();
+            JSONArray responseJson = webActionsHandler.getUsersList();
 
             response.setCharacterEncoding("UTF-8");
             response.getWriter().println(responseJson.toString());
@@ -340,7 +328,7 @@ public class WebServer extends CommonServer {
             response.setContentType("text/html");
             response.setStatus(HttpServletResponse.SC_OK);
 
-            JSONArray responseJson = ReportServer.getRoutesList();
+            JSONArray responseJson = webActionsHandler.getRoutesList();
 
             response.setCharacterEncoding("UTF-8");
             response.getWriter().println(responseJson.toString());
@@ -353,15 +341,15 @@ public class WebServer extends CommonServer {
             response.setContentType("text/html");
             response.setStatus(HttpServletResponse.SC_OK);
 
-            JSONArray responseJson = ReportServer.getFilteredDetour(
-                                                                    Integer.parseInt(request.getParameter("userId")),
-                                                                    Integer.parseInt(request.getParameter("routeId")),
-                                                                    Integer.parseInt(request.getParameter("rowNumber")),
-                                                                    request.getParameter("startDate1"),
-                                                                    request.getParameter("startDate2"),
-                                                                    request.getParameter("finishDate1"),
-                                                                    request.getParameter("finishDate2")
-                                                                   );
+            JSONArray responseJson = webActionsHandler.getFilteredDetour(
+                                                                Integer.parseInt(request.getParameter("userId")),
+                                                                Integer.parseInt(request.getParameter("routeId")),
+                                                                Integer.parseInt(request.getParameter("rowNumber")),
+                                                                request.getParameter("startDate1"),
+                                                                request.getParameter("startDate2"),
+                                                                request.getParameter("finishDate1"),
+                                                                request.getParameter("finishDate2")
+                                                               );
             response.setCharacterEncoding("UTF-8");
             response.getWriter().println(responseJson.toString());
         }
@@ -373,7 +361,7 @@ public class WebServer extends CommonServer {
             response.setContentType("text/html");
             response.setStatus(HttpServletResponse.SC_OK);
 
-            JSONArray responseJson = ReportServer.getVisits(Integer.parseInt(request.getParameter("detourId")));
+            JSONArray responseJson = webActionsHandler.getVisits(Integer.parseInt(request.getParameter("detourId")));
 
             response.setCharacterEncoding("UTF-8");
             response.getWriter().println(responseJson.toString());

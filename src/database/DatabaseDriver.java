@@ -305,7 +305,7 @@ public class DatabaseDriver {
         }
     }
 
-    public synchronized void runScript(boolean isAdmin, String clientAddress, SqlCommandList batch, boolean isNeedToIncrementVersion) throws SQLException {
+    public synchronized void runScript(boolean isAdmin, String serverAddress, String clientAddress, SqlCommandList batch, boolean isNeedToIncrementVersion) throws SQLException {
         try {
             commonDatabaseConnection.setAutoCommit(false);
             localDatabaseConnection.setAutoCommit(false);
@@ -328,7 +328,7 @@ public class DatabaseDriver {
 
             //если все этапы прошли корректно увеличиваем версию в базе
             if (isNeedToIncrementVersion) {
-                incrementDatabaseVersion(ReportServer.getBluetoothMacAddress());
+                incrementDatabaseVersion(serverAddress);
             }
 
             setClientVersion(clientAddress, getDatabaseVersion());
@@ -576,7 +576,7 @@ public class DatabaseDriver {
         return rs.getString("path_picture_route");
     }
 
-    public synchronized void addFileToHistory(Path file, boolean isNeedToIncrementVersion) throws SQLException {
+    public synchronized void addFileToHistory(String bluetoothMacAddress, Path file, boolean isNeedToIncrementVersion) throws SQLException {
         try {
             commonDatabaseConnection.setAutoCommit(false);
             localDatabaseConnection.setAutoCommit(false);
@@ -584,7 +584,7 @@ public class DatabaseDriver {
             //если все этапы прошли корректно увеличиваем версию
             if (isNeedToIncrementVersion) {
                 setFileToHistory(file, getDatabaseVersion()+1);
-                incrementDatabaseVersion(ReportServer.getBluetoothMacAddress());
+                incrementDatabaseVersion(bluetoothMacAddress);
             }
             else
             {

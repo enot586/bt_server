@@ -1,5 +1,6 @@
 package reportserver;
 
+import javax.bluetooth.BluetoothStateException;
 import javax.bluetooth.LocalDevice;
 import javax.servlet.AsyncContext;
 import java.io.*;
@@ -20,12 +21,13 @@ public class ReportServer {
 
     private static final int versionMajor = 1;
     private static final int versionMinor = 0;
-    private static final int versionBuild = 11;
+    private static final int versionBuild = 13;
 
     private static WebServer webServer;
     private static BluetoothServer bluetoothServer;
     private static DatabaseDriver databaseDriver;
     private static FeedbackUsersMessage userFeedback;
+    private static WebActionsHandler userWebActionsHandler;
 
     private static GroupTransaction groupTransaction;
 
@@ -35,26 +37,19 @@ public class ReportServer {
 
     private static final Logger log = Logger.getLogger(ReportServer.class);
 
-    private static void printConsoleHelp()  {
-        //String ver = ReportServer.class.getPackage().getImplementationVersion();
-        System.out.println("reportserver v"+versionMajor+"."+versionMinor+"build"+versionBuild+"\n"+
-                           "Copyright (C) 2016 M&D, Inc.");
-        //usage format:
-        //Usage: reportserver [-aDde] [-f | -g] [-n number] [-b b_arg | -c c_arg] req1 req2 [opt1 [opt2]]
-        System.out.println("Usage: reportserver port");
-        System.out.println("\tport: web-server port number");
-    }
-
     public static void main(String[] args) throws IOException, InterruptedException {
-        //PropertyConfigurator.configure("log4j.properties");
         log.info("Application status:\t\t[INIT]");
 
         String logMessage = "Application database driver\t\t";
-
         try {
             databaseDriver = new DatabaseDriver();
             databaseDriver.init(ProjectDirectories.commonDatabaseRelativePath,
                                 ProjectDirectories.localDatabaseRelativePath);
+
+            LocalDevice ld = LocalDevice.getLocalDevice();
+            databaseDriver.initDatabaseVersion(ld.getBluetoothAddress());
+
+            userFeedback = new FeedbackUsersMessage(databaseDriver);
             log.info(logMessage+"[OK]");
         } catch(Exception e) {
             log.info(logMessage+"[FAIL]");
@@ -62,28 +57,33 @@ public class ReportServer {
             return;
         }
 
-        logMessage = "Web server init\t\t";
-
+        logMessage = "Bluetooth driver init\t\t";
         try {
+            bluetoothServer = new BluetoothServer(userFeedback);
+            bluetoothServer.init();
+            log.info(logMessage + "[OK]");
+        } catch(Exception e) {
+            log.info(logMessage+"[FAIL]");
+            log.error(e);
+            return;
+        }
+
+        logMessage = "Web server init\t\t";
+        try {
+            userWebActionsHandler = new WebActionsHandler(bluetoothServer, databaseDriver);
+
             try {
                 int port = Integer.parseInt(args[0]);
-                userFeedback = new FeedbackUsersMessage(databaseDriver);
-                webServer = new WebServer(port, "webapp", userFeedback);
+                webServer = new WebServer(port, "webapp", userWebActionsHandler, userFeedback);
             } catch(Exception e) {
                 System.out.println("Error: incorrect port number.");
+                log.error(e);
                 printConsoleHelp();
                 return;
             }
 
             webServer.init();
             log.info(logMessage+"[OK]");
-
-            logMessage = "Bluetooth driver init\t\t";
-            bluetoothServer = new BluetoothServer(userFeedback);
-            bluetoothServer.init();
-            log.info(logMessage+"[OK]");
-
-            databaseDriver.initDatabaseVersion(bluetoothServer.getLocalHostMacAddress());
 
             logMessage = "Web server start\t\t";
             webServer.start();
@@ -98,7 +98,7 @@ public class ReportServer {
 
         //Bluetooth-сервер запускается при старте
         try {
-            bluetoothServerStart();
+            userWebActionsHandler.bluetoothServerStart();
             log.info("Bluetooth status:\t\t[RUNNING]");
         } catch (Exception e) {
             log.error(e);
@@ -112,6 +112,16 @@ public class ReportServer {
             bluetoothTransactionHandler(bluetoothServer);
             sleep(500);
         }
+    }
+
+    private static void printConsoleHelp()  {
+        //String ver = ReportServer.class.getPackage().getImplementationVersion();
+        System.out.println("reportserver v"+versionMajor+"."+versionMinor+"build"+versionBuild+"\n"+
+                "Copyright (C) 2016 M&D, Inc.");
+        //usage format:
+        //Usage: reportserver [-aDde] [-f | -g] [-n number] [-b b_arg | -c c_arg] req1 req2 [opt1 [opt2]]
+        System.out.println("Usage: reportserver port");
+        System.out.println("\tport: web-server port number");
     }
 
     private static void bluetoothTransactionHandler(BluetoothServer bt) {
@@ -269,7 +279,8 @@ public class ReportServer {
         boolean isNeedToIncrementDbVersion = (currentConnectionId != bt.getConnectionId());
 
         try {
-            databaseDriver.addFileToHistory(scriptFile.toPath(), isNeedToIncrementDbVersion);
+            databaseDriver.addFileToHistory(bt.getLocalHostMacAddress(),
+                                            scriptFile.toPath(), isNeedToIncrementDbVersion);
             databaseDriver.setClientVersion(bt.getRemoteDeviceBluetoothAddress(), databaseDriver.getDatabaseVersion());
         } catch (IOException|SQLException e) {
             log.error(e);
@@ -507,7 +518,8 @@ public class ReportServer {
             //сверяем connectionId и если не совпадает увеличиваем версию,
             //если connectionId одинаковый, считаем все изменения проходят в рамках текущей версии
             boolean isNeedToIncrementDbVersion = (currentConnectionId != bt.getConnectionId());
-            databaseDriver.runScript(isAdmin, bt.getRemoteDeviceBluetoothAddress(), sqlScript, isNeedToIncrementDbVersion);
+            databaseDriver.runScript(isAdmin, bt.getLocalHostMacAddress(), bt.getRemoteDeviceBluetoothAddress(),
+                                    sqlScript, isNeedToIncrementDbVersion);
 
             currentConnectionId = bt.getConnectionId();
         } catch (IOException|SQLException e) {
@@ -522,31 +534,6 @@ public class ReportServer {
             //по каким-то причинам ajax соединение установлено не было
             log.warn(e);
         }
-    }
-
-    public static CommonServer.ServerState getStateBluetoothServer() {
-        return bluetoothServer.getServerState();
-    }
-
-    public static void bluetoothServerStart() throws Exception {
-        LocalDevice bluetoothLocalDevice = LocalDevice.getLocalDevice();
-        bluetoothServer.start();
-    }
-
-    public static void bluetoothServerStop() throws Exception {
-        try {
-            bluetoothServer.stop();
-        } catch(Exception e) {
-            log.error(e);
-        }
-    }
-
-    public static String getBluetoothMacAddress() {
-        return bluetoothServer.getLocalHostMacAddress();
-    }
-
-    public static DatabaseDriver getDatabaseDriver() {
-        return databaseDriver;
     }
 
     private static LinkedList<SimpleTransaction> addSqlHistoryToGroupTransaction(long userId,
@@ -694,82 +681,4 @@ public class ReportServer {
         return result;
     }
 
-    public static JSONArray getUsersList() {
-        ArrayList<UserData> users = databaseDriver.getUsersList();
-        JSONArray result = new JSONArray();
-
-        for( UserData i : users) {
-            JSONObject user = new JSONObject();
-
-            user.put("id", i._id_user);
-            user.put("fio", i.fio);
-            user.put("position", i.id_position);
-
-            result.add(user);
-        }
-
-        return result;
-    }
-
-    public static JSONArray getRoutesList() {
-        ArrayList<RouteData> routes = databaseDriver.getRoutesList();
-        JSONArray result = new JSONArray();
-
-        for( RouteData i : routes) {
-            JSONObject route = new JSONObject();
-
-            route.put("id", i._id_route);
-            route.put("name", i.name);
-
-            result.add(route);
-        }
-
-        return result;
-    }
-
-    public static JSONArray getFilteredDetour(int userId, int routeId, int rowNumber, String startDate1,
-                                              String startDate2, String finishDate1, String finishDate2) {
-
-        ArrayList<DetourData> detour = databaseDriver.getFilteredDetour(userId, routeId, rowNumber,
-                                                                        startDate1, startDate2,
-                                                                        finishDate1, finishDate2);
-        JSONArray result = new JSONArray();
-
-        for( DetourData i : detour) {
-            JSONObject detourRow = new JSONObject();
-
-            detourRow.put("_id_detour", i._id_detour);
-
-            String user_name = databaseDriver.getUserName(i.id_user);
-            detourRow.put("user_name", user_name);
-
-            String route_name = databaseDriver.getRouteName(i.id_route);
-            detourRow.put("route_name", route_name);
-
-            detourRow.put("start_time", i.time_start);
-            detourRow.put("end_time", i.time_stop);
-            result.add(detourRow);
-        }
-
-        return result;
-    }
-
-    public static JSONArray getVisits(int detourId) {
-        ArrayList<VisitData> visits = databaseDriver.getVisits(detourId);
-        JSONArray result = new JSONArray();
-
-        for( VisitData i : visits) {
-            JSONObject detourRow = new JSONObject();
-
-            detourRow.put("_id_visit", i._id_visit);
-            detourRow.put("id_point", i.id_point);
-            detourRow.put("id_detour", detourId);
-            detourRow.put("time", i.time);
-            detourRow.put("description", i.description);
-
-            result.add(detourRow);
-        }
-
-        return result;
-    }
 }
