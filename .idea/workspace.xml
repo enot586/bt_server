@@ -28,26 +28,11 @@
       <file leaf-file-name="ReportServer.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/ReportServer.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="230">
-              <caret line="99" column="13" selection-start-line="99" selection-start-column="13" selection-end-line="99" selection-end-column="13" />
+            <state relative-caret-position="321">
+              <caret line="80" column="0" selection-start-line="80" selection-start-column="0" selection-end-line="80" selection-end-column="0" />
               <folding>
+                <element signature="imports" expanded="true" />
                 <element signature="method#printConsoleHelp#0;class#ReportServer#0" expanded="false" />
-                <element signature="method#bluetoothTransactionHandler#0;class#ReportServer#0" expanded="false" />
-                <element signature="method#bluetoothReplaceDatabaseTransactionHandler#0;class#ReportServer#0" expanded="false" />
-                <element signature="method#bluetoothBinaryFileTransactionHandler#0;class#ReportServer#0" expanded="false" />
-                <element signature="method#bluetoothSynchTransactionHandler#0;class#ReportServer#0" expanded="false" />
-                <element signature="class#16658:17633" expanded="false" />
-                <element signature="method#success#0;class#16658:17633" expanded="false" />
-                <element signature="method#fail#0;class#16658:17633" expanded="false" />
-                <element signature="class#19352:20399" expanded="false" />
-                <element signature="method#fail#0;class#19352:20399" expanded="false" />
-                <element signature="method#bluetoothSqlQueriesTransactionHandler#0;class#ReportServer#0" expanded="false" />
-                <element signature="method#addSqlHistoryToGroupTransaction#0;class#ReportServer#0" expanded="false" />
-                <element signature="method#addPicturesToGroupTransaction#0;class#ReportServer#0" expanded="false" />
-                <element signature="method#addReplaceDatabaseToGroupTransaction#0;class#ReportServer#0" expanded="false" />
-                <element signature="method#addEndTransactionToGroupTransaction#0;class#ReportServer#0" expanded="false" />
-                <element signature="method#addSessionCloseToGroupTransaction#0;class#ReportServer#0" expanded="false" />
-                <element signature="method#addPicturesFromTableToGroupTransaction#0;class#ReportServer#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -69,7 +54,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/run.bat" />
         <option value="$PROJECT_DIR$/src/webserver/ServletBtStart.java" />
         <option value="$PROJECT_DIR$/resources/webapp/routes-table.jsp" />
         <option value="$PROJECT_DIR$/src/webserver/ServletForwarder.java" />
@@ -120,6 +104,7 @@
         <option value="$PROJECT_DIR$/src/webserver/WebActionsHandler.java" />
         <option value="$PROJECT_DIR$/src/database/DatabaseDriver.java" />
         <option value="$PROJECT_DIR$/src/ReportServer.java" />
+        <option value="$PROJECT_DIR$/src/bluetoothserver/BluetoothTransactionHandler.java" />
       </list>
     </option>
   </component>
@@ -180,6 +165,8 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
+      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -282,8 +269,6 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="Scope" />
-      <pane id="PackagesPane" />
       <pane id="Scratches" />
     </panes>
   </component>
@@ -674,7 +659,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1696" height="1036" extended-state="7" />
+    <frame x="-8" y="-8" width="1696" height="1036" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -686,8 +671,8 @@
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.45899773" sideWeight="0.5378973" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2096577" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.285877" sideWeight="0.5287286" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.20171149" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.19248292" sideWeight="0.5287286" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3893643" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -739,7 +724,7 @@
       <breakpoints-dialog>
         <breakpoints-dialog />
       </breakpoints-dialog>
-      <option name="time" value="484" />
+      <option name="time" value="486" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -748,13 +733,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_25/src.zip!/java/util/concurrent/locks/ReentrantLock.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-977">
-          <caret line="283" column="16" selection-start-line="283" selection-start-column="16" selection-end-line="283" selection-end-column="16" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/CommonUserInterface.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="120">
@@ -936,9 +914,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-120">
           <caret line="24" column="0" selection-start-line="24" selection-start-column="0" selection-end-line="24" selection-end-column="0" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -988,7 +963,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-617">
           <caret line="131" column="7" selection-start-line="131" selection-start-column="7" selection-end-line="131" selection-end-column="7" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1059,48 +1033,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="140">
           <caret line="7" column="31" selection-start-line="7" selection-start-column="31" selection-end-line="7" selection-end-column="31" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/webserver/WebServer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="280">
-          <caret line="40" column="0" selection-start-line="40" selection-start-column="0" selection-end-line="40" selection-end-column="0" />
-          <folding>
-            <element signature="method#WebServer#0;class#WebServer#0" expanded="false" />
-            <element signature="method#getWebRootResourceUri#0;class#WebServer#0" expanded="false" />
-            <element signature="method#init#0;class#WebServer#0" expanded="false" />
-            <element signature="method#stop#0;class#WebServer#0" expanded="false" />
-            <element signature="method#start#0;class#WebServer#0" expanded="false" />
-            <element signature="method#putWebAction#0;class#WebServer#0" expanded="false" />
-            <element signature="method#popWebAction#0;class#WebServer#0" expanded="false" />
-            <element signature="method#userMessageHandler#0;class#WebServer#0" expanded="false" />
-            <element signature="class#ServletBtStart#0;class#WebServer#0" expanded="false" />
-            <element signature="method#doGet#0;class#ServletBtStart#0;class#WebServer#0" expanded="false" />
-            <element signature="class#ServletBtStop#0;class#WebServer#0" expanded="false" />
-            <element signature="method#doGet#0;class#ServletBtStop#0;class#WebServer#0" expanded="false" />
-            <element signature="class#ServletBtStatus#0;class#WebServer#0" expanded="false" />
-            <element signature="method#doGet#0;class#ServletBtStatus#0;class#WebServer#0" expanded="false" />
-            <element signature="class#ServletTableRefresh#0;class#WebServer#0" expanded="false" />
-            <element signature="method#doGet#0;class#ServletTableRefresh#0;class#WebServer#0" expanded="false" />
-            <element signature="class#ServletUserMessageHandler#0;class#WebServer#0" expanded="false" />
-            <element signature="method#doGet#0;class#ServletUserMessageHandler#0;class#WebServer#0" expanded="false" />
-            <element signature="class#ServletGetOldUserMessageHandler#0;class#WebServer#0" expanded="false" />
-            <element signature="method#doPost#0;class#ServletGetOldUserMessageHandler#0;class#WebServer#0" expanded="false" />
-            <element signature="class#ServletGetBluetoothMac#0;class#WebServer#0" expanded="false" />
-            <element signature="method#doGet#0;class#ServletGetBluetoothMac#0;class#WebServer#0" expanded="false" />
-            <element signature="class#ServletGetUsersList#0;class#WebServer#0" expanded="false" />
-            <element signature="method#doPost#0;class#ServletGetUsersList#0;class#WebServer#0" expanded="false" />
-            <element signature="class#ServletGetRoutesList#0;class#WebServer#0" expanded="false" />
-            <element signature="method#doPost#0;class#ServletGetRoutesList#0;class#WebServer#0" expanded="false" />
-            <element signature="class#ServletGetFilteredDetour#0;class#WebServer#0" expanded="false" />
-            <element signature="method#doPost#0;class#ServletGetFilteredDetour#0;class#WebServer#0" expanded="false" />
-            <element signature="class#ServletGetVisits#0;class#WebServer#0" expanded="false" />
-            <element signature="method#doPost#0;class#ServletGetVisits#0;class#WebServer#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1108,41 +1040,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1600">
           <caret line="577" column="0" selection-start-line="577" selection-start-column="0" selection-end-line="577" selection-end-column="0" />
-          <folding>
-            <element signature="class#DatabaseState#0;class#DatabaseDriver#0" expanded="false" />
-            <element signature="method#getUsersList#0;class#DatabaseDriver#0" expanded="false" />
-            <element signature="method#getRoutesList#0;class#DatabaseDriver#0" expanded="false" />
-            <element signature="method#getFilteredDetour#0;class#DatabaseDriver#0" expanded="false" />
-            <element signature="method#getVisits#0;class#DatabaseDriver#0" expanded="false" />
-            <element signature="method#getPointDescription#0;class#DatabaseDriver#0" expanded="false" />
-            <element signature="method#init#0;class#DatabaseDriver#0" expanded="false" />
-            <element signature="e#8652#8688#0" expanded="false" />
-            <element signature="method#close#0;class#DatabaseDriver#0" expanded="false" />
-            <element signature="method#backupCurrentDatabase#0;class#DatabaseDriver#0" expanded="false" />
-            <element signature="method#runScript#0;class#DatabaseDriver#0" expanded="false" />
-            <element signature="method#replaceCommonBase#0;class#DatabaseDriver#0" expanded="false" />
-            <element signature="method#isUserAdmin#0;class#DatabaseDriver#0" expanded="false" />
-            <element signature="method#isUserAcceptableTableInQuery#0;class#DatabaseDriver#0" expanded="false" />
-            <element signature="method#checkClientVersion#0;class#DatabaseDriver#0" expanded="false" />
-            <element signature="method#setClientVersion#0;class#DatabaseDriver#0" expanded="false" />
-            <element signature="method#getClientHistory#0;class#DatabaseDriver#0" expanded="false" />
-            <element signature="method#getClientPicturesHistory#0;class#DatabaseDriver#0" expanded="false" />
-            <element signature="method#setToHistory#0;class#DatabaseDriver#0" expanded="false" />
-            <element signature="method#setFileToHistory#0;class#DatabaseDriver#0" expanded="false" />
-            <element signature="method#getDatabaseVersion#1;class#DatabaseDriver#0" expanded="false" />
-            <element signature="method#incrementDatabaseVersion#0;class#DatabaseDriver#0" expanded="false" />
-            <element signature="method#initDatabaseVersion#0;class#DatabaseDriver#0" expanded="false" />
-            <element signature="method#getUserMessageNumber#0;class#DatabaseDriver#0" expanded="false" />
-            <element signature="method#getUserMessages#0;class#DatabaseDriver#0" expanded="false" />
-            <element signature="method#getUserMessagesDate#0;class#DatabaseDriver#0" expanded="false" />
-            <element signature="method#addUserMessageToDatabase#0;class#DatabaseDriver#0" expanded="false" />
-            <element signature="method#getUserName#0;class#DatabaseDriver#0" expanded="false" />
-            <element signature="method#getRouteName#0;class#DatabaseDriver#0" expanded="false" />
-            <element signature="method#getRoutesTablePathRoutePicture#0;class#DatabaseDriver#0" expanded="false" />
-            <element signature="method#addFileToHistory#0;class#DatabaseDriver#0" expanded="false" />
-            <element signature="method#removeLocalHistory#0;class#DatabaseDriver#0" expanded="false" />
-            <element signature="method#getPictures#0;class#DatabaseDriver#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1170,12 +1067,9 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/webserver/WebActionsHandler.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="205">
-          <caret line="21" column="11" selection-start-line="21" selection-start-column="11" selection-end-line="21" selection-end-column="29" />
+        <state relative-caret-position="440">
+          <caret line="26" column="0" selection-start-line="26" selection-start-column="0" selection-end-line="26" selection-end-column="0" />
           <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#1054#1055#0" expanded="true" />
-            <element signature="e#1110#1111#0" expanded="true" />
             <element signature="method#getUsersList#0;class#WebActionsHandler#0" expanded="false" />
             <element signature="method#getRoutesList#0;class#WebActionsHandler#0" expanded="false" />
             <element signature="method#getFilteredDetour#0;class#WebActionsHandler#0" expanded="false" />
@@ -1185,28 +1079,77 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/webserver/WebServer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="280">
+          <caret line="40" column="0" selection-start-line="40" selection-start-column="0" selection-end-line="40" selection-end-column="0" />
+          <folding>
+            <element signature="method#getWebRootResourceUri#0;class#WebServer#0" expanded="false" />
+            <element signature="method#init#0;class#WebServer#0" expanded="false" />
+            <element signature="method#stop#0;class#WebServer#0" expanded="false" />
+            <element signature="method#start#0;class#WebServer#0" expanded="false" />
+            <element signature="method#putWebAction#0;class#WebServer#0" expanded="false" />
+            <element signature="method#popWebAction#0;class#WebServer#0" expanded="false" />
+            <element signature="method#userMessageHandler#0;class#WebServer#0" expanded="false" />
+            <element signature="class#ServletBtStart#0;class#WebServer#0" expanded="false" />
+            <element signature="method#doGet#0;class#ServletBtStart#0;class#WebServer#0" expanded="false" />
+            <element signature="class#ServletBtStop#0;class#WebServer#0" expanded="false" />
+            <element signature="method#doGet#0;class#ServletBtStop#0;class#WebServer#0" expanded="false" />
+            <element signature="class#ServletBtStatus#0;class#WebServer#0" expanded="false" />
+            <element signature="method#doGet#0;class#ServletBtStatus#0;class#WebServer#0" expanded="false" />
+            <element signature="class#ServletTableRefresh#0;class#WebServer#0" expanded="false" />
+            <element signature="method#doGet#0;class#ServletTableRefresh#0;class#WebServer#0" expanded="false" />
+            <element signature="class#ServletUserMessageHandler#0;class#WebServer#0" expanded="false" />
+            <element signature="class#ServletGetOldUserMessageHandler#0;class#WebServer#0" expanded="false" />
+            <element signature="method#doPost#0;class#ServletGetOldUserMessageHandler#0;class#WebServer#0" expanded="false" />
+            <element signature="class#ServletGetBluetoothMac#0;class#WebServer#0" expanded="false" />
+            <element signature="method#doGet#0;class#ServletGetBluetoothMac#0;class#WebServer#0" expanded="false" />
+            <element signature="class#ServletGetUsersList#0;class#WebServer#0" expanded="false" />
+            <element signature="method#doPost#0;class#ServletGetUsersList#0;class#WebServer#0" expanded="false" />
+            <element signature="class#ServletGetRoutesList#0;class#WebServer#0" expanded="false" />
+            <element signature="method#doPost#0;class#ServletGetRoutesList#0;class#WebServer#0" expanded="false" />
+            <element signature="class#ServletGetFilteredDetour#0;class#WebServer#0" expanded="false" />
+            <element signature="method#doPost#0;class#ServletGetFilteredDetour#0;class#WebServer#0" expanded="false" />
+            <element signature="class#ServletGetVisits#0;class#WebServer#0" expanded="false" />
+            <element signature="method#doPost#0;class#ServletGetVisits#0;class#WebServer#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/bluetoothserver/BluetoothTransactionHandler.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1140">
+          <caret line="595" column="0" selection-start-line="595" selection-start-column="0" selection-end-line="595" selection-end-column="0" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="method#BluetoothTransactionHandler#0;class#BluetoothTransactionHandler#0" expanded="false" />
+            <element signature="method#run#0;class#BluetoothTransactionHandler#0" expanded="false" />
+            <element signature="method#bluetoothReplaceDatabaseTransactionHandler#0;class#BluetoothTransactionHandler#0" expanded="false" />
+            <element signature="method#bluetoothBinaryFileTransactionHandler#0;class#BluetoothTransactionHandler#0" expanded="false" />
+            <element signature="method#bluetoothSynchTransactionHandler#0;class#BluetoothTransactionHandler#0" expanded="false" />
+            <element signature="class#13665:14712" expanded="false" />
+            <element signature="method#success#0;class#13665:14712" expanded="false" />
+            <element signature="method#fail#0;class#13665:14712" expanded="false" />
+            <element signature="class#16435:17554" expanded="false" />
+            <element signature="method#fail#0;class#16435:17554" expanded="false" />
+            <element signature="method#bluetoothSqlQueriesTransactionHandler#0;class#BluetoothTransactionHandler#0" expanded="false" />
+            <element signature="method#addSqlHistoryToGroupTransaction#0;class#BluetoothTransactionHandler#0" expanded="false" />
+            <element signature="method#addPicturesToGroupTransaction#0;class#BluetoothTransactionHandler#0" expanded="false" />
+            <element signature="method#addReplaceDatabaseToGroupTransaction#0;class#BluetoothTransactionHandler#0" expanded="false" />
+            <element signature="method#addEndTransactionToGroupTransaction#0;class#BluetoothTransactionHandler#0" expanded="false" />
+            <element signature="method#addSessionCloseToGroupTransaction#0;class#BluetoothTransactionHandler#0" expanded="false" />
+            <element signature="method#addPicturesFromTableToGroupTransaction#0;class#BluetoothTransactionHandler#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/ReportServer.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="230">
-          <caret line="99" column="13" selection-start-line="99" selection-start-column="13" selection-end-line="99" selection-end-column="13" />
+        <state relative-caret-position="321">
+          <caret line="80" column="0" selection-start-line="80" selection-start-column="0" selection-end-line="80" selection-end-column="0" />
           <folding>
+            <element signature="imports" expanded="true" />
             <element signature="method#printConsoleHelp#0;class#ReportServer#0" expanded="false" />
-            <element signature="method#bluetoothTransactionHandler#0;class#ReportServer#0" expanded="false" />
-            <element signature="method#bluetoothReplaceDatabaseTransactionHandler#0;class#ReportServer#0" expanded="false" />
-            <element signature="method#bluetoothBinaryFileTransactionHandler#0;class#ReportServer#0" expanded="false" />
-            <element signature="method#bluetoothSynchTransactionHandler#0;class#ReportServer#0" expanded="false" />
-            <element signature="class#16658:17633" expanded="false" />
-            <element signature="method#success#0;class#16658:17633" expanded="false" />
-            <element signature="method#fail#0;class#16658:17633" expanded="false" />
-            <element signature="class#19352:20399" expanded="false" />
-            <element signature="method#fail#0;class#19352:20399" expanded="false" />
-            <element signature="method#bluetoothSqlQueriesTransactionHandler#0;class#ReportServer#0" expanded="false" />
-            <element signature="method#addSqlHistoryToGroupTransaction#0;class#ReportServer#0" expanded="false" />
-            <element signature="method#addPicturesToGroupTransaction#0;class#ReportServer#0" expanded="false" />
-            <element signature="method#addReplaceDatabaseToGroupTransaction#0;class#ReportServer#0" expanded="false" />
-            <element signature="method#addEndTransactionToGroupTransaction#0;class#ReportServer#0" expanded="false" />
-            <element signature="method#addSessionCloseToGroupTransaction#0;class#ReportServer#0" expanded="false" />
-            <element signature="method#addPicturesFromTableToGroupTransaction#0;class#ReportServer#0" expanded="false" />
           </folding>
         </state>
       </provider>
