@@ -98,7 +98,7 @@ public class ReportServer {
 
         //Bluetooth-сервер запускается при старте
         try {
-            userWebActionsHandler.bluetoothServerStart();
+            bluetoothServer.start();
             log.info("Bluetooth status:\t\t[RUNNING]");
         } catch (Exception e) {
             log.error(e);
