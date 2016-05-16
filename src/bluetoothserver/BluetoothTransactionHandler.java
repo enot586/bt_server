@@ -64,13 +64,13 @@ public class BluetoothTransactionHandler implements Runnable {
                 }
 
                 if (BluetoothPacketType.SYNCH_REQUEST.getId() == type) {
-                    bluetoothSynchTransactionHandler(bluetoothServer, newReceivedTransaction);
+                    bluetoothSynchTransactionHandler(newReceivedTransaction);
                     break;
                 }
 
                 if (BluetoothPacketType.SQL_QUERIES.getId() == type) {
                     try {
-                        bluetoothSqlQueriesTransactionHandler(bluetoothServer, (FileTransaction) newReceivedTransaction);
+                        bluetoothSqlQueriesTransactionHandler((FileTransaction) newReceivedTransaction);
                     } catch (ClassCastException e) {
                         log.warn(e);
                     }
@@ -79,7 +79,7 @@ public class BluetoothTransactionHandler implements Runnable {
 
                 if (BluetoothPacketType.BINARY_FILE.getId() == type) {
                     try {
-                        bluetoothBinaryFileTransactionHandler(bluetoothServer, (FileTransaction) newReceivedTransaction);
+                        bluetoothBinaryFileTransactionHandler((FileTransaction) newReceivedTransaction);
                     } catch (ClassCastException e) {
                         log.warn(e);
                     }
@@ -88,7 +88,7 @@ public class BluetoothTransactionHandler implements Runnable {
 
                 if (BluetoothPacketType.REPLACE_DATABASE.getId() == type) {
                     try {
-                        bluetoothReplaceDatabaseTransactionHandler(bluetoothServer, (FileTransaction) newReceivedTransaction);
+                        bluetoothReplaceDatabaseTransactionHandler((FileTransaction) newReceivedTransaction);
                     } catch (ClassCastException e) {
                         log.warn(e);
                     }
@@ -124,7 +124,7 @@ public class BluetoothTransactionHandler implements Runnable {
         }
     }
 
-    private void bluetoothReplaceDatabaseTransactionHandler(BluetoothServer bt, FileTransaction transaction) {
+    protected void bluetoothReplaceDatabaseTransactionHandler(FileTransaction transaction) {
         int status = BluetoothTransactionStatus.DONE.getId();
 
         JSONObject header = new JSONObject();
@@ -132,7 +132,7 @@ public class BluetoothTransactionHandler implements Runnable {
         header.put("userId", (Long)transaction.getHeader().get("userId"));
         header.put("size", (Long)transaction.getHeader().get("size"));
         header.put("status", new Long(status));
-        bt.sendData(new SimpleTransaction(header));
+        bluetoothServer.sendData(new SimpleTransaction(header));
 
         try {
             File dataBase = new File(ProjectDirectories.directoryDownloads + "/" + transaction.getFileName());
@@ -152,11 +152,11 @@ public class BluetoothTransactionHandler implements Runnable {
          */
         try {
             databaseDriver.removeLocalHistory();
-            databaseDriver.initDatabaseVersion(bt.getLocalHostMacAddress());
-            databaseDriver.setClientVersion(bt.getRemoteDeviceBluetoothAddress(), 1);
+            databaseDriver.initDatabaseVersion(bluetoothServer.getLocalHostMacAddress());
+            databaseDriver.setClientVersion(bluetoothServer.getRemoteDeviceBluetoothAddress(), 1);
 
             //чтобы исключить инкремент версии при получении файлов, если они будут отосланы
-            currentConnectionId = bt.getConnectionId();
+            currentConnectionId = bluetoothServer.getConnectionId();
         } catch (IOException|SQLException e) {
             userFeedback.sendUserMessage("Ошибка очистки истории базы данных.");
             log.error(e);
@@ -172,7 +172,7 @@ public class BluetoothTransactionHandler implements Runnable {
         }
     }
 
-    private void bluetoothBinaryFileTransactionHandler(BluetoothServer bt, FileTransaction transaction) {
+    protected void bluetoothBinaryFileTransactionHandler(FileTransaction transaction) {
 
         File scriptFile = new File(ProjectDirectories.directoryDownloads + "/" + transaction.getFileName());
 
@@ -183,27 +183,27 @@ public class BluetoothTransactionHandler implements Runnable {
         header.put("userId", (Long)transaction.getHeader().get("userId"));
         header.put("size", (Long)transaction.getHeader().get("size"));
         header.put("status", new Long(status));
-        bt.sendData(new SimpleTransaction(header));
+        bluetoothServer.sendData(new SimpleTransaction(header));
 
         userFeedback.sendUserMessage("Принят файл: "+transaction.getFileName());
 
         //сверяем connectionId и если не совпадает увеличиваем версию,
         //если connectionId одинаковый, считаем все изменения проходят в рамках текущей версии
-        boolean isNeedToIncrementDbVersion = (currentConnectionId != bt.getConnectionId());
+        boolean isNeedToIncrementDbVersion = (currentConnectionId != bluetoothServer.getConnectionId());
 
         try {
-            databaseDriver.addFileToHistory(bt.getLocalHostMacAddress(),
+            databaseDriver.addFileToHistory(bluetoothServer.getLocalHostMacAddress(),
                     scriptFile.toPath(), isNeedToIncrementDbVersion);
-            databaseDriver.setClientVersion(bt.getRemoteDeviceBluetoothAddress(), databaseDriver.getDatabaseVersion());
+            databaseDriver.setClientVersion(bluetoothServer.getRemoteDeviceBluetoothAddress(), databaseDriver.getDatabaseVersion());
         } catch (IOException|SQLException e) {
             log.error(e);
             userFeedback.sendUserMessage("Ошибка при обращении к базе даных.");
         }
 
-        currentConnectionId = bt.getConnectionId();
+        currentConnectionId = bluetoothServer.getConnectionId();
     }
 
-    private void bluetoothSynchTransactionHandler(BluetoothServer bt, SimpleTransaction transaction) {
+    protected void bluetoothSynchTransactionHandler(SimpleTransaction transaction) {
         if (!transaction.getHeader().containsKey("userId") ||
                 !transaction.getHeader().containsKey("version")) {
             userFeedback.sendUserMessage("Ошибка: Некорректный формат SYNCH_REQUEST.");
@@ -215,7 +215,7 @@ public class BluetoothTransactionHandler implements Runnable {
 
         int clientVersion = 0;
         try {
-            clientVersion = databaseDriver.checkClientVersion(bt.getRemoteDeviceBluetoothAddress());
+            clientVersion = databaseDriver.checkClientVersion(bluetoothServer.getRemoteDeviceBluetoothAddress());
         } catch(IOException | SQLException e) {
             log.error(e);
             log.error("Ошибка: не могу установить версию базы клиента");
@@ -249,7 +249,7 @@ public class BluetoothTransactionHandler implements Runnable {
                             public void success() {
                                 //присваивать версию только если тразакция завершилась успешно
                                 try {
-                                    databaseDriver.setClientVersion(bt.getRemoteDeviceBluetoothAddress(), dbVersion);
+                                    databaseDriver.setClientVersion(bluetoothServer.getRemoteDeviceBluetoothAddress(), dbVersion);
                                 } catch (IOException | SQLException e) {
                                     log.error(e);
                                     userFeedback.sendUserMessage("Ошибка: не удалось инкрементировать весию БД для клиента.");
@@ -258,14 +258,14 @@ public class BluetoothTransactionHandler implements Runnable {
 
                             @Override
                             public void fail() {
-                                bt.reopenNewConnection();
+                                bluetoothServer.reopenNewConnection();
                                 log.warn("client RESPONSE fail");
                                 userFeedback.sendUserMessage("Ошибка: не удалось получить ответ от клиента");
                             }
                         }
                 );
 
-                if (bt.sendData(groupTransaction)) {
+                if (bluetoothServer.sendData(groupTransaction)) {
                     userFeedback.sendUserMessage("Отправлена актуальная база.");
                 } else {
                     userFeedback.sendUserMessage("Ошибка: Не могу отправить данные.");
@@ -305,7 +305,7 @@ public class BluetoothTransactionHandler implements Runnable {
                         public void success() {
                             //присваивать версию только если тразакция завершилась успешно
                             try {
-                                databaseDriver.setClientVersion(bt.getRemoteDeviceBluetoothAddress(),
+                                databaseDriver.setClientVersion(bluetoothServer.getRemoteDeviceBluetoothAddress(),
                                         databaseDriver.getDatabaseVersion());
                             } catch (IOException | SQLException e) {
                                 log.error(e);
@@ -315,14 +315,14 @@ public class BluetoothTransactionHandler implements Runnable {
 
                         @Override
                         public void fail() {
-                            bt.reopenNewConnection();
+                            bluetoothServer.reopenNewConnection();
                             log.warn("client RESPONSE fail");
                             userFeedback.sendUserMessage("Ошибка: не удалось получить ответ от клиента");
                         }
                     }
             );
 
-            if (bt.sendData(groupTransaction)) {
+            if (bluetoothServer.sendData(groupTransaction)) {
                 userFeedback.sendUserMessage("Версия устарела. Отправлена актуальная база.");
             } else {
                 userFeedback.sendUserMessage("Ошибка: Не могу отправить данные.");
@@ -340,7 +340,7 @@ public class BluetoothTransactionHandler implements Runnable {
                 JSONObject header = new JSONObject();
                 header.put("type", new Long(BluetoothPacketType.END_TRANSACTION.getId()));
                 header.put("version", new Long(dbVersion));
-                if(bt.sendData(new SimpleTransaction(header))) {
+                if(bluetoothServer.sendData(new SimpleTransaction(header))) {
                     userFeedback.sendUserMessage("База планшета актуальна.");
                 } else {
                     userFeedback.sendUserMessage("Ошибка: Не могу отправить данные.");
@@ -357,7 +357,7 @@ public class BluetoothTransactionHandler implements Runnable {
                             public void success() {
                                 //присваивать версию только если тразакция завершилась успешно
                                 try {
-                                    databaseDriver.setClientVersion(bt.getRemoteDeviceBluetoothAddress(),
+                                    databaseDriver.setClientVersion(bluetoothServer.getRemoteDeviceBluetoothAddress(),
                                             databaseDriver.getDatabaseVersion());
                                 } catch (IOException | SQLException e) {
                                     log.error(e);
@@ -367,13 +367,13 @@ public class BluetoothTransactionHandler implements Runnable {
 
                             @Override
                             public void fail() {
-                                bt.reopenNewConnection();
+                                bluetoothServer.reopenNewConnection();
                                 log.warn("client RESPONSE fail");
                                 userFeedback.sendUserMessage("Ошибка: не удалось получить ответ от клиента");
                             }
                         }
                 );
-                if (bt.sendData(groupTransaction)) {
+                if (bluetoothServer.sendData(groupTransaction)) {
                     userFeedback.sendUserMessage("Данные для синхронизации отправлены.");
                 } else {
                     userFeedback.sendUserMessage("Ошибка: Не могу отправить данные.");
@@ -385,7 +385,7 @@ public class BluetoothTransactionHandler implements Runnable {
         }
     }
 
-    private void bluetoothSqlQueriesTransactionHandler(BluetoothServer bt, FileTransaction transaction) {
+    protected void bluetoothSqlQueriesTransactionHandler(FileTransaction transaction) {
         if (!transaction.getHeader().containsKey("userId")) {
             userFeedback.sendUserMessage("Ошибка: Некорректный формат SQL_QUERIES.");
             return;
@@ -415,7 +415,7 @@ public class BluetoothTransactionHandler implements Runnable {
         header.put("userId", new Long(userId));
         header.put("size", (Long)transaction.getHeader().get("size"));
         header.put("status", new Long(status));
-        bt.sendData(new SimpleTransaction(header));
+        bluetoothServer.sendData(new SimpleTransaction(header));
 
         boolean isAdmin = false;
 
@@ -430,11 +430,12 @@ public class BluetoothTransactionHandler implements Runnable {
 
             //сверяем connectionId и если не совпадает увеличиваем версию,
             //если connectionId одинаковый, считаем все изменения проходят в рамках текущей версии
-            boolean isNeedToIncrementDbVersion = (currentConnectionId != bt.getConnectionId());
-            databaseDriver.runScript(isAdmin, bt.getLocalHostMacAddress(), bt.getRemoteDeviceBluetoothAddress(),
-                    sqlScript, isNeedToIncrementDbVersion);
+            boolean isNeedToIncrementDbVersion = (currentConnectionId != bluetoothServer.getConnectionId());
+            databaseDriver.runScript(isAdmin, bluetoothServer.getLocalHostMacAddress(),
+                                    bluetoothServer.getRemoteDeviceBluetoothAddress(),
+                                    sqlScript, isNeedToIncrementDbVersion);
 
-            currentConnectionId = bt.getConnectionId();
+            currentConnectionId = bluetoothServer.getConnectionId();
         } catch (IOException|SQLException e) {
             userFeedback.sendUserMessage("Ошибка обработки SQL-запроса. Cинхронизация отменена.");
         }
@@ -449,7 +450,7 @@ public class BluetoothTransactionHandler implements Runnable {
         }
     }
 
-    private LinkedList<SimpleTransaction> addSqlHistoryToGroupTransaction(long userId,
+    protected LinkedList<SimpleTransaction> addSqlHistoryToGroupTransaction(long userId,
                                                                          int clientVersion_,
                                                                          int dbVersion_) {
         LinkedList<SimpleTransaction> result = new LinkedList<SimpleTransaction>();
@@ -497,7 +498,7 @@ public class BluetoothTransactionHandler implements Runnable {
         return result;
     }
 
-    private LinkedList<SimpleTransaction> addPicturesToGroupTransaction(long userId,
+    protected LinkedList<SimpleTransaction> addPicturesToGroupTransaction(long userId,
                                                                        int clientVersion_,
                                                                        int dbVersion_) {
         LinkedList<SimpleTransaction> result = new LinkedList<SimpleTransaction>();
@@ -536,7 +537,7 @@ public class BluetoothTransactionHandler implements Runnable {
         return result;
     }
 
-    private FileTransaction addReplaceDatabaseToGroupTransaction(long userId, int dbVersion_) throws FileNotFoundException {
+    protected FileTransaction addReplaceDatabaseToGroupTransaction(long userId, int dbVersion_) throws FileNotFoundException {
         //передать файлик базы данных целиком
         File databaseFile = new File(ProjectDirectories.commonDatabaseRelativePath);
         if (databaseFile.exists()) {
@@ -551,7 +552,7 @@ public class BluetoothTransactionHandler implements Runnable {
         throw new FileNotFoundException();
     }
 
-    private SimpleTransaction addEndTransactionToGroupTransaction(int versionDb_) {
+    protected SimpleTransaction addEndTransactionToGroupTransaction(int versionDb_) {
         //Ставим в группу для отправки закрытия сессии после получения последнего RESPONSE
         JSONObject sessionCloseHeader = new JSONObject();
         sessionCloseHeader.put("type", new Long(BluetoothPacketType.END_TRANSACTION.getId()));
@@ -559,7 +560,7 @@ public class BluetoothTransactionHandler implements Runnable {
         return new SimpleTransaction(sessionCloseHeader);
     }
 
-    private SimpleTransaction addSessionCloseToGroupTransaction(int versionDb_) {
+    protected SimpleTransaction addSessionCloseToGroupTransaction(int versionDb_) {
         //Ставим в группу для отправки закрытия сессии после получения последнего RESPONSE
         JSONObject sessionCloseHeader = new JSONObject();
         sessionCloseHeader.put("type", new Long(BluetoothPacketType.SESSION_CLOSE.getId()));
@@ -567,7 +568,7 @@ public class BluetoothTransactionHandler implements Runnable {
         return new SimpleTransaction(sessionCloseHeader);
     }
 
-    private LinkedList<SimpleTransaction> addPicturesFromTableToGroupTransaction(int userId) {
+    protected LinkedList<SimpleTransaction> addPicturesFromTableToGroupTransaction(int userId) {
         LinkedList<SimpleTransaction> result = new LinkedList<SimpleTransaction>();
         ArrayList<String> pictures = new ArrayList<String>();
 
