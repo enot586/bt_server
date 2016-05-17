@@ -1,6 +1,6 @@
 package reportserver;
 
-enum BluetoothTransactionStatus {
+enum TransactionStatus {
     DONE      (0),  //Если выполнилось успешно
     NOT_DONE  (1),  //Если принялось но не выполнелось
     ERROR     (2),  //Если плохо принялось
@@ -8,7 +8,7 @@ enum BluetoothTransactionStatus {
 
     private int id;
 
-    BluetoothTransactionStatus(int transactionStatus_) {
+    TransactionStatus(int transactionStatus_) {
         this.id = transactionStatus_;
     }
 

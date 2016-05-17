@@ -22,7 +22,7 @@ enum BluetoothPacketType {
     RESPONSE(2),            //Ответ на транзакцию
                             //JSON-Заголовок: {"type":int, "userId":int, "size":int, "status":int}
                             //size = количество приянтых байт;
-                            //status = BluetoothTransactionStatus.getId()
+                            //status = TransactionStatus.getId()
 
     BINARY_FILE(3),         //Передача файла
                             //JSON-Заголовок: {"type":int, "userId":int, "size":int, "filename:string"}
@@ -30,7 +30,7 @@ enum BluetoothPacketType {
                             //В ответ посылается RESPONSE.
 
     SESSION_CLOSE(4),       //Закрытие текущей сессии
-                            //JSON-Заголовок: {"type":int}
+                            //JSON-Заголовок: {"type":int, "version":int}
 
     REPLACE_DATABASE(5),    //Замена файла базы данных на сервере
                             //JSON-Заголовок: {"type":int, "userId":int, "size":int, "version":int}

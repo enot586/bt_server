@@ -125,7 +125,7 @@ public class BluetoothTransactionHandler implements Runnable {
     }
 
     protected void bluetoothReplaceDatabaseTransactionHandler(FileTransaction transaction) {
-        int status = BluetoothTransactionStatus.DONE.getId();
+        int status = TransactionStatus.DONE.getId();
 
         JSONObject header = new JSONObject();
         header.put("type", new Long(BluetoothPacketType.RESPONSE.getId()) );
@@ -176,7 +176,7 @@ public class BluetoothTransactionHandler implements Runnable {
 
         File scriptFile = new File(ProjectDirectories.directoryDownloads + "/" + transaction.getFileName());
 
-        int status = BluetoothTransactionStatus.DONE.getId();
+        int status = TransactionStatus.DONE.getId();
 
         JSONObject header = new JSONObject();
         header.put("type", new Long(BluetoothPacketType.RESPONSE.getId()) );
@@ -398,12 +398,12 @@ public class BluetoothTransactionHandler implements Runnable {
 
         try {
             sqlScript = new SqlCommandList(scriptFile);
-            status = BluetoothTransactionStatus.DONE.getId();
+            status = TransactionStatus.DONE.getId();
         } catch (SQLSyntaxErrorException e) {
             log.warn(e);
-            status = BluetoothTransactionStatus.ERROR.getId();
+            status = TransactionStatus.ERROR.getId();
         } catch (FileNotFoundException e) {
-            status = BluetoothTransactionStatus.ERROR.getId();
+            status = TransactionStatus.ERROR.getId();
             log.error(e);
             log.error("Ошибка: Не могу получить доступ к файлу "+transaction.getFileName());
             userFeedback.sendUserMessage("Ошибка: Не могу получить доступ к файлу "+transaction.getFileName());
