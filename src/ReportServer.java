@@ -77,7 +77,8 @@ public class ReportServer {
             return;
         }
 
-        bluetoothTransactionHandler = new BluetoothTransactionHandler(bluetoothServer, databaseDriver, userFeedback);
+        bluetoothTransactionHandler = new BluetoothTransactionHandler(bluetoothServer, webServer,
+                                                                        databaseDriver, userFeedback);
 
         //Bluetooth-сервер запускается при старте
         try {

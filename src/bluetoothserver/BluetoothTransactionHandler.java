@@ -18,6 +18,7 @@ import java.util.NoSuchElementException;
 public class BluetoothTransactionHandler implements Runnable {
     private BluetoothServer bluetoothServer;
     private DatabaseDriver databaseDriver;
+    private WebServer webServer;
     private CommonUserInterface userFeedback;
     private GroupTransactionHandler bluetoothGroupTransactionHandler;
     private GroupTransaction groupTransaction;
@@ -26,7 +27,7 @@ public class BluetoothTransactionHandler implements Runnable {
 
     private final Logger log = Logger.getLogger(BluetoothTransactionHandler.class);
 
-    BluetoothTransactionHandler(BluetoothServer btServer_, DatabaseDriver dbDriver_,
+    BluetoothTransactionHandler(BluetoothServer btServer_, WebServer webServer_, DatabaseDriver dbDriver_,
                                 CommonUserInterface messageForUser_) {
         userFeedback = messageForUser_;
 
@@ -34,6 +35,8 @@ public class BluetoothTransactionHandler implements Runnable {
         bluetoothGroupTransactionHandler = new GroupTransactionHandler(bluetoothServer);
 
         databaseDriver = dbDriver_;
+
+        webServer = webServer_;
     }
 
     @Override
@@ -128,14 +131,14 @@ public class BluetoothTransactionHandler implements Runnable {
         int status = TransactionStatus.DONE.getId();
 
         JSONObject header = new JSONObject();
-        header.put("type", new Long(BluetoothPacketType.RESPONSE.getId()) );
-        header.put("userId", (Long)transaction.getHeader().get("userId"));
-        header.put("size", (Long)transaction.getHeader().get("size"));
-        header.put("status", new Long(status));
-        bluetoothServer.sendData(new SimpleTransaction(header));
+        header.put( "type", new Long(BluetoothPacketType.RESPONSE.getId()) );
+        header.put( "userId", (Long)transaction.getHeader().get("userId") );
+        header.put( "size", (Long)transaction.getHeader().get("size") );
+        header.put( "status", new Long(status) );
+        bluetoothServer.sendData( new SimpleTransaction(header) );
 
         try {
-            File dataBase = new File(ProjectDirectories.directoryDownloads + "/" + transaction.getFileName());
+            File dataBase = new File( ProjectDirectories.directoryDownloads + "/" + transaction.getFileName() );
             databaseDriver.replaceCommonBase(dataBase);
             userFeedback.sendUserMessage("Установлена новая база");
         } catch (IOException e) {
@@ -164,7 +167,7 @@ public class BluetoothTransactionHandler implements Runnable {
 
         //обновить таблицу у веб-морды
         try {
-            AsyncContext asyncRefreshDetourTable = WebServer.popWebAction(WebActionType.REFRESH_DETOUR_TABLE);
+            AsyncContext asyncRefreshDetourTable = webServer.popWebAction(WebActionType.REFRESH_DETOUR_TABLE);
             asyncRefreshDetourTable.complete();
         } catch (NullPointerException e) {
             //по каким-то причинам ajax соединение установлено не было
@@ -174,7 +177,7 @@ public class BluetoothTransactionHandler implements Runnable {
 
     protected void bluetoothBinaryFileTransactionHandler(FileTransaction transaction) {
 
-        File scriptFile = new File(ProjectDirectories.directoryDownloads + "/" + transaction.getFileName());
+        File innerFile = new File(ProjectDirectories.directoryDownloads + "/" + transaction.getFileName());
 
         int status = TransactionStatus.DONE.getId();
 
@@ -193,7 +196,7 @@ public class BluetoothTransactionHandler implements Runnable {
 
         try {
             databaseDriver.addFileToHistory(bluetoothServer.getLocalHostMacAddress(),
-                    scriptFile.toPath(), isNeedToIncrementDbVersion);
+                    innerFile.toPath(), isNeedToIncrementDbVersion);
             databaseDriver.setClientVersion(bluetoothServer.getRemoteDeviceBluetoothAddress(), databaseDriver.getDatabaseVersion());
         } catch (IOException|SQLException e) {
             log.error(e);
@@ -442,7 +445,7 @@ public class BluetoothTransactionHandler implements Runnable {
 
         //обновить таблицу у веб-морды
         try {
-            AsyncContext asyncRefreshDetourTable = WebServer.popWebAction(WebActionType.REFRESH_DETOUR_TABLE);
+            AsyncContext asyncRefreshDetourTable = webServer.popWebAction(WebActionType.REFRESH_DETOUR_TABLE);
             asyncRefreshDetourTable.complete();
         } catch (NullPointerException e) {
             //по каким-то причинам ajax соединение установлено не было

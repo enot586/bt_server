@@ -33,7 +33,7 @@ public class WebServer extends CommonServer {
 
     private Server server;
     private String siteAddress;
-    private static Map< WebActionType, AsyncContext > webActions = new HashMap< WebActionType, AsyncContext >();
+    private Map< WebActionType, AsyncContext > webActions = new HashMap< WebActionType, AsyncContext >();
     private CommonUserInterface ui;
     private ActionFromWeb webActionsHandler;
     private static Logger log = Logger.getLogger(ReportServer.class);
@@ -147,15 +147,15 @@ public class WebServer extends CommonServer {
         setState(ServerState.SERVER_ACTIVE);
     }
 
-    static boolean isWebActionExist(WebActionType type) {
+    boolean isWebActionExist(WebActionType type) {
         return webActions.containsKey(type);
     }
 
-    public static synchronized void putWebAction(WebActionType type, AsyncContext context) {
+    public synchronized void putWebAction(WebActionType type, AsyncContext context) {
         webActions.put(type, context);
     }
 
-    public static synchronized AsyncContext popWebAction(WebActionType type) throws NullPointerException {
+    public synchronized AsyncContext popWebAction(WebActionType type) throws NullPointerException {
         AsyncContext action = webActions.get(type);
         webActions.remove(type);
         return action;
@@ -261,8 +261,7 @@ public class WebServer extends CommonServer {
             AsyncContext asyncContext = request.startAsync();
             asyncContext.setTimeout(0);
 
-            WebServer.putWebAction(WebActionType.REFRESH_DETOUR_TABLE,
-                    asyncContext);
+            putWebAction(WebActionType.REFRESH_DETOUR_TABLE, asyncContext);
 
         }
     }
@@ -273,7 +272,7 @@ public class WebServer extends CommonServer {
             AsyncContext asyncContext = request.startAsync();
             asyncContext.setTimeout(0);
 
-            WebServer.putWebAction(WebActionType.SEND_USER_MESSAGE, asyncContext);
+            putWebAction(WebActionType.SEND_USER_MESSAGE, asyncContext);
         }
     }
 

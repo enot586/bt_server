@@ -18,9 +18,13 @@ import static org.junit.Assert.assertTrue;
 public class BluetoothTransactionHandlerTest {
     private TestStubUserInterface testUi = new TestStubUserInterface();
     private TestStubBluetoothServer testBluetoothServer = new TestStubBluetoothServer(testUi);
-    private DatabaseDriver testDatabaseDriver = new DatabaseDriver();
+    private TestStubDatabaseDriver testDatabaseDriver = new TestStubDatabaseDriver();
+
+    private TestStubWebActionsHandler webActionsHandler = new TestStubWebActionsHandler();
+    private TestStubWebServer testWebServer = new TestStubWebServer( 8080, "webserver", webActionsHandler, testUi );
+
     private BluetoothTransactionHandler bluetoothTransactionHandler =
-            new BluetoothTransactionHandler(testBluetoothServer, testDatabaseDriver, testUi);
+            new BluetoothTransactionHandler(testBluetoothServer, testWebServer, testDatabaseDriver, testUi);
 
     @Before
     public void setUp() throws Exception {
@@ -37,11 +41,6 @@ public class BluetoothTransactionHandlerTest {
     @After
     public void tearDown() throws Exception {
         testDatabaseDriver.close();
-    }
-
-    @Test
-    public void run() throws Exception {
-
     }
 
     @Test
@@ -80,23 +79,23 @@ public class BluetoothTransactionHandlerTest {
 
         String testLine;
 
-        try (FileReader fr = new FileReader(((FileTransaction)t).getFileName())) {
-            try(BufferedReader br = new BufferedReader(fr)) {
+        try ( FileReader fr = new FileReader(((FileTransaction)t).getFileName()) ) {
+            try( BufferedReader br = new BufferedReader(fr) ) {
                 testLine = br.readLine();
+
+                assertNotNull(testLine);
+
+                String[] list = testLine.split(";");
+
+                assertEquals(list.length, 5);
+
+                assertEquals(list[0], "TEST_QUERY2");
+                assertEquals(list[1], "TEST_QUERY2");
+                assertEquals(list[2], "TEST_QUERY3");
+                assertEquals(list[3], "TEST_QUERY3");
+                assertEquals(list[4], "TEST_QUERY3");
             }
         }
-
-        assertNotNull(testLine);
-
-        String[] list = testLine.split(";");
-
-        assertEquals(list.length, 5);
-
-        assertEquals(list[0], "TEST_QUERY2");
-        assertEquals(list[1], "TEST_QUERY2");
-        assertEquals(list[2], "TEST_QUERY3");
-        assertEquals(list[3], "TEST_QUERY3");
-        assertEquals(list[4], "TEST_QUERY3");
 
         //RESPONSE
         JSONObject responseHeader = new JSONObject();
