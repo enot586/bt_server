@@ -36,7 +36,7 @@ public class BluetoothTransactionHandlerTest {
 
     @After
     public void tearDown() throws Exception {
-
+        testDatabaseDriver.close();
     }
 
     @Test
