@@ -33,8 +33,7 @@ class SqlCommandList implements Iterable<String> {
     }
 
     private boolean isBadStartOrFinishSymbol(char symbol) {
-        if (symbol == '\n' || symbol == '\r') return true;
-        return false;
+        return (symbol == '\n') || (symbol == '\r');
     }
 
     private String deletePrefixSuffix(String query) {

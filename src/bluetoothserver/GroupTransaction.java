@@ -14,9 +14,9 @@ public class GroupTransaction {
         ACTIVE,
         DONE,
         ERROR
-    };
+    }
 
-    private State groupTransactionState = State.EMPTY;;
+    private State groupTransactionState = State.EMPTY;
 
     GroupTransaction() {
 

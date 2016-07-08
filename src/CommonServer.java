@@ -21,7 +21,7 @@ abstract class CommonServer {
         return state;
     }
 
-    boolean sendData(GroupTransaction t) {return false;};
+    boolean sendData(GroupTransaction t) {return false;}
 
-    boolean sendData(SimpleTransaction t) {return false;};
+    boolean sendData(SimpleTransaction t) {return false;}
 }

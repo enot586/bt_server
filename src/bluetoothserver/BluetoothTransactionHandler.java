@@ -41,6 +41,7 @@ public class BluetoothTransactionHandler implements Runnable {
 
     @Override
     public void run() {
+        //Если установлена групповая транзакция
         if (groupTransaction != null) {
             bluetoothGroupTransactionHandler.timerHandler(groupTransaction);
             if (groupTransaction.isComplete()) {

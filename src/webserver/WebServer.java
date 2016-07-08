@@ -94,17 +94,6 @@ public class WebServer extends CommonServer {
         context.setClassLoader( new URLClassLoader(new URL[0], this.getClass().getClassLoader() ) );
         context.setParentLoaderPriority(true);
 
-        //Create JSP Servlet (must be named "jsp")
-        ServletHolder holderJsp = new ServletHolder("jsp", JettyJspServlet.class);
-        holderJsp.setInitOrder(0);
-        holderJsp.setInitParameter("logVerbosityLevel", "WARN");
-        holderJsp.setInitParameter("fork", "false");
-        holderJsp.setInitParameter("xpoweredBy", "false");
-        holderJsp.setInitParameter("compilerTargetVM", "1.7");
-        holderJsp.setInitParameter("compilerSourceVM", "1.7");
-        holderJsp.setInitParameter("keepgenerated", "true");
-        context.addServlet(holderJsp, "*.jsp");
-
         // Add Application Servlets
         context.addServlet(new ServletHolder( new WebServer.ServletBtStatus()), "/btstatus");
         context.addServlet(new ServletHolder( new WebServer.ServletBtStart()), "/btstart");

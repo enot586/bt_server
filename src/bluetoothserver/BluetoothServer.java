@@ -58,7 +58,7 @@ class BluetoothServer extends CommonServer {
         return this.getServerState() != ServerState.SERVER_INITIALIZING;
     }
 
-    public void init() throws IOException, Exception {
+    public void init() throws Exception {
         setState(ServerState.SERVER_INITIALIZING);
         uuid = new UUID("1101", true);
         name = "ReportServer";

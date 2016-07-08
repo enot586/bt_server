@@ -14,7 +14,7 @@ class FileHandler {
     }
 
     public byte[] getMD5ForFile(String file)
-            throws NoSuchAlgorithmException, FileNotFoundException, IOException {
+            throws NoSuchAlgorithmException, IOException {
         MessageDigest md = MessageDigest.getInstance("MD5");
         byte[] digest = getFileDigest(new FileInputStream(file), md);
         return digest;
